@@ -9,10 +9,10 @@ export interface User {
 }
 
 export enum UserRole {
-  BUSINESS = 'BUSINESS',
-  CONSUMER = 'CONSUMER',
-  COURIER = 'COURIER',
-  ADMIN = 'ADMIN'
+  BUSINESS = "BUSINESS",
+  CONSUMER = "CONSUMER",
+  COURIER = "COURIER",
+  ADMIN = "ADMIN"
 }
 
 // Food item types
