@@ -12,7 +12,8 @@ export enum UserRole {
   BUSINESS = "BUSINESS",
   CONSUMER = "CONSUMER",
   COURIER = "COURIER",
-  ADMIN = "ADMIN"
+  ADMIN = "ADMIN",
+  UNASSIGNED = "UNASSIGNED"
 }
 
 // Food item types

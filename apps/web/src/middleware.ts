@@ -1,6 +1,7 @@
 import { auth } from "@/auth"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
+import { UserRole } from "@food-waste/types"
 
 export default async function middleware(request: NextRequest) {
   const session = await auth()
@@ -14,6 +15,9 @@ export default async function middleware(request: NextRequest) {
   // Redirect to login if not authenticated
   if (!session) {
     return NextResponse.redirect(new URL("/auth/login", request.url))
+  }
+  else if (session.user.role === UserRole.UNASSIGNED) {
+    return NextResponse.redirect(new URL("/auth/register-oauth", request.url))
   }
 
   return NextResponse.next()

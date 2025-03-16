@@ -38,7 +38,7 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
-  role          UserRole  @default(CONSUMER)
+  role          UserRole  @default(UNASSIGNED)
   accounts      Account[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -116,6 +116,7 @@ model OrderItem {
 }
 
 enum UserRole {
+  UNASSIGNED
   BUSINESS
   CONSUMER
   COURIER
