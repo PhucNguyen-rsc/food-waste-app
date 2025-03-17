@@ -29,25 +29,23 @@ export const authOptions = {
       },
       async authorize(credentials: any, req: any): Promise<any> {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Invalid credentials");
+          return null; // Instead of throwing, just return null
         }
-
+      
         const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email as string,
-          },
+          where: { email: credentials.email as string },
         });
-
+      
         if (!user || !user.password) {
-          throw new Error("User not found");
+          return null; // User not found → return null
         }
-
+      
         const isPasswordValid = await compare(credentials.password, user.password);
-
+      
         if (!isPasswordValid) {
-          throw new Error("Invalid password");
+          return null; // Password mismatch → return null
         }
-
+      
         return {
           id: user.id,
           email: user.email,
