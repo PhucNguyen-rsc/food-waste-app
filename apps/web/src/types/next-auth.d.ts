@@ -1,5 +1,5 @@
 import { UserRole } from "@food-waste/types"
-import NextAuth from "next-auth"
+import "next-auth"
 
 declare module "next-auth" {
   interface User {
@@ -10,9 +10,10 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string
-      email: string
       name: string
+      email: string
       role: UserRole
     }
+    token?: string
   }
 } 

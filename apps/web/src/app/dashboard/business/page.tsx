@@ -9,6 +9,7 @@ import {
   BarChart3, 
   History 
 } from "lucide-react"
+import { ProfileSettingsForm } from "@/components/dashboard/business/profile-settings-form"
 
 export const metadata: Metadata = {
   title: "Business Dashboard",
@@ -55,8 +56,7 @@ export default function BusinessDashboardPage() {
               <CardTitle>Profile Settings</CardTitle>
             </CardHeader>
             <CardContent>
-              {/* Profile settings form will go here */}
-              <p className="text-muted-foreground">Profile settings content coming soon...</p>
+              <ProfileSettingsForm />
             </CardContent>
           </Card>
         </TabsContent>

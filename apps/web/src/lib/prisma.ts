@@ -1,4 +1,4 @@
-import { PrismaClient } from "@food-waste/database/client";
+import { PrismaClient } from "@food-waste/database";
 import { PrismaNeon } from '@prisma/adapter-neon'
 import { Pool } from '@neondatabase/serverless'
 

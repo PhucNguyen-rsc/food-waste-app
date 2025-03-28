@@ -1,4 +1,3 @@
-// filepath: /Users/kwaakuboamah-powers/Documents/food-waste-app/apps/web/tailwind.config.ts
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
