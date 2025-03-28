@@ -33,7 +33,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Handle unauthorized access
       console.error('Unauthorized access:', error.response.data)
-      // You might want to redirect to login or refresh the token here
+      window.location.href = '/auth/login'
     }
     return Promise.reject(error)
   }
