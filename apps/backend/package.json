@@ -1,5 +1,5 @@
 {
-  "name": "@apps/backend",
+  "name": "@food-waste/backend",
   "version": "1.0.0",
   "private": true,
   "main": "dist/main.js",
