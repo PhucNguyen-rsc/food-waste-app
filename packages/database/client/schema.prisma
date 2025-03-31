@@ -1,16 +1,15 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// packages/database/prisma/schema.prisma
 
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
-  output          = "../client" // Keep generated client one level up, outside src
+  output          = "../client" // generated client goes one level up
 }
 
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  url       = env("DATABASE_URL") // ✅ use the working variable from your .env
+  directUrl = env("DATABASE_URL") // ✅ avoid crash due to missing POSTGRES_URL_NON_POOLING
 }
 
 model Account {
