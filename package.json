@@ -34,5 +34,9 @@
   "packageManager": "pnpm@8.15.4",
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@react-native-picker/picker": "^2.11.0",
+    "expo-image-picker": "^16.0.6"
   }
-} 
+}

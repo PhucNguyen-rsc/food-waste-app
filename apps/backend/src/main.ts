@@ -8,16 +8,20 @@ async function bootstrap() {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
 
-  // Enable CORS with configuration from API_CONFIG
+  // ✅ Enable CORS
   app.enableCors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
+      // Allow requests with no origin (like mobile apps or curl)
       if (!origin) return callback(null, true);
-      
-      if (API_CONFIG.CORS.ORIGINS.includes(origin)) {
+
+      // Allow known frontend origins (local IPs and localhost)
+      if (
+        API_CONFIG.CORS.ORIGINS.includes(origin) ||
+        API_CONFIG.CORS.ORIGINS.includes('*')
+      ) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        callback(new Error(`❌ Not allowed by CORS: ${origin}`));
       }
     },
     methods: API_CONFIG.CORS.METHODS,
@@ -26,8 +30,8 @@ async function bootstrap() {
   });
 
   await app.listen(API_CONFIG.PORT);
-  console.log(`Server is running on port ${API_CONFIG.PORT}`);
-  console.log('CORS enabled for origins:', API_CONFIG.CORS.ORIGINS.join(', '));
+  console.log(`🚀 Server is running on port ${API_CONFIG.PORT}`);
+  console.log('🌐 CORS Origins Allowed:', API_CONFIG.CORS.ORIGINS.join(', '));
 }
 
-bootstrap(); 
+bootstrap();

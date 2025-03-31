@@ -1,15 +1,27 @@
+// src/screens/GetStartedScreen.tsx
+
+import React from 'react';
 import { StyleSheet, View, SafeAreaView } from 'react-native';
 import { Text } from '../components/ui/Text';
 import { Button } from '../components/ui/Button';
 import { useAppDispatch } from '../store';
 import { setInitialized } from '../store/slices/appSlice';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
+
+
+type GetStartedScreenNavProp = NativeStackNavigationProp<RootStackParamList, 'GetStarted'>;
 
 export default function GetStartedScreen() {
   const dispatch = useAppDispatch();
+  const navigation = useNavigation<GetStartedScreenNavProp>();
 
   const handleGetStarted = () => {
     dispatch(setInitialized(true));
     console.log('Get Started pressed');
+    // Navigate to the "Login" screen (or 'SignUp' if you prefer)
+    navigation.navigate('Login');
   };
 
   return (
@@ -19,7 +31,7 @@ export default function GetStartedScreen() {
           <Text style={styles.logo}>feedr</Text>
           <Text style={styles.logoSubtitle}>FoodService</Text>
         </View>
-        
+
         <View style={styles.welcomeSection}>
           <Text style={styles.title}>Welcome</Text>
           <Text style={styles.subtitle}>
@@ -27,27 +39,9 @@ export default function GetStartedScreen() {
           </Text>
         </View>
 
-        <Button 
-          onPress={handleGetStarted}
-          style={styles.button}
-        >
+        <Button onPress={handleGetStarted} style={styles.button}>
           GET STARTED
         </Button>
-      </View>
-
-      <View style={styles.tabBar}>
-        <View style={styles.tabItem}>
-          <Text style={styles.tabText}>Home</Text>
-        </View>
-        <View style={styles.tabItem}>
-          <Text style={styles.tabText}>Search</Text>
-        </View>
-        <View style={styles.tabItem}>
-          <Text style={styles.tabText}>Notifications</Text>
-        </View>
-        <View style={styles.tabItem}>
-          <Text style={styles.tabText}>Profile</Text>
-        </View>
       </View>
     </SafeAreaView>
   );
@@ -101,19 +95,4 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 20,
   },
-  tabBar: {
-    flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E5E5',
-    paddingVertical: 10,
-  },
-  tabItem: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  tabText: {
-    fontSize: 12,
-    color: '#666',
-  },
-}); 
+});

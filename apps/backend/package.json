@@ -5,8 +5,9 @@
   "main": "dist/main.js",
   "scripts": {
     "start": "nest start",
-    "build": "nest build",
+    "start:dev": "npm run dev",
     "dev": "nest start --watch",
+    "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\""
   },
   "dependencies": {
