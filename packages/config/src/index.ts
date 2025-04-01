@@ -89,8 +89,8 @@ const getApiConfig = (options: ApiConfigOptions = {}) => ({
     ORIGINS: [
       options.frontendUrl || process.env.FRONTEND_URL || 'http://localhost:3000',
       options.mobileAppUrl || process.env.MOBILE_APP_URL || 'http://localhost:3002',
-      // Add more origins as needed
-    ].filter(Boolean), // Remove any undefined/null values
+      process.env.NGROK_URL, // ✅ Allow ngrok URL
+    ].filter(Boolean),
     METHODS: options.methods || ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     CREDENTIALS: options.credentials !== undefined ? options.credentials : true,
     ALLOWED_HEADERS: options.allowedHeaders || [
@@ -151,4 +151,4 @@ export type {
   UploadConfigOptions,
   PaginationConfigOptions,
   CacheConfigOptions,
-}; 
+};

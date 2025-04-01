@@ -33,7 +33,7 @@ export default function ConsumerHomeScreen() {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const res = await axios.get('http://10.228.243.83:3000/items');
+        const res = await axios.get('https://fcd5-5-195-74-111.ngrok-free.app/items');
         setItems(res.data);
       } catch (error) {
         console.error(error);

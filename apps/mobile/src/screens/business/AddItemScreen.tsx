@@ -54,7 +54,7 @@ export default function AddItemScreen() {
     console.log('📤 Submitting item to backend:', itemPayload);
 
     try {
-      const response = await axios.post('http://10.228.243.83:3000/items', itemPayload);
+      const response = await axios.post('https://fcd5-5-195-74-111.ngrok-free.app/items', itemPayload);
       console.log('✅ Item successfully added. Response:', response.data);
 
       Alert.alert('Success', 'Item added successfully!');
