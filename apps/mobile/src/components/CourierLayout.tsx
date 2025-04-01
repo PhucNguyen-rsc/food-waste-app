@@ -8,10 +8,11 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '@/navigation/types';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 type CourierLayoutNavProp = NativeStackNavigationProp<RootStackParamList>;
+type IconName = keyof typeof Ionicons.glyphMap;
 
 interface CourierLayoutProps {
   children: React.ReactNode;
@@ -22,7 +23,12 @@ export default function CourierLayout({ children }: CourierLayoutProps) {
   const route = useRoute();
   const currentRoute = route.name;
 
-  const tabs = [
+  const tabs: Array<{
+    routeName: keyof RootStackParamList;
+    label: string;
+    icon: IconName;
+    iconActive: IconName;
+  }> = [
     {
       routeName: 'CourierHome',
       label: 'Home',

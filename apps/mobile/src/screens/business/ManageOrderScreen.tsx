@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import BusinessLayout from '../../components/BusinessLayout';
+import BusinessLayout from '@/components/BusinessLayout';
 
 type Order = {
   id: string;

@@ -14,7 +14,7 @@ import {
   ScrollView,
 } from 'react-native';
 import axios from 'axios';
-import BusinessLayout from '../../components/BusinessLayout';
+import BusinessLayout from '@/components/BusinessLayout';
 
 export default function AddItemScreen() {
   const [photoUri, setPhotoUri] = useState<string | null>(null);

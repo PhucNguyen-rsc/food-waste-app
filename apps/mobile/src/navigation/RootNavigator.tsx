@@ -3,28 +3,28 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { RootStackParamList } from './types';
+import { RootStackParamList } from '@/navigation/types';
 
 // Onboarding / Auth Screens
-import GetStartedScreen from '../screens/GetStartedScreen';
-import LoginScreen from '../screens/LoginScreen';
-import SignUpScreen from '../screens/SignUpScreen';
+import GetStartedScreen from '@/screens/GetStartedScreen';
+import LoginScreen from '@/screens/LoginScreen';
+import SignUpScreen from '@/screens/SignUpScreen';
 
 // Role Selection
-import RoleSelectionScreen from '../screens/RoleSelectionScreen';
+import RoleSelectionScreen from '@/screens/RoleSelectionScreen';
 
 // Business Screens
-import BusinessHomeScreen from '../screens/business/BusinessHomeScreen';
-import AddItemScreen from '../screens/business/AddItemScreen';
-import ManageOrderScreen from '../screens/business/ManageOrderScreen'; // ✅ Singular, matches file + export
+import BusinessHomeScreen from '@/screens/business/BusinessHomeScreen';
+import AddItemScreen from '@/screens/business/AddItemScreen';
+import ManageOrderScreen from '@/screens/business/ManageOrderScreen'; // ✅ Singular, matches file + export
 
 // Consumer Screen
-import ConsumerHomeScreen from '../screens/consumer/ConsumerHomeScreen';
+import ConsumerHomeScreen from '@/screens/consumer/ConsumerHomeScreen';
 
 // (Optional) Courier Screen
 // import CourierHomeScreen from '../screens/courier/CourierHomeScreen';
 
-import { useAppSelector } from '../store';
+import { useAppSelector } from '@/store';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

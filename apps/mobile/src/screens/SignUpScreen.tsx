@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../config/firebaseConfig';
-import { useAppDispatch } from '../store';
-import { setUser } from '../store/slices/authSlice';
+import auth from '@react-native-firebase/auth';
+import { useAppDispatch } from '@/store';
+import { setUser } from '@/store/slices/authSlice';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '@/navigation/types';
 
 type SignUpNavProp = NativeStackNavigationProp<RootStackParamList, 'SignUp'>;
 
@@ -30,7 +29,7 @@ export default function SignUpScreen() {
 
     try {
       // 2. Call Firebase Auth for Sign-Up
-      const userCred = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      const userCred = await auth().createUserWithEmailAndPassword(email.trim(), password);
       dispatch(setUser(userCred.user.uid));
       console.log('Sign Up successful:', userCred.user.uid);
 

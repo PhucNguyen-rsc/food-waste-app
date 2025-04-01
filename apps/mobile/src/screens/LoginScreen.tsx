@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../config/firebaseConfig';
-import { useAppDispatch } from '../store';
-import { setUser } from '../store/slices/authSlice';
+import auth from '@react-native-firebase/auth';
+import { useAppDispatch } from '@/store';
+import { setUser } from '@/store/slices/authSlice';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '@/navigation/types';
 
 type LoginScreenNavProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -30,7 +29,7 @@ export default function LoginScreen() {
 
     try {
       // 2. Attempt to sign in with Firebase Auth
-      const userCred = await signInWithEmailAndPassword(auth, email.trim(), password);
+      const userCred = await auth().signInWithEmailAndPassword(email.trim(), password);
       dispatch(setUser(userCred.user.uid));
       console.log('Login successful:', userCred.user.uid);
 
@@ -77,7 +76,7 @@ export default function LoginScreen() {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-        <Text style={styles.link}>Don’t have an account? Sign up</Text>
+        <Text style={styles.link}>Don't have an account? Sign up</Text>
       </TouchableOpacity>
     </View>
   );

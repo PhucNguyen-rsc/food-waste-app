@@ -14,9 +14,11 @@ export type RootStackParamList = {
 
   // Consumer side
   ConsumerHome: undefined;
-  // Browse: undefined;
-  // Profile: undefined;
+  Browse: undefined;
+  Profile: undefined;
 
-  // Courier side (if needed)
-  // CourierHome: undefined;
+  // Courier side
+  CourierHome: undefined;
+  Deliveries: undefined;
+  CourierProfile: undefined;
 };

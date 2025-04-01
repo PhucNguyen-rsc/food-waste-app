@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '@/navigation/types';
 
 type BusinessLayoutNavProp = NativeStackNavigationProp<RootStackParamList>;
 

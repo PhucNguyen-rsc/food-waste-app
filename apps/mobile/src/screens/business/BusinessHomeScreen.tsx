@@ -9,7 +9,7 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import BusinessLayout from '../../components/BusinessLayout'; // Use your BusinessLayout for a bottom bar
+import BusinessLayout from '@/components/BusinessLayout'; // Use your BusinessLayout for a bottom bar
 
 /** Types for dummy data */
 type Listing = {

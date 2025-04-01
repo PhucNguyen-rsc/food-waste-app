@@ -1,16 +1,15 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useAppDispatch, useAppSelector } from '../store';
-import { logout } from '../store/slices/authSlice';
-import { signOut } from 'firebase/auth';
-import { auth } from '../config/firebaseConfig';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { logout } from '@/store/slices/authSlice';
+import auth from '@react-native-firebase/auth';
 
 export default function HomeScreen() {
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.user);
 
   const handleLogout = async () => {
-    await signOut(auth);
+    await auth().signOut();
     dispatch(logout());
   };
 

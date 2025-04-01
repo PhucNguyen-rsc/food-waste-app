@@ -10,7 +10,7 @@ import {
   Dimensions,
 } from 'react-native';
 import axios from 'axios';
-import ConsumerLayout from '../../components/ConsumerLayout';
+import ConsumerLayout from '@/components/ConsumerLayout';
 
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = (screenWidth - 48) / 2; // 16px padding * 3

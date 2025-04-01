@@ -2,13 +2,13 @@
 
 import React from 'react';
 import { StyleSheet, View, SafeAreaView } from 'react-native';
-import { Text } from '../components/ui/Text';
-import { Button } from '../components/ui/Button';
-import { useAppDispatch } from '../store';
-import { setInitialized } from '../store/slices/appSlice';
+import { Text } from '@/components/ui/Text';
+import { Button } from '@/components/ui/Button';
+import { useAppDispatch } from '@/store';
+import { setInitialized } from '@/store/slices/appSlice';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '@/navigation/types';
 
 
 type GetStartedScreenNavProp = NativeStackNavigationProp<RootStackParamList, 'GetStarted'>;
