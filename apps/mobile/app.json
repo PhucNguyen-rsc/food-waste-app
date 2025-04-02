@@ -13,7 +13,11 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.foodwaste.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -25,7 +29,10 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "port": 3002
+      "port": 3002,
+      "eas": {
+        "projectId": "f03e035c-7822-4ae3-8bcd-37f1124593c1"
+      }
     }
   }
 }

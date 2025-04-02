@@ -5,8 +5,10 @@ import { AppService } from '@app/app.service';
 import { PrismaModule } from '@prisma/prisma.module';
 import { CommonModule } from '@common/common.module';
 import { BusinessModule } from '@business/business.module';
+import { AuthModule } from '@auth/auth.module';
+import { UsersModule } from '@users/users.module';
 import { LoggerMiddleware } from '@middleware/logger.middleware';
-import { ItemModule } from './modules/item/item.module'; // ✅ Import your new module here
+import { ItemModule } from '@app/modules/foodItem/foodItem.module'; // ✅ Import your new module here
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { ItemModule } from './modules/item/item.module'; // ✅ Import your new 
     CommonModule,
     BusinessModule,
     ItemModule, // ✅ Register the new module here
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

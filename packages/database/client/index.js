@@ -233,7 +233,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/mahletatrsawandargei/Desktop/food-waste-app/packages/database/client",
+      "value": "/Users/kwaakuboamah-powers/Documents/food-waste-app/packages/database/client",
       "fromEnvVar": null
     },
     "config": {
@@ -249,11 +249,12 @@ const config = {
     "previewFeatures": [
       "driverAdapters"
     ],
-    "sourceFilePath": "/Users/mahletatrsawandargei/Desktop/food-waste-app/packages/database/prisma/schema.prisma",
+    "sourceFilePath": "/Users/kwaakuboamah-powers/Documents/food-waste-app/packages/database/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null
+    "rootEnvPath": null,
+    "schemaEnvPath": "../.env"
   },
   "relativePath": "../prisma",
   "clientVersion": "6.5.0",
@@ -281,8 +282,8 @@ const fs = require('fs')
 config.dirname = __dirname
 if (!fs.existsSync(path.join(__dirname, 'schema.prisma'))) {
   const alternativePaths = [
-    "packages/database/client",
-    "database/client",
+    "client",
+    "",
   ]
   
   const alternativePath = alternativePaths.find((altPath) => {
@@ -312,7 +313,7 @@ Object.assign(exports, Prisma)
 
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
-path.join(process.cwd(), "packages/database/client/libquery_engine-darwin-arm64.dylib.node")
+path.join(process.cwd(), "client/libquery_engine-darwin-arm64.dylib.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
-path.join(process.cwd(), "packages/database/client/schema.prisma")
+path.join(process.cwd(), "client/schema.prisma")

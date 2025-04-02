@@ -1,7 +1,6 @@
 // src/config/firebaseConfig.ts
 
-import auth from '@react-native-firebase/auth';
-import firebase from '@react-native-firebase/app';
+import { initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -14,8 +13,6 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase if it hasn't been initialized yet
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+const app = initializeApp(firebaseConfig);
 
-export { auth };
+export { app };

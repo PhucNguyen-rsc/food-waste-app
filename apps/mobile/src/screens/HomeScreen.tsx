@@ -6,7 +6,7 @@ import auth from '@react-native-firebase/auth';
 
 export default function HomeScreen() {
   const dispatch = useAppDispatch();
-  const userId = useAppSelector((state) => state.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
 
   const handleLogout = async () => {
     await auth().signOut();
@@ -16,7 +16,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Home Screen</Text>
-      <Text>User ID: {userId}</Text>
+      <Text>User ID: {user?.id}</Text>
 
       <TouchableOpacity onPress={handleLogout} style={styles.button}>
         <Text style={styles.buttonText}>Log Out</Text>

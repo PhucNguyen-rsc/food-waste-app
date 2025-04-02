@@ -1,126 +1,129 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import auth from '@react-native-firebase/auth';
-import { useAppDispatch } from '@/store';
-import { setUser } from '@/store/slices/authSlice';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/navigation/types';
+import { useDispatch } from 'react-redux';
+import { setUser, setToken } from '../store/slices/authSlice';
+import { createUserWithEmailAndPassword } from '../lib/auth';
 
-type SignUpNavProp = NativeStackNavigationProp<RootStackParamList, 'SignUp'>;
-
-export default function SignUpScreen() {
-  const dispatch = useAppDispatch();
-  const navigation = useNavigation<SignUpNavProp>();
-
+export default function SignUpScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const dispatch = useDispatch();
 
   const handleSignUp = async () => {
-    // 1. Basic Client-Side Validation
-    if (!email.includes('@')) {
-      Alert.alert('Invalid Email', 'Please enter a valid email address.');
-      return;
-    }
-    if (password.length < 6) {
-      Alert.alert('Weak Password', 'Password must be at least 6 characters long.');
+    if (!email || !password || !name) {
+      Alert.alert('Error', 'Please fill in all fields');
       return;
     }
 
     try {
-      // 2. Call Firebase Auth for Sign-Up
-      const userCred = await auth().createUserWithEmailAndPassword(email.trim(), password);
-      dispatch(setUser(userCred.user.uid));
-      console.log('Sign Up successful:', userCred.user.uid);
-
+      const { user, accessToken } = await createUserWithEmailAndPassword(email, password, name);
       
-      navigation.replace('RoleSelection');
-    } catch (error: any) {
-      // 3. Map Firebase Error Codes to Friendly Messages
-      let message = 'Something went wrong. Please try again.';
-      if (error.code === 'auth/email-already-in-use') {
-        message = 'That email is already registered.';
-      } else if (error.code === 'auth/invalid-email') {
-        message = 'That email address is invalid.';
-      } else if (error.code === 'auth/weak-password') {
-        message = 'Your password is too weak. Must be at least 6 characters.';
-      }
+      // Update user with name
+      const updatedUser = {
+        ...user,
+        name
+      };
 
-      Alert.alert('Sign Up Error', message);
+      dispatch(setUser(updatedUser));
+      dispatch(setToken(accessToken));
+      
+      // Navigate to appropriate screen based on role
+      switch (user.role) {
+        case 'CONSUMER':
+          navigation.replace('ConsumerHome');
+          break;
+        case 'BUSINESS':
+          navigation.replace('BusinessHome');
+          break;
+        case 'COURIER':
+          navigation.replace('CourierHome');
+          break;
+        default:
+          navigation.replace('RoleSelection');
+      }
+    } catch (error: any) {
+      let errorMessage = 'An error occurred during sign up';
+      
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          errorMessage = 'This email is already registered';
+          break;
+        case 'auth/invalid-email':
+          errorMessage = 'Please enter a valid email address';
+          break;
+        case 'auth/weak-password':
+          errorMessage = 'Password should be at least 6 characters';
+          break;
+        default:
+          errorMessage = error.message || errorMessage;
+      }
+      
+      Alert.alert('Error', errorMessage);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Sign Up</Text>
-
+      <TextInput
+        style={styles.input}
+        placeholder="Name"
+        value={name}
+        onChangeText={setName}
+        autoCapitalize="words"
+      />
       <TextInput
         style={styles.input}
         placeholder="Email"
-        autoCapitalize="none"
-        autoCorrect={false}
-        keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
-
       <TextInput
         style={styles.input}
-        placeholder="Password (min 6 chars)"
-        secureTextEntry
+        placeholder="Password"
         value={password}
         onChangeText={setPassword}
+        secureTextEntry
       />
-
-      <TouchableOpacity onPress={handleSignUp} style={styles.button}>
-        <Text style={styles.buttonText}>Create Account</Text>
+      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+        <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-        <Text style={styles.link}>Already have an account? Log In</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+        <Text style={styles.linkText}>Already have an account? Sign In</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-// --------------------------------
-// Styles remain the same:
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 80,
-    paddingHorizontal: 20,
-  },
-  heading: {
-    fontSize: 24,
-    fontWeight: '600',
-    marginBottom: 16,
-    textAlign: 'center',
+    justifyContent: 'center',
+    padding: 20,
   },
   input: {
-    borderColor: '#ccc',
     borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    fontSize: 16,
-    marginBottom: 16,
+    borderColor: '#ddd',
+    padding: 10,
+    marginBottom: 20,
+    borderRadius: 5,
   },
   button: {
-    backgroundColor: '#22C55E',
-    paddingVertical: 12,
-    borderRadius: 8,
+    backgroundColor: '#007AFF',
+    padding: 15,
+    borderRadius: 5,
     alignItems: 'center',
-    marginTop: 8,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
-  link: {
-    marginTop: 16,
+  linkText: {
     color: '#007AFF',
     textAlign: 'center',
+    marginTop: 20,
   },
 });

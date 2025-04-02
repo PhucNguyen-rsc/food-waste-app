@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import auth from '@react-native-firebase/auth';
 import { useAppDispatch } from '@/store';
-import { setUser } from '@/store/slices/authSlice';
+import { setUser, setToken } from '@/store/slices/authSlice';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
+import { signInWithEmailAndPassword } from '@/lib/auth';
 
 type LoginScreenNavProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
 
@@ -17,7 +17,6 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    // 1. Basic Client-Side Validation
     if (!email.includes('@')) {
       Alert.alert('Invalid Email', 'Please enter a valid email address.');
       return;
@@ -28,14 +27,21 @@ export default function LoginScreen() {
     }
 
     try {
-      // 2. Attempt to sign in with Firebase Auth
-      const userCred = await auth().signInWithEmailAndPassword(email.trim(), password);
-      dispatch(setUser(userCred.user.uid));
-      console.log('Login successful:', userCred.user.uid);
-
+      const { firebaseUser, accessToken, user } = await signInWithEmailAndPassword(email.trim(), password);
+      
+      // Store both Firebase UID and backend user data
+      dispatch(setUser({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        firebaseUid: firebaseUser.uid
+      }));
+      dispatch(setToken(accessToken));
+      
+      console.log('Login successful:', user.id);
       navigation.replace('RoleSelection');
     } catch (error: any) {
-      // 3. Map Firebase error codes to friendly messages
       let message = 'Something went wrong. Please try again.';
       if (error.code === 'auth/wrong-password') {
         message = 'Incorrect password. Please try again.';
