@@ -7,7 +7,7 @@ import { RootStackParamList } from '@/navigation/types';
 
 // Onboarding / Auth Screens
 import GetStartedScreen from '@/screens/GetStartedScreen';
-import LoginScreen from '@/screens/LoginScreen';
+import SignInScreen from '@/screens/SignInScreen';
 import SignUpScreen from '@/screens/SignUpScreen';
 
 // Role Selection
@@ -42,7 +42,7 @@ export const RootNavigator = () => {
       >
         {/* Onboarding / Auth */}
         <Stack.Screen name="GetStarted" component={GetStartedScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="SignIn" component={SignInScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
 
         {/* Role Selection */}

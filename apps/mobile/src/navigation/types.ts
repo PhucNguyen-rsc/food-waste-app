@@ -1,7 +1,7 @@
 export type RootStackParamList = {
   // Onboarding / Auth
   GetStarted: undefined;
-  Login: undefined;
+  SignIn: undefined;
   SignUp: undefined;
 
   // Role selection (after user logs in)

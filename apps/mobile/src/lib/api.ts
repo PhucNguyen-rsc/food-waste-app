@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { getApiConfig } from '@food-waste/config';
+import { store } from '@/store';
 
 const apiConfig = getApiConfig({
   apiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001',
@@ -14,10 +15,16 @@ const api = axios.create({
   withCredentials: apiConfig.CORS.CREDENTIALS,
 });
 
-// Add request interceptor for auth token if needed
+// Add request interceptor for auth token
 api.interceptors.request.use(
   (config) => {
-    // You can add auth token here later
+    const state = store.getState();
+    const token = state.auth.token;
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
     return config;
   },
   (error) => {

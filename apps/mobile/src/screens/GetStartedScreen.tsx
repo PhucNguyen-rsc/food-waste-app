@@ -21,7 +21,7 @@ export default function GetStartedScreen() {
     dispatch(setInitialized(true));
     console.log('Get Started pressed');
     // Navigate to the "Login" screen (or 'SignUp' if you prefer)
-    navigation.navigate('Login');
+    navigation.navigate('SignIn');
   };
 
   return (

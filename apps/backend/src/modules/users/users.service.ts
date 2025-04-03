@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
 import { UserRole } from '@food-waste/types';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
-  async findByFirebaseUid(firebaseUid: string) {
+  async findByFirebaseUid(id: string) {
     return this.prisma.user.findUnique({
-      where: { id: firebaseUid },
+      where: { id },
     });
   }
 
@@ -40,5 +44,55 @@ export class UsersService {
         vehicleType: null,
       },
     });
+  }
+
+  async updateRole(userId: string, role: UserRole) {
+    console.log('\n=== Updating User Role in Database ===');
+    console.log('User ID:', userId);
+    console.log('New Role:', role);
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: { role },
+    });
+
+    // Generate new JWT token with updated role
+    const payload = {
+      sub: updatedUser.id,
+      email: updatedUser.email,
+      role: updatedUser.role,
+    };
+    const accessToken = this.jwtService.sign(payload);
+
+    console.log('Database Update Result:', {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      role: updatedUser.role
+    });
+    console.log('========================\n');
+
+    return {
+      accessToken,
+      user: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        name: updatedUser.name,
+        role: updatedUser.role,
+        // Include role-specific fields
+        ...(updatedUser.role === UserRole.BUSINESS && {
+          businessName: updatedUser.businessName,
+          businessAddress: updatedUser.businessAddress,
+          businessPhone: updatedUser.businessPhone,
+        }),
+        ...(updatedUser.role === UserRole.CONSUMER && {
+          deliveryAddress: updatedUser.deliveryAddress,
+        }),
+        ...(updatedUser.role === UserRole.COURIER && {
+          isAvailable: updatedUser.isAvailable,
+          currentLocation: updatedUser.currentLocation,
+          vehicleType: updatedUser.vehicleType,
+        }),
+      },
+    };
   }
 } 

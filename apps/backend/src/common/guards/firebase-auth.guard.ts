@@ -48,7 +48,6 @@ export class FirebaseAuthGuard extends AuthGuard('firebase') {
       id: user.id,
       email: user.email,
       role: user.role,
-      firebaseUid: user.firebaseUid
     });
 
     const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(ROLES_KEY, [

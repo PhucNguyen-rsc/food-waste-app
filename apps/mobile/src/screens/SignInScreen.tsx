@@ -33,7 +33,7 @@ export default function SignInScreen({ navigation }: any) {
           navigation.replace('CourierHome');
           break;
         default:
-          navigation.replace('Home');
+          navigation.replace('SignUp');
       }
     } catch (error: any) {
       let errorMessage = 'An error occurred during sign in';
