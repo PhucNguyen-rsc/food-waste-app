@@ -1,6 +1,6 @@
 import { getAuth, signInWithEmailAndPassword as firebaseSignIn, createUserWithEmailAndPassword as firebaseSignUp, signOut as firebaseSignOut } from 'firebase/auth';
-import api from './api';
-import { app } from '../config/firebaseConfig';
+import api from '@/lib/api';
+import { app } from '@/config/firebaseConfig';
 
 // Initialize auth with the app instance
 const auth = getAuth(app);

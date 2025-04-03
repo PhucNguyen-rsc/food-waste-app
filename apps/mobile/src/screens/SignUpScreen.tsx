@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { setUser, setToken } from '../store/slices/authSlice';
-import { createUserWithEmailAndPassword } from '../lib/auth';
+import { setUser, setToken } from '@/store/slices/authSlice';
+import { createUserWithEmailAndPassword } from '@/lib/auth';
 
 export default function SignUpScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
