@@ -9,20 +9,38 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
+import NavBar from './ui/NavBar';
 
 type ConsumerLayoutNavProp = NativeStackNavigationProp<RootStackParamList>;
 
 interface ConsumerLayoutProps {
   children: React.ReactNode;
+  title?: string;
+  showBackButton?: boolean;
+  onBackPress?: () => void;
 }
 
-export default function ConsumerLayout({ children }: ConsumerLayoutProps) {
+export default function ConsumerLayout({ 
+  children, 
+  title,
+  showBackButton,
+  onBackPress 
+}: ConsumerLayoutProps) {
   const navigation = useNavigation<ConsumerLayoutNavProp>();
   const route = useRoute();
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>{children}</View>
+      <View style={styles.container}>
+        <NavBar 
+          title={title} 
+          showBackButton={showBackButton} 
+          onBackPress={onBackPress} 
+        />
+        <View style={styles.content}>
+          {children}
+        </View>
+      </View>
       <View style={styles.bottomNav}>
         <TouchableOpacity
           style={styles.navButton}
@@ -77,8 +95,11 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    backgroundColor: '#F3F4F6',
+  },
+  content: {
+    flex: 1,
+    padding: 16,
   },
   bottomNav: {
     flexDirection: 'row',
@@ -98,7 +119,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   activeNavText: {
-    color: '#22C55E', // or '#007BFF' for blue
+    color: '#22C55E',
     fontWeight: '700',
   },
 });

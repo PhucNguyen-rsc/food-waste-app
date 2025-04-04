@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { useNavigation } from '@react-navigation/native';
@@ -98,16 +99,21 @@ export default function BusinessProfileScreen() {
   };
 
   return (
-    <BusinessLayout>
+    <BusinessLayout 
+      title="Business Profile"
+      showBackButton
+      onBackPress={() => navigation.goBack()}
+    >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}
         >
-          <View style={styles.container}>
-            <Text style={styles.heading}>Business Profile</Text>
-
+          <ScrollView 
+            style={styles.container}
+            showsVerticalScrollIndicator={false}
+          >
             <TextInput
               style={styles.input}
               placeholder="Business Name"
@@ -183,7 +189,7 @@ export default function BusinessProfileScreen() {
                 {isLoading ? 'Updating...' : 'Update Profile'}
               </Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
     </BusinessLayout>
@@ -195,12 +201,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     paddingBottom: 120,
-  },
-  heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 24,
-    textAlign: 'center',
   },
   input: {
     borderColor: '#ccc',

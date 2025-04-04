@@ -118,7 +118,7 @@ export default function BusinessHomeScreen() {
 
   return (
     <BusinessLayout>
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         {/* TOP BAR: Avatar, store name, "Online", notification icons */}
         <View style={styles.topBar}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>

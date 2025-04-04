@@ -10,15 +10,24 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import NavBar from './ui/NavBar';
 
 type CourierLayoutNavProp = NativeStackNavigationProp<RootStackParamList>;
 type IconName = keyof typeof Ionicons.glyphMap;
 
 interface CourierLayoutProps {
   children: React.ReactNode;
+  title?: string;
+  showBackButton?: boolean;
+  onBackPress?: () => void;
 }
 
-export default function CourierLayout({ children }: CourierLayoutProps) {
+export default function CourierLayout({ 
+  children, 
+  title,
+  showBackButton,
+  onBackPress 
+}: CourierLayoutProps) {
   const navigation = useNavigation<CourierLayoutNavProp>();
   const route = useRoute();
   const currentRoute = route.name;
@@ -51,7 +60,16 @@ export default function CourierLayout({ children }: CourierLayoutProps) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>{children}</View>
+      <View style={styles.container}>
+        <NavBar 
+          title={title} 
+          showBackButton={showBackButton} 
+          onBackPress={onBackPress} 
+        />
+        <View style={styles.content}>
+          {children}
+        </View>
+      </View>
       <View style={styles.bottomNav}>
         {tabs.map((tab) => {
           const isActive = currentRoute === tab.routeName;
@@ -86,8 +104,11 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    backgroundColor: '#F3F4F6',
+  },
+  content: {
+    flex: 1,
+    padding: 16,
   },
   bottomNav: {
     flexDirection: 'row',

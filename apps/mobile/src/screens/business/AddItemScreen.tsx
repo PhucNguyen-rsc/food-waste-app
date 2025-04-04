@@ -173,6 +173,7 @@ export default function AddItemScreen() {
           <ScrollView
             contentContainerStyle={styles.scrollContainer}
             keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
           >
             <Text style={styles.heading}>Add New Food Item</Text>
 
