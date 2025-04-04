@@ -10,6 +10,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import NavBar from './ui/NavBar';
+import { Ionicons } from '@expo/vector-icons';
 
 type BusinessLayoutNavProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -20,6 +21,13 @@ interface BusinessLayoutProps {
   onBackPress?: () => void;
 }
 
+type TabType = {
+  name: keyof RootStackParamList;
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  activeIcon: keyof typeof Ionicons.glyphMap;
+};
+
 export default function BusinessLayout({ 
   children, 
   title,
@@ -28,6 +36,39 @@ export default function BusinessLayout({
 }: BusinessLayoutProps) {
   const navigation = useNavigation<BusinessLayoutNavProp>();
   const route = useRoute();
+
+  const tabs: TabType[] = [
+    {
+      name: 'BusinessHome',
+      label: 'Home',
+      icon: 'home-outline',
+      activeIcon: 'home',
+    },
+    {
+      name: 'Analytics',
+      label: 'Analytics',
+      icon: 'stats-chart-outline',
+      activeIcon: 'stats-chart',
+    },
+    {
+      name: 'AddItem',
+      label: 'Add',
+      icon: 'add-circle-outline',
+      activeIcon: 'add-circle',
+    },
+    {
+      name: 'ManageOrders',
+      label: 'Orders',
+      icon: 'cube-outline',
+      activeIcon: 'cube',
+    },
+    {
+      name: 'BusinessProfile',
+      label: 'Profile',
+      icon: 'person-outline',
+      activeIcon: 'person',
+    },
+  ];
 
   return (
     <View style={styles.container}>
@@ -43,47 +84,27 @@ export default function BusinessLayout({
       </View>
       <SafeAreaView style={styles.bottomSafeArea}>
         <View style={styles.bottomNav}>
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => navigation.navigate('BusinessHome')}
-          >
-            <Text
-              style={[
-                styles.navText,
-                route.name === 'BusinessHome' && styles.activeNavText,
-              ]}
+          {tabs.map((tab) => (
+            <TouchableOpacity
+              key={tab.name}
+              style={styles.navButton}
+              onPress={() => navigation.navigate(tab.name)}
             >
-              Home
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => navigation.navigate('AddItem')}
-          >
-            <Text
-              style={[
-                styles.navText,
-                route.name === 'AddItem' && styles.activeNavText,
-              ]}
-            >
-              Add Item
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => navigation.navigate('ManageOrders')}
-          >
-            <Text
-              style={[
-                styles.navText,
-                route.name === 'ManageOrders' && styles.activeNavText,
-              ]}
-            >
-              Orders
-            </Text>
-          </TouchableOpacity>
+              <Ionicons
+                name={route.name === tab.name ? tab.activeIcon : tab.icon}
+                size={24}
+                color={route.name === tab.name ? '#22C55E' : '#666'}
+              />
+              <Text
+                style={[
+                  styles.navText,
+                  route.name === tab.name && styles.activeNavText,
+                ]}
+              >
+                {tab.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </SafeAreaView>
     </View>
@@ -110,8 +131,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#ddd',
     backgroundColor: '#fff',
-    paddingVertical: 12,
-    height: 40,
+    paddingVertical: 8,
+    height: 60,
   },
   navButton: {
     flex: 1,
@@ -119,9 +140,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   navText: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#666',
     fontWeight: '500',
+    marginTop: 4,
   },
   activeNavText: {
     color: '#22C55E',

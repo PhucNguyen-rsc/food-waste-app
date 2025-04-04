@@ -9,6 +9,7 @@ export type RootStackParamList = {
 
   // Business owner side
   BusinessHome: undefined;
+  Analytics: undefined;
   AddItem: undefined;
   ManageOrders: undefined;
   BusinessProfile: undefined;
