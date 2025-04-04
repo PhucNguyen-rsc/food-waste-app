@@ -12,67 +12,153 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  FlatList,
+  Modal,
+  Pressable,
 } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import * as ImagePicker from 'expo-image-picker';
 import api from '@/lib/api';
+import { uploadImages } from '@/lib/cloudinary';
 import BusinessLayout from '@/components/BusinessLayout';
+import { FoodCategory, FoodStatus } from '@food-waste/types';
 
 export default function AddItemScreen() {
-  const [photoUri, setPhotoUri] = useState<string | null>(null);
-  const [imageUrl, setImageUrl] = useState('');
-  const [itemName, setItemName] = useState('');
-  const [category, setCategory] = useState('');
-  const [originalPrice, setOriginalPrice] = useState('');
-  const [discountedPrice, setDiscountedPrice] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [bestBefore, setBestBefore] = useState('');
+  const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
+  const [originalPrice, setOriginalPrice] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [expiryDate, setExpiryDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [category, setCategory] = useState<FoodCategory>(FoodCategory.OTHER);
+  const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
 
-  const handleChoosePhoto = () => {
-    Alert.alert(
-      'Image Upload',
-      'For now, paste an image URL manually into the field below.'
-    );
+  const pickImage = async () => {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert('Permission required', 'Please grant camera roll permissions to upload images.');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: 'images',
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled) {
+        const newImage = result.assets[0].uri;
+        setImages([...images, newImage]);
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert('Error', 'Failed to pick image. Please try again.');
+    }
+  };
+
+  const removeImage = (index: number) => {
+    const newImages = [...images];
+    newImages.splice(index, 1);
+    setImages(newImages);
+  };
+
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setExpiryDate(selectedDate);
+    }
+  };
+
+  const formatDate = (date: Date) => {
+    return date.toISOString().split('T')[0];
+  };
+
+  const getCategoryLabel = (category: FoodCategory) => {
+    switch (category) {
+      case FoodCategory.MEAT:
+        return 'Meat';
+      case FoodCategory.DAIRY:
+        return 'Dairy';
+      case FoodCategory.PRODUCE:
+        return 'Produce';
+      case FoodCategory.BAKERY:
+        return 'Bakery';
+      case FoodCategory.PREPARED:
+        return 'Prepared';
+      case FoodCategory.OTHER:
+        return 'Other';
+      default:
+        return 'Other';
+    }
   };
 
   const handleAddItem = async () => {
-    if (!itemName.trim()) {
+    if (!name.trim()) {
       Alert.alert('Validation', 'Please enter the item name.');
       return;
     }
 
-    const itemPayload = {
-      name: itemName.trim(),
-      category: category.trim() || 'Misc',
-      originalPrice: parseFloat(originalPrice || '0'),
-      discountedPrice: parseFloat(discountedPrice || '0'),
-      quantity: parseInt(quantity || '0', 10),
-      bestBefore,
-      description,
-      imageUrl: imageUrl.trim() || undefined,
-    };
+    if (!price.trim() || !originalPrice.trim()) {
+      Alert.alert('Validation', 'Please enter both current and original prices.');
+      return;
+    }
 
-    console.log('📤 Submitting item to backend:', itemPayload);
+    if (!quantity.trim()) {
+      Alert.alert('Validation', 'Please enter the quantity available.');
+      return;
+    }
+
+    if (images.length === 0) {
+      Alert.alert('Validation', 'Please add at least one image of the food item.');
+      return;
+    }
 
     try {
-      const response = await api.post('/items', itemPayload);
-      console.log('✅ Item successfully added. Response:', response.data);
+      setUploading(true);
+      
+      // Upload images to Cloudinary
+      const uploadedImageUrls = await uploadImages(images);
 
-      Alert.alert('Success', 'Item added successfully!');
-      setPhotoUri(null);
-      setImageUrl('');
-      setItemName('');
-      setCategory('');
-      setOriginalPrice('');
-      setDiscountedPrice('');
-      setQuantity('');
-      setBestBefore('');
+      const itemPayload = {
+        name: name.trim(),
+        description: description.trim(),
+        price: parseFloat(price),
+        originalPrice: parseFloat(originalPrice),
+        quantity: parseInt(quantity, 10),
+        expiryDate: formatDate(expiryDate),
+        category,
+        images: uploadedImageUrls,
+        status: FoodStatus.AVAILABLE,
+      };
+
+
+      const response = await api.post('/business/food-items', itemPayload);
+
+      Alert.alert('Success', 'Food item added successfully!');
+      // Reset form
+      setName('');
       setDescription('');
+      setPrice('');
+      setOriginalPrice('');
+      setQuantity('');
+      setExpiryDate(new Date());
+      setShowDatePicker(false);
+      setCategory(FoodCategory.OTHER);
+      setImages([]);
     } catch (err: any) {
       console.error('❌ Network or backend error:', err?.message || err);
       if (err?.response) {
         console.error('🔁 Backend responded with:', err.response.data);
       }
-      Alert.alert('Error', 'Failed to add item. Please try again.');
+      Alert.alert('Error', 'Failed to add food item. Please try again.');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -88,38 +174,55 @@ export default function AddItemScreen() {
             contentContainerStyle={styles.scrollContainer}
             keyboardShouldPersistTaps="handled"
           >
-            <Text style={styles.heading}>Add New Item</Text>
+            <Text style={styles.heading}>Add New Food Item</Text>
 
-            <View style={styles.photoContainer}>
-              {imageUrl ? (
-                <Image source={{ uri: imageUrl }} style={styles.photoPreview} />
-              ) : (
-                <View style={styles.photoPlaceholder}>
-                  <Text style={styles.photoPlaceholderText}>Upload food photo</Text>
-                </View>
-              )}
-              <TouchableOpacity style={styles.choosePhotoBtn} onPress={handleChoosePhoto}>
-                <Text style={styles.choosePhotoText}>Choose Photo</Text>
+            <View style={styles.imagesContainer}>
+              <FlatList
+                horizontal
+                data={images}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item, index }) => (
+                  <View style={styles.imageItem}>
+                    <Image source={{ uri: item }} style={styles.imagePreview} />
+                    <TouchableOpacity
+                      style={styles.removeImageButton}
+                      onPress={() => removeImage(index)}
+                    >
+                      <Text style={styles.removeImageText}>×</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+                ListEmptyComponent={
+                  <View style={styles.placeholderContainer}>
+                    <Text style={styles.placeholderText}>No images selected</Text>
+                  </View>
+                }
+              />
+              <TouchableOpacity style={styles.addImageButton} onPress={pickImage}>
+                <Text style={styles.addImageText}>Add Image</Text>
               </TouchableOpacity>
             </View>
 
             <TextInput
               style={styles.input}
-              placeholder="Image URL (paste link)"
-              value={imageUrl}
-              onChangeText={setImageUrl}
-            />
-            <TextInput
-              style={styles.input}
               placeholder="Item Name"
-              value={itemName}
-              onChangeText={setItemName}
+              value={name}
+              onChangeText={setName}
+            />
+            <TextInput
+              style={[styles.input, styles.multilineInput]}
+              placeholder="Description"
+              multiline
+              numberOfLines={3}
+              value={description}
+              onChangeText={setDescription}
             />
             <TextInput
               style={styles.input}
-              placeholder="Category"
-              value={category}
-              onChangeText={setCategory}
+              placeholder="Current Price"
+              keyboardType="numeric"
+              value={price}
+              onChangeText={setPrice}
             />
             <TextInput
               style={styles.input}
@@ -130,35 +233,87 @@ export default function AddItemScreen() {
             />
             <TextInput
               style={styles.input}
-              placeholder="Discounted Price"
-              keyboardType="numeric"
-              value={discountedPrice}
-              onChangeText={setDiscountedPrice}
-            />
-            <TextInput
-              style={styles.input}
               placeholder="Quantity Available"
               keyboardType="numeric"
               value={quantity}
               onChangeText={setQuantity}
             />
-            <TextInput
-              style={styles.input}
-              placeholder="Best Before (YYYY-MM-DD)"
-              value={bestBefore}
-              onChangeText={setBestBefore}
-            />
-            <TextInput
-              style={[styles.input, styles.multilineInput]}
-              placeholder="Description"
-              multiline
-              numberOfLines={3}
-              value={description}
-              onChangeText={setDescription}
-            />
 
-            <TouchableOpacity style={styles.button} onPress={handleAddItem}>
-              <Text style={styles.buttonText}>Add Item</Text>
+            <TouchableOpacity 
+              style={styles.dateInput}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text style={styles.dateText}>
+                {formatDate(expiryDate)}
+              </Text>
+            </TouchableOpacity>
+
+            {showDatePicker && (
+              <DateTimePicker
+                value={expiryDate}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                onChange={handleDateChange}
+                minimumDate={new Date()}
+              />
+            )}
+
+            <TouchableOpacity 
+              style={styles.categoryInput}
+              onPress={() => setShowCategoryPicker(true)}
+            >
+              <Text style={styles.categoryText}>
+                {getCategoryLabel(category)}
+              </Text>
+            </TouchableOpacity>
+
+            <Modal
+              visible={showCategoryPicker}
+              transparent={true}
+              animationType="slide"
+              onRequestClose={() => setShowCategoryPicker(false)}
+            >
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalTitle}>Select Category</Text>
+                  {Object.values(FoodCategory).map((cat) => (
+                    <TouchableOpacity
+                      key={cat}
+                      style={[
+                        styles.categoryOption,
+                        category === cat && styles.selectedCategoryOption
+                      ]}
+                      onPress={() => {
+                        setCategory(cat);
+                        setShowCategoryPicker(false);
+                      }}
+                    >
+                      <Text style={[
+                        styles.categoryOptionText,
+                        category === cat && styles.selectedCategoryOptionText
+                      ]}>
+                        {getCategoryLabel(cat)}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                  <TouchableOpacity
+                    style={styles.modalCloseButton}
+                    onPress={() => setShowCategoryPicker(false)}
+                  >
+                    <Text style={styles.modalCloseButtonText}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+
+            <TouchableOpacity 
+              style={[styles.button, uploading && styles.buttonDisabled]} 
+              onPress={handleAddItem}
+              disabled={uploading}
+            >
+              <Text style={styles.buttonText}>
+                {uploading ? 'Uploading...' : 'Add Food Item'}
+              </Text>
             </TouchableOpacity>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -177,11 +332,37 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
   },
-  photoContainer: {
-    alignItems: 'center',
+  imagesContainer: {
     marginBottom: 16,
+    alignItems: 'center',
   },
-  photoPlaceholder: {
+  imageItem: {
+    marginRight: 8,
+    position: 'relative',
+  },
+  imagePreview: {
+    width: 120,
+    height: 120,
+    borderRadius: 8,
+    resizeMode: 'cover',
+  },
+  removeImageButton: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  removeImageText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  placeholderContainer: {
     width: 120,
     height: 120,
     backgroundColor: '#F2F2F2',
@@ -189,21 +370,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
   },
-  photoPlaceholderText: {
+  placeholderText: {
     color: '#999',
   },
-  photoPreview: {
-    width: 120,
-    height: 120,
-    borderRadius: 8,
-    resizeMode: 'cover',
-  },
-  choosePhotoBtn: {
+  addImageButton: {
     marginTop: 8,
+    padding: 8,
+    backgroundColor: '#007AFF',
+    borderRadius: 8,
+    alignSelf: 'center',
   },
-  choosePhotoText: {
-    color: '#007AFF',
-    fontSize: 16,
+  addImageText: {
+    color: 'white',
+    fontWeight: '600',
   },
   input: {
     borderColor: '#ccc',
@@ -225,9 +404,88 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 8,
   },
+  buttonDisabled: {
+    backgroundColor: '#9CA3AF',
+  },
   buttonText: {
     color: '#fff',
     fontWeight: '600',
+    fontSize: 16,
+  },
+  dateInput: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 8,
+    fontSize: 16,
+    marginBottom: 12,
+    justifyContent: 'center',
+    height: 50,
+  },
+  dateText: {
+    fontSize: 16,
+    color: '#000',
+  },
+  categoryInput: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 8,
+    fontSize: 16,
+    marginBottom: 12,
+    justifyContent: 'center',
+    height: 50,
+  },
+  categoryText: {
+    fontSize: 16,
+    color: '#000',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 20,
+    width: '80%',
+    maxWidth: 400,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  categoryOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  selectedCategoryOption: {
+    backgroundColor: '#22C55E',
+  },
+  categoryOptionText: {
+    fontSize: 16,
+    color: '#000',
+  },
+  selectedCategoryOptionText: {
+    color: '#fff',
+  },
+  modalCloseButton: {
+    marginTop: 16,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+  modalCloseButtonText: {
+    color: '#666',
     fontSize: 16,
   },
 });
