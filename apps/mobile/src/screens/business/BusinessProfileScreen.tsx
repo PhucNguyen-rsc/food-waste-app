@@ -1,3 +1,4 @@
+import 'react-native-get-random-values';
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -10,16 +11,35 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
 } from 'react-native';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
 import api from '@/lib/api';
 import BusinessLayout from '@/components/BusinessLayout';
 import { useAppDispatch, useAppSelector } from '@/store/index';
 import { setUser } from '@/store/slices/authSlice';
 
+interface GooglePlaceData {
+  description: string;
+  place_id: string;
+}
+
+interface GooglePlaceDetails {
+  formatted_address: string;
+  geometry: {
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
+}
+
 export default function BusinessProfileScreen() {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   
   const [businessName, setBusinessName] = useState('');
   const [businessAddress, setBusinessAddress] = useState('');
@@ -55,7 +75,17 @@ export default function BusinessProfileScreen() {
       });
 
       dispatch(setUser(response.data));
-      Alert.alert('Success', 'Business profile updated successfully!');
+      
+      Alert.alert(
+        'Success', 
+        'Business profile updated successfully!',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('BusinessHome')
+          }
+        ]
+      );
     } catch (err: any) {
       console.error('Network or backend error:', err?.message || err);
       if (err?.response) {
@@ -75,10 +105,7 @@ export default function BusinessProfileScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}
         >
-          <ScrollView
-            contentContainerStyle={styles.scrollContainer}
-            keyboardShouldPersistTaps="handled"
-          >
+          <View style={styles.container}>
             <Text style={styles.heading}>Business Profile</Text>
 
             <TextInput
@@ -88,14 +115,56 @@ export default function BusinessProfileScreen() {
               onChangeText={setBusinessName}
             />
 
-            <TextInput
-              style={[styles.input, styles.multilineInput]}
-              placeholder="Business Address"
-              multiline
-              numberOfLines={3}
-              value={businessAddress}
-              onChangeText={setBusinessAddress}
-            />
+            <View style={styles.addressContainer}>
+              <GooglePlacesAutocomplete
+                placeholder="Search for your business address"
+                textInputProps={{
+                  value: businessAddress,
+                  onChangeText: setBusinessAddress,
+                }}
+                onPress={(data: GooglePlaceData, details: GooglePlaceDetails | null = null) => {
+                  if (details) {
+                    setBusinessAddress(details.formatted_address);
+                  }
+                }}
+                query={{
+                  key: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
+                  language: 'en',
+                  components: 'country:ae', // Restrict to UAE
+                }}
+                styles={{
+                  container: {
+                    flex: 0,
+                  },
+                  textInput: {
+                    ...styles.input,
+                    marginBottom: 0,
+                  },
+                  listView: {
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    right: 0,
+                    backgroundColor: '#fff',
+                    borderWidth: 1,
+                    borderColor: '#ccc',
+                    borderRadius: 8,
+                    marginTop: 4,
+                    zIndex: 1000,
+                  },
+                  row: {
+                    padding: 13,
+                    height: 44,
+                  },
+                  separator: {
+                    height: 1,
+                    backgroundColor: '#ccc',
+                  },
+                }}
+                enablePoweredByContainer={false}
+                fetchDetails={true}
+              />
+            </View>
 
             <TextInput
               style={styles.input}
@@ -114,7 +183,7 @@ export default function BusinessProfileScreen() {
                 {isLoading ? 'Updating...' : 'Update Profile'}
               </Text>
             </TouchableOpacity>
-          </ScrollView>
+          </View>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
     </BusinessLayout>
@@ -122,7 +191,8 @@ export default function BusinessProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  scrollContainer: {
+  container: {
+    flex: 1,
     padding: 16,
     paddingBottom: 120,
   },
@@ -141,9 +211,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 16,
   },
-  multilineInput: {
-    height: 80,
-    textAlignVertical: 'top',
+  addressContainer: {
+    marginBottom: 16,
+    zIndex: 1,
   },
   button: {
     backgroundColor: '#22C55E',

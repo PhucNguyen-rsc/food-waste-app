@@ -4,8 +4,8 @@ export interface User {
   email: string;
   name: string;
   role: UserRole;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   // Business specific fields
   businessName?: string;
   businessAddress?: string;
@@ -14,8 +14,11 @@ export interface User {
   deliveryAddress?: string;
   // Courier specific fields
   isAvailable?: boolean;
-  currentLocation?: string;
-  vehicleType?: string;
+  currentLocation?: {
+    latitude: number;
+    longitude: number;
+  };
+  vehicleType?: VehicleType;
 }
 
 export enum UserRole {
@@ -24,6 +27,13 @@ export enum UserRole {
   COURIER = "COURIER",
   ADMIN = "ADMIN",
   UNASSIGNED = "UNASSIGNED"
+}
+
+export enum VehicleType {
+  BIKE = 'BIKE',
+  MOTORCYCLE = 'MOTORCYCLE',
+  CAR = 'CAR',
+  VAN = 'VAN',
 }
 
 // Food item types

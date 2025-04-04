@@ -32,7 +32,7 @@ export default function RoleSelectionScreen() {
       // Navigate to appropriate screen based on role
       switch (role) {
         case UserRole.BUSINESS:
-          navigation.replace('BusinessHome');
+          navigation.replace('BusinessProfile');
           break;
         case UserRole.CONSUMER:
           navigation.replace('ConsumerHome');
