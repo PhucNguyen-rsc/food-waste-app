@@ -10,6 +10,9 @@ import {
   ScrollView,
 } from 'react-native';
 import BusinessLayout from '@/components/BusinessLayout'; // Use your BusinessLayout for a bottom bar
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
 
 /** Types for dummy data */
 type Listing = {
@@ -30,6 +33,7 @@ type Order = {
 };
 
 export default function BusinessHomeScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [listings, setListings] = useState<Listing[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
@@ -158,33 +162,32 @@ export default function BusinessHomeScreen() {
 
         {/* QUICK ACTIONS ROW */}
         <Text style={styles.sectionTitle}>Quick Actions</Text>
-        <View style={styles.actionRow}>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.actionRow}
+        >
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => {
-              // Navigate to Add Item screen from Quick Actions too
-              // (This should match the behavior of the bottom bar "Add Item" button)
-              // For example, if using navigation: navigation.navigate('AddItem')
-              console.log('Quick Action: Add Item');
-            }}
+            onPress={() => navigation.navigate('AddItem')}
           >
-            <Text>Add Item</Text>
+            <Text style={styles.actionButtonText}>Add Food Item</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => console.log('Quick Action: Update Price')}
+            onPress={() => navigation.navigate('ManageOrders')}
           >
-            <Text>Update Price</Text>
+            <Text style={styles.actionButtonText}>Manage Orders</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => console.log('Quick Action: Inventory')}
+            onPress={() => navigation.navigate('BusinessProfile')}
           >
-            <Text>Inventory</Text>
+            <Text style={styles.actionButtonText}>Business Profile</Text>
           </TouchableOpacity>
-        </View>
+        </ScrollView>
 
         {/* ACTIVE LISTINGS */}
         <View style={styles.sectionHeader}>
@@ -266,6 +269,7 @@ const styles = StyleSheet.create({
   actionRow: {
     flexDirection: 'row',
     marginBottom: 16,
+    paddingRight: 16,
   },
   actionButton: {
     backgroundColor: '#EEE',
@@ -273,6 +277,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 8,
     marginRight: 8,
+  },
+  actionButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
   },
 
   /* SECTION HEADER */

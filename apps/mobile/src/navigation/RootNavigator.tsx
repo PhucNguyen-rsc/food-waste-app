@@ -17,6 +17,7 @@ import RoleSelectionScreen from '@/screens/RoleSelectionScreen';
 import BusinessHomeScreen from '@/screens/business/BusinessHomeScreen';
 import AddItemScreen from '@/screens/business/AddItemScreen';
 import ManageOrderScreen from '@/screens/business/ManageOrderScreen'; // ✅ Singular, matches file + export
+import BusinessProfileScreen from '@/screens/business/BusinessProfileScreen';
 
 // Consumer Screen
 import ConsumerHomeScreen from '@/screens/consumer/ConsumerHomeScreen';
@@ -51,7 +52,8 @@ export const RootNavigator = () => {
         {/* Business Screens */}
         <Stack.Screen name="BusinessHome" component={BusinessHomeScreen} />
         <Stack.Screen name="AddItem" component={AddItemScreen} />
-        <Stack.Screen name="ManageOrders" component={ManageOrderScreen} /> 
+        <Stack.Screen name="ManageOrders" component={ManageOrderScreen} />
+        <Stack.Screen name="BusinessProfile" component={BusinessProfileScreen} />
 
         {/* Consumer Screen */}
         <Stack.Screen name="ConsumerHome" component={ConsumerHomeScreen} />

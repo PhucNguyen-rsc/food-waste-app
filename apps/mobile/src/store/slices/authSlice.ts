@@ -1,13 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { UserRole } from '@food-waste/types';
+import { User } from '@food-waste/types';
 
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
-  firebaseUid: string;
-}
 
 interface AuthState {
   user: User | null;

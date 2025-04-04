@@ -6,6 +6,16 @@ export interface User {
   role: UserRole;
   createdAt: Date;
   updatedAt: Date;
+  // Business specific fields
+  businessName?: string;
+  businessAddress?: string;
+  businessPhone?: string;
+  // Consumer specific fields
+  deliveryAddress?: string;
+  // Courier specific fields
+  isAvailable?: boolean;
+  currentLocation?: string;
+  vehicleType?: string;
 }
 
 export enum UserRole {

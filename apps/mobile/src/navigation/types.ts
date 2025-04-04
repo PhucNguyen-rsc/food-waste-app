@@ -11,6 +11,7 @@ export type RootStackParamList = {
   BusinessHome: undefined;
   AddItem: undefined;
   ManageOrders: undefined;
+  BusinessProfile: undefined;
 
   // Consumer side
   ConsumerHome: undefined;
