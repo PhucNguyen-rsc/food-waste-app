@@ -22,6 +22,7 @@
     "@react-navigation/native-stack": "^6.9.17",
     "@reduxjs/toolkit": "^2.1.0",
     "cloudinary": "^2.6.0",
+    "date-fns": "^4.1.0",
     "expo": "52.0.42",
     "expo-image-picker": "^16.0.6",
     "expo-status-bar": "~2.0.1",

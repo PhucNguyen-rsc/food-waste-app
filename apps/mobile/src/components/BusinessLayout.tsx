@@ -21,8 +21,10 @@ interface BusinessLayoutProps {
   onBackPress?: () => void;
 }
 
+type BusinessTabName = 'BusinessHome' | 'Analytics' | 'AddItem' | 'ManageOrders' | 'BusinessProfile';
+
 type TabType = {
-  name: keyof RootStackParamList;
+  name: BusinessTabName;
   label: string;
   icon: keyof typeof Ionicons.glyphMap;
   activeIcon: keyof typeof Ionicons.glyphMap;

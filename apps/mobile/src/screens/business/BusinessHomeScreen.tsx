@@ -15,6 +15,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppSelector } from '@/store';
+import FoodItemCard from '@/components/FoodItemCard';
+import { FoodItem } from '@/store/slices/foodItemsSlice';
 
 /** Types for dummy data */
 type Listing = {
@@ -34,9 +36,16 @@ type Order = {
   status: 'Delivered' | 'In Progress' | 'Pending';
 };
 
+type QuickAction = {
+  title: 'Add Item' | 'Update Price' | 'Inventory';
+  icon: 'add-circle' | 'pricetag' | 'cube';
+  screen: 'AddItem' | 'UpdatePrice' | 'Inventory';
+};
+
 export default function BusinessHomeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const user = useAppSelector((state) => state.auth.user);
+  const foodItems = useAppSelector((state) => state.foodItems?.items) || [];
   const [listings, setListings] = useState<Listing[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
@@ -79,318 +88,164 @@ export default function BusinessHomeScreen() {
     ]);
   }, []);
 
-  // Render each listing as shown in the screenshot
-  const renderListing = (listing: Listing) => (
-    <View key={listing.id} style={styles.listingCard}>
-      {listing.imageUrl && (
-        <Image source={{ uri: listing.imageUrl }} style={styles.listingImage} />
-      )}
-      <View style={{ flex: 1 }}>
-        <Text style={styles.listingName}>{listing.name}</Text>
-        <Text style={styles.listingMeta}>
-          {listing.quantityLeft} left • {listing.expiresIn}
-        </Text>
-        <Text style={styles.listingPrice}>AED {listing.price}</Text>
-        <Text style={styles.listingPriceType}>
-          {listing.pricingType === 'Dynamic'
-            ? 'Dynamic pricing active'
-            : 'Fixed price'}
-        </Text>
-      </View>
-    </View>
-  );
+  // Get only available items, sorted by creation date
+  const availableItems = foodItems
+    .filter((item: FoodItem) => item.status === 'AVAILABLE')
+    .sort((a: FoodItem, b: FoodItem) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+    .slice(0, 2); // Only take the first 2 items
 
-  // Render each order
-  const renderOrder = (order: Order) => {
-    let statusStyle = styles.statusDefault;
-    if (order.status === 'Delivered') statusStyle = styles.statusDelivered;
-    if (order.status === 'In Progress') statusStyle = styles.statusInProgress;
-
-    return (
-      <View key={order.id} style={styles.orderCard}>
-        <Text style={styles.orderId}>#{order.id}</Text>
-        <Text style={styles.orderItems}>{order.items}</Text>
-        <Text style={styles.orderPrice}>AED {order.totalPrice}</Text>
-
-        <View style={[styles.statusContainer, statusStyle]}>
-          <Text style={styles.statusText}>{order.status}</Text>
-        </View>
-      </View>
-    );
-  };
+  const quickActions: QuickAction[] = [
+    {
+      title: 'Add Item',
+      icon: 'add-circle',
+      screen: 'AddItem',
+    },
+    {
+      title: 'Update Price',
+      icon: 'pricetag',
+      screen: 'UpdatePrice',
+    },
+    {
+      title: 'Inventory',
+      icon: 'cube',
+      screen: 'Inventory',
+    },
+  ];
 
   return (
-    <BusinessLayout>
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-        {/* TOP BAR: Avatar, store name, "Online", notification icons */}
-        <View style={styles.topBar}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Image
-              source={{ uri: 'https://placehold.co/40x40' }}
-              style={styles.avatar}
-            />
-            <View style={{ marginLeft: 8 }}>
-              <Text style={styles.storeName}>{user?.businessName || 'Your Business'}</Text>
-              <Text style={styles.onlineText}>Online</Text>
-            </View>
-          </View>
-
-          {/* Right side icons (notifications, settings, etc.) */}
-          <View style={{ flexDirection: 'row' }}>
-            <TouchableOpacity style={{ marginRight: 16 }}>
-              <Text style={{ fontSize: 18 }}>🔔</Text>
+    <BusinessLayout title={user?.businessName || 'Your Business'}>
+      <View style={styles.container}>
+        {/* Quick Actions */}
+        <View style={styles.quickActionsContainer}>
+          {quickActions.map((action) => (
+            <TouchableOpacity
+              key={action.title}
+              style={styles.actionCard}
+              onPress={() => {
+                if (action.screen === 'UpdatePrice') {
+                  navigation.navigate('UpdatePrice', { itemId: '' });
+                } else {
+                  navigation.navigate(action.screen);
+                }
+              }}
+            >
+              <Ionicons name={action.icon} size={24} color="#22C55E" />
+              <Text style={styles.actionTitle}>{action.title}</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={{ fontSize: 18 }}>⚙</Text>
+          ))}
+        </View>
+
+        {/* Active Listings */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Active Listings</Text>
+            <TouchableOpacity 
+              style={styles.seeAllButton}
+              onPress={() => navigation.navigate('Inventory')}
+            >
+              <Text style={styles.seeAllText}>See All</Text>
+              <Ionicons name="chevron-forward" size={16} color="#22C55E" />
             </TouchableOpacity>
           </View>
-        </View>
 
-        {/* TWO INFO CARDS: "Today's Sales" and "Active Orders" */}
-        <View style={styles.infoRow}>
-          {/* Card 1: Today's Sales */}
-          <View style={[styles.infoCard, { marginRight: 8 }]}>
-            <Text style={styles.infoLabel}>Today's Sales</Text>
-            <Text style={styles.infoValue}>AED 458</Text>
-            <Text style={styles.infoSub}>↑12% from yesterday</Text>
-          </View>
-
-          {/* Card 2: Active Orders */}
-          <View style={styles.infoCard}>
-            <Text style={styles.infoLabel}>Active Orders</Text>
-            <Text style={styles.infoValue}>7</Text>
-            <Text style={styles.infoSub}>2 need attention</Text>
-          </View>
-        </View>
-
-        {/* QUICK ACTIONS */}
-        <Text style={styles.sectionTitle}>Quick Actions</Text>
-        <View style={styles.quickActions}>
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => navigation.navigate('AddItem')}
-          >
-            <View style={styles.iconContainer}>
-              <Ionicons name="add-circle" size={28} color="#000" />
+          {availableItems.length > 0 ? (
+            availableItems.map((item: FoodItem) => (
+              <FoodItemCard
+                key={item.id}
+                {...item}
+                onPress={() => navigation.navigate('UpdatePrice', { itemId: item.id })}
+              />
+            ))
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>No active listings</Text>
+              <TouchableOpacity
+                style={styles.addItemButton}
+                onPress={() => navigation.navigate('AddItem')}
+              >
+                <Text style={styles.addItemButtonText}>Add Your First Item</Text>
+              </TouchableOpacity>
             </View>
-            <Text style={styles.actionButtonText}>Add Item</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => navigation.navigate('UpdatePrice')}
-          >
-            <View style={styles.iconContainer}>
-              <Ionicons name="pricetag" size={28} color="#000" />
-            </View>
-            <Text style={styles.actionButtonText}>Update Price</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => navigation.navigate('Inventory')}
-          >
-            <View style={styles.iconContainer}>
-              <Ionicons name="cube" size={28} color="#000" />
-            </View>
-            <Text style={styles.actionButtonText}>Inventory</Text>
-          </TouchableOpacity>
+          )}
         </View>
-
-        {/* ACTIVE LISTINGS */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Active Listings</Text>
-          <TouchableOpacity onPress={() => console.log('See All Listings')}>
-            <Text style={styles.linkText}>See All</Text>
-          </TouchableOpacity>
-        </View>
-        {listings.map(renderListing)}
-
-        {/* RECENT ORDERS */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Recent Orders</Text>
-          <TouchableOpacity onPress={() => console.log('View All Orders')}>
-            <Text style={styles.linkText}>View All</Text>
-          </TouchableOpacity>
-        </View>
-        {orders.map(renderOrder)}
-      </ScrollView>
+      </View>
     </BusinessLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  /* TOP BAR */
-  topBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  avatar: {
-    width: 40, 
-    height: 40, 
-    borderRadius: 20,
-  },
-  storeName: {
-    fontSize: 16, 
-    fontWeight: '600',
-  },
-  onlineText: {
-    fontSize: 12,
-    color: 'green',
-  },
-
-  /* INFO ROW */
-  infoRow: {
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
-  infoCard: {
+  container: {
     flex: 1,
-    backgroundColor: '#FFF',
-    borderRadius: 8,
-    padding: 12,
+    padding: 16,
   },
-  infoLabel: {
-    fontSize: 14,
-    color: '#666',
-  },
-  infoValue: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginTop: 4,
-  },
-  infoSub: {
-    fontSize: 12,
-    color: 'green',
-    marginTop: 4,
-  },
-
-  /* QUICK ACTIONS */
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-    marginTop: 4,
-  },
-  quickActions: {
+  quickActionsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
-    gap: 12,
-    paddingHorizontal: 16,
+    marginBottom: 24,
   },
   actionCard: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 16,
+    backgroundColor: 'white',
+    borderRadius: 12,
     padding: 16,
     alignItems: 'center',
-    justifyContent: 'center',
+    width: '31%',
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
-  iconContainer: {
-    marginBottom: 4,
-  },
-  actionButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1F2937',
+  actionTitle: {
+    marginTop: 8,
+    fontSize: 12,
+    fontWeight: '500',
     textAlign: 'center',
   },
-
-  /* SECTION HEADER */
+  section: {
+    marginBottom: 24,
+  },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 16,
   },
-  linkText: {
-    fontSize: 14,
-    color: '#007AFF',
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
   },
-
-  /* LISTINGS */
-  listingCard: {
-    backgroundColor: '#FFF',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 8,
+  seeAllButton: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  listingImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 8,
-    marginRight: 12,
-  },
-  listingName: {
-    fontWeight: '600',
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  listingMeta: {
-    fontSize: 12,
-    color: '#666',
-  },
-  listingPrice: {
+  seeAllText: {
     color: '#22C55E',
     fontSize: 14,
-    marginTop: 4,
+    fontWeight: '500',
+    marginRight: 4,
   },
-  listingPriceType: {
-    fontSize: 12,
-    color: '#333',
+  emptyState: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 24,
+    alignItems: 'center',
   },
-
-  /* ORDERS */
-  orderCard: {
-    backgroundColor: '#FFF',
+  emptyStateText: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 16,
+  },
+  addItemButton: {
+    backgroundColor: '#22C55E',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
     borderRadius: 8,
-    padding: 10,
-    marginBottom: 8,
   },
-  orderId: {
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  orderItems: {
-    fontSize: 13,
-    marginBottom: 4,
-    color: '#333',
-  },
-  orderPrice: {
+  addItemButtonText: {
+    color: 'white',
     fontSize: 14,
-    color: '#000',
-  },
-  statusContainer: {
-    alignSelf: 'flex-start',
-    marginTop: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  statusText: {
-    fontSize: 12,
     fontWeight: '600',
-  },
-  statusDefault: {
-    backgroundColor: '#EEE',
-  },
-  statusDelivered: {
-    backgroundColor: '#D1FADF',
-  },
-  statusInProgress: {
-    backgroundColor: '#E0E7FF',
   },
 });

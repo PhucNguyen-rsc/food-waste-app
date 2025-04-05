@@ -12,6 +12,7 @@ import { RootStackParamList } from '@/navigation/types';
 import NavBar from './ui/NavBar';
 
 type ConsumerLayoutNavProp = NativeStackNavigationProp<RootStackParamList>;
+type ConsumerTabName = 'ConsumerHome' | 'ConsumerProfile';
 
 interface ConsumerLayoutProps {
   children: React.ReactNode;
@@ -58,26 +59,12 @@ export default function ConsumerLayout({
 
         <TouchableOpacity
           style={styles.navButton}
-          onPress={() => navigation.navigate('Browse')}
+          onPress={() => navigation.navigate('ConsumerProfile')}
         >
           <Text
             style={[
               styles.navText,
-              route.name === 'Browse' && styles.activeNavText,
-            ]}
-          >
-            Browse
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => navigation.navigate('Profile')}
-        >
-          <Text
-            style={[
-              styles.navText,
-              route.name === 'Profile' && styles.activeNavText,
+              route.name === 'ConsumerProfile' && styles.activeNavText,
             ]}
           >
             Profile

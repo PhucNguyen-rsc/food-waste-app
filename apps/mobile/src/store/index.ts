@@ -4,11 +4,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import appReducer from './slices/appSlice';
 import authReducer from './slices/authSlice';
+import foodItemsReducer from './slices/foodItemsSlice';
 
 export const store = configureStore({
   reducer: {
     app: appReducer,
-    auth: authReducer, // <-- Add the auth slice here
+    auth: authReducer,
+    foodItems: foodItemsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

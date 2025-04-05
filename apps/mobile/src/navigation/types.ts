@@ -11,18 +11,16 @@ export type RootStackParamList = {
   BusinessHome: undefined;
   Analytics: undefined;
   AddItem: undefined;
-  UpdatePrice: undefined;
+  UpdatePrice: { itemId: string };
   Inventory: undefined;
   ManageOrders: undefined;
   BusinessProfile: undefined;
 
   // Consumer side
   ConsumerHome: undefined;
-  Browse: undefined;
-  Profile: undefined;
+  ConsumerProfile: undefined;
 
   // Courier side
   CourierHome: undefined;
-  Deliveries: undefined;
   CourierProfile: undefined;
 };
