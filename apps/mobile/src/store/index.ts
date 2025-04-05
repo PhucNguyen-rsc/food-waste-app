@@ -5,12 +5,14 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import appReducer from './slices/appSlice';
 import authReducer from './slices/authSlice';
 import foodItemsReducer from './slices/foodItemsSlice';
+import ordersReducer from './slices/ordersSlice';
 
 export const store = configureStore({
   reducer: {
     app: appReducer,
     auth: authReducer,
     foodItems: foodItemsReducer,
+    orders: ordersReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

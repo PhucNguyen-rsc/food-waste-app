@@ -8,33 +8,20 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import BusinessLayout from '@/components/BusinessLayout'; // Use your BusinessLayout for a bottom bar
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import { Ionicons } from '@expo/vector-icons';
-import { useAppSelector } from '@/store';
+import { useAppSelector, useAppDispatch } from '@/store';
+import { setOrders, setLoading as setOrdersLoading, setError as setOrdersError } from '@/store/slices/ordersSlice';
+import { setFoodItems, setLoading as setFoodItemsLoading, setError as setFoodItemsError } from '@/store/slices/foodItemsSlice';
 import FoodItemCard from '@/components/FoodItemCard';
+import OrderCard from '@/components/OrderCard';
 import { FoodItem } from '@/store/slices/foodItemsSlice';
-
-/** Types for dummy data */
-type Listing = {
-  id: string;
-  name: string;
-  quantityLeft: number;
-  expiresIn: string;      // e.g. "Expires today" or "Expires in 2d"
-  price: number;
-  pricingType: 'Dynamic' | 'Fixed';
-  imageUrl?: string;
-};
-
-type Order = {
-  id: string;
-  items: string;          // e.g. "2x Veggie Sandwich, 1x Salad"
-  totalPrice: number;
-  status: 'Delivered' | 'In Progress' | 'Pending';
-};
+import api from '@/lib/api';
 
 type QuickAction = {
   title: 'Add Item' | 'Update Price' | 'Inventory';
@@ -44,49 +31,36 @@ type QuickAction = {
 
 export default function BusinessHomeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
   const foodItems = useAppSelector((state) => state.foodItems?.items) || [];
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
+  const foodItemsLoading = useAppSelector((state) => state.foodItems?.loading);
+  const foodItemsError = useAppSelector((state) => state.foodItems?.error);
+  const orders = useAppSelector((state) => state.orders.items) || [];
+  const ordersLoading = useAppSelector((state) => state.orders.loading);
+  const ordersError = useAppSelector((state) => state.orders.error);
 
   useEffect(() => {
-    // In a real app, you'd fetch from your backend.
-    // For now, we mock data:
-    setListings([
-      {
-        id: 'list1',
-        name: 'Veggie Sandwich',
-        quantityLeft: 12,
-        expiresIn: 'Expires today',
-        price: 15,
-        pricingType: 'Dynamic',
-        imageUrl: 'https://placehold.co/100x100',
-      },
-      {
-        id: 'list2',
-        name: 'Fruit Salad Bowl',
-        quantityLeft: 8,
-        expiresIn: 'Expires in 2d',
-        price: 12,
-        pricingType: 'Fixed',
-      },
-    ]);
+    const fetchData = async () => {
+      try {
+        // Fetch food items
+        dispatch(setFoodItemsLoading(true));
+        const { data: foodItemsData } = await api.get('/business/food-items');
+        dispatch(setFoodItems(foodItemsData));
 
-    setOrders([
-      {
-        id: 'ORD2841',
-        items: '2x Veggie Sandwich\n1x Fruit Salad Bowl',
-        totalPrice: 42,
-        status: 'Delivered',
-      },
-      {
-        id: 'ORD2840',
-        items: '3x Fruit Salad Bowl',
-        totalPrice: 36,
-        status: 'In Progress',
-      },
-    ]);
-  }, []);
+        // Fetch orders
+        dispatch(setOrdersLoading(true));
+        const { data: ordersData } = await api.get('/business/orders');
+        dispatch(setOrders(ordersData));
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        dispatch(setFoodItemsError('Failed to fetch food items'));
+        dispatch(setOrdersError('Failed to fetch orders'));
+      }
+    };
+
+    fetchData();
+  }, [dispatch]);
 
   // Get only available items, sorted by creation date
   const availableItems = foodItems
@@ -116,7 +90,7 @@ export default function BusinessHomeScreen() {
 
   return (
     <BusinessLayout title={user?.businessName || 'Your Business'}>
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         {/* Quick Actions */}
         <View style={styles.quickActionsContainer}>
           {quickActions.map((action) => (
@@ -150,7 +124,15 @@ export default function BusinessHomeScreen() {
             </TouchableOpacity>
           </View>
 
-          {availableItems.length > 0 ? (
+          {foodItemsLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#22C55E" />
+            </View>
+          ) : foodItemsError ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.errorText}>{foodItemsError}</Text>
+            </View>
+          ) : availableItems.length > 0 ? (
             availableItems.map((item: FoodItem) => (
               <FoodItemCard
                 key={item.id}
@@ -170,7 +152,43 @@ export default function BusinessHomeScreen() {
             </View>
           )}
         </View>
-      </View>
+
+        {/* Recent Orders */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Recent Orders</Text>
+            <TouchableOpacity 
+              style={styles.seeAllButton}
+              onPress={() => navigation.navigate('ManageOrders')}
+            >
+              <Text style={styles.seeAllText}>See All</Text>
+              <Ionicons name="chevron-forward" size={16} color="#22C55E" />
+            </TouchableOpacity>
+          </View>
+
+          {ordersLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#22C55E" />
+            </View>
+          ) : ordersError ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.errorText}>{ordersError}</Text>
+            </View>
+          ) : orders.length > 0 ? (
+            orders.slice(0, 2).map((order) => (
+              <OrderCard
+                key={order.id}
+                {...order}
+                onPress={() => navigation.navigate('ManageOrders')}
+              />
+            ))
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>No recent orders</Text>
+            </View>
+          )}
+        </View>
+      </ScrollView>
     </BusinessLayout>
   );
 }
@@ -237,6 +255,11 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 16,
   },
+  errorText: {
+    fontSize: 16,
+    color: '#EF4444',
+    marginBottom: 16,
+  },
   addItemButton: {
     backgroundColor: '#22C55E',
     paddingVertical: 12,
@@ -247,5 +270,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     fontWeight: '600',
+  },
+  loadingContainer: {
+    padding: 24,
+    alignItems: 'center',
   },
 });

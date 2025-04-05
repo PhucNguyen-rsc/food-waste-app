@@ -34,6 +34,8 @@ const foodItemsSlice = createSlice({
   reducers: {
     setFoodItems: (state, action: PayloadAction<FoodItem[]>) => {
       state.items = action.payload;
+      state.loading = false;
+      state.error = null;
     },
     addFoodItem: (state, action: PayloadAction<FoodItem>) => {
       state.items.push(action.payload);
@@ -47,8 +49,22 @@ const foodItemsSlice = createSlice({
     deleteFoodItem: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter(item => item.id !== action.payload);
     },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
+    },
+    setError: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+      state.loading = false;
+    },
   },
 });
 
-export const { setFoodItems, addFoodItem, updateFoodItem, deleteFoodItem } = foodItemsSlice.actions;
+export const { 
+  setFoodItems, 
+  addFoodItem, 
+  updateFoodItem, 
+  deleteFoodItem,
+  setLoading,
+  setError,
+} = foodItemsSlice.actions;
 export default foodItemsSlice.reducer; 

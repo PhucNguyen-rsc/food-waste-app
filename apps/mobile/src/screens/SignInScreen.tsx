@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { setUser, setToken } from '@/store/slices/authSlice';
-import { setFoodItems } from '@/store/slices/foodItemsSlice';
 import { signInWithEmailAndPassword } from '@/lib/auth';
-import api from '@/lib/api';
 
 export default function SignInScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
@@ -29,13 +27,6 @@ export default function SignInScreen({ navigation }: any) {
           navigation.replace('ConsumerHome');
           break;
         case 'BUSINESS':
-          // Fetch food items for business users
-          try {
-            const { data } = await api.get('/business/food-items');
-            dispatch(setFoodItems(data));
-          } catch (error) {
-            console.error('Failed to fetch food items:', error);
-          }
           navigation.replace('BusinessHome');
           break;
         case 'COURIER':
