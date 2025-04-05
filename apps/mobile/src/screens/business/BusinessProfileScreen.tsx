@@ -1,5 +1,5 @@
 import 'react-native-get-random-values';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,6 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
 } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { useNavigation } from '@react-navigation/native';
@@ -46,14 +45,30 @@ export default function BusinessProfileScreen() {
   const [businessAddress, setBusinessAddress] = useState('');
   const [businessPhone, setBusinessPhone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isAddressFocused, setIsAddressFocused] = useState(false);
+
+  const addressRef = useRef<any>(null); // Ref for GooglePlacesAutocomplete
 
   useEffect(() => {
     if (user) {
       setBusinessName(user.businessName || '');
       setBusinessAddress(user.businessAddress || '');
       setBusinessPhone(user.businessPhone || '');
+
+      // Set the address in the GooglePlacesAutocomplete field
+      if (user.businessAddress && addressRef.current) {
+        addressRef.current.setAddressText(user.businessAddress);
+      }
     }
   }, [user]);
+
+  const handleAddressFocus = () => {
+    setIsAddressFocused(true);
+  };
+
+  const handleAddressBlur = () => {
+    setIsAddressFocused(false);
+  };
 
   const handleUpdateProfile = async () => {
     if (!businessName.trim()) {
@@ -120,16 +135,20 @@ export default function BusinessProfileScreen() {
 
             <View style={styles.addressContainer}>
               <GooglePlacesAutocomplete
+                ref={addressRef}
                 placeholder="Search for your business address"
                 textInputProps={{
-                  value: businessAddress,
                   onChangeText: setBusinessAddress,
+                  onFocus: handleAddressFocus,
+                  onBlur: handleAddressBlur,
                   placeholderTextColor: '#999',
                   returnKeyType: 'done',
                 }}
                 onPress={(data: GooglePlaceData, details: GooglePlaceDetails | null = null) => {
                   if (details) {
-                    setBusinessAddress(details.formatted_address);
+                    const address = details.formatted_address;
+                    setBusinessAddress(address);
+                    addressRef.current?.setAddressText(address); // Make sure input shows it
                   }
                 }}
                 query={{
@@ -144,6 +163,7 @@ export default function BusinessProfileScreen() {
                   textInput: {
                     ...styles.input,
                     marginBottom: 0,
+                    color: businessAddress ? '#000' : '#999',
                   },
                   listView: {
                     position: 'absolute',
@@ -232,4 +252,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
   },
-}); 
+});
