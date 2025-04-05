@@ -13,6 +13,8 @@ import BusinessLayout from '@/components/BusinessLayout'; // Use your BusinessLa
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
+import { Ionicons } from '@expo/vector-icons';
+import { useAppSelector } from '@/store';
 
 /** Types for dummy data */
 type Listing = {
@@ -34,6 +36,7 @@ type Order = {
 
 export default function BusinessHomeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const user = useAppSelector((state) => state.auth.user);
   const [listings, setListings] = useState<Listing[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
@@ -127,7 +130,7 @@ export default function BusinessHomeScreen() {
               style={styles.avatar}
             />
             <View style={{ marginLeft: 8 }}>
-              <Text style={styles.storeName}>Alex's Kitchen</Text>
+              <Text style={styles.storeName}>{user?.businessName || 'Your Business'}</Text>
               <Text style={styles.onlineText}>Online</Text>
             </View>
           </View>
@@ -160,34 +163,39 @@ export default function BusinessHomeScreen() {
           </View>
         </View>
 
-        {/* QUICK ACTIONS ROW */}
+        {/* QUICK ACTIONS */}
         <Text style={styles.sectionTitle}>Quick Actions</Text>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.actionRow}
-        >
+        <View style={styles.quickActions}>
           <TouchableOpacity
-            style={styles.actionButton}
+            style={styles.actionCard}
             onPress={() => navigation.navigate('AddItem')}
           >
-            <Text style={styles.actionButtonText}>Add Food Item</Text>
+            <View style={styles.iconContainer}>
+              <Ionicons name="add-circle" size={28} color="#000" />
+            </View>
+            <Text style={styles.actionButtonText}>Add Item</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => navigation.navigate('ManageOrders')}
+            style={styles.actionCard}
+            onPress={() => navigation.navigate('UpdatePrice')}
           >
-            <Text style={styles.actionButtonText}>Manage Orders</Text>
+            <View style={styles.iconContainer}>
+              <Ionicons name="pricetag" size={28} color="#000" />
+            </View>
+            <Text style={styles.actionButtonText}>Update Price</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => navigation.navigate('BusinessProfile')}
+            style={styles.actionCard}
+            onPress={() => navigation.navigate('Inventory')}
           >
-            <Text style={styles.actionButtonText}>Business Profile</Text>
+            <View style={styles.iconContainer}>
+              <Ionicons name="cube" size={28} color="#000" />
+            </View>
+            <Text style={styles.actionButtonText}>Inventory</Text>
           </TouchableOpacity>
-        </ScrollView>
+        </View>
 
         {/* ACTIVE LISTINGS */}
         <View style={styles.sectionHeader}>
@@ -266,21 +274,37 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     marginTop: 4,
   },
-  actionRow: {
+  quickActions: {
     flexDirection: 'row',
-    marginBottom: 16,
-    paddingRight: 16,
-  },
-  actionButton: {
-    backgroundColor: '#EEE',
-    paddingVertical: 10,
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    gap: 12,
     paddingHorizontal: 16,
-    borderRadius: 8,
-    marginRight: 8,
+  },
+  actionCard: {
+    flex: 1,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  iconContainer: {
+    marginBottom: 4,
   },
   actionButtonText: {
     fontSize: 14,
     fontWeight: '600',
+    color: '#1F2937',
+    textAlign: 'center',
   },
 
   /* SECTION HEADER */

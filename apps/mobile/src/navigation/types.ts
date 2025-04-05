@@ -11,6 +11,8 @@ export type RootStackParamList = {
   BusinessHome: undefined;
   Analytics: undefined;
   AddItem: undefined;
+  UpdatePrice: undefined;
+  Inventory: undefined;
   ManageOrders: undefined;
   BusinessProfile: undefined;
 

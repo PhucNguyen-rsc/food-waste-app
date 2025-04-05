@@ -110,10 +110,7 @@ export default function BusinessProfileScreen() {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}
         >
-          <ScrollView 
-            style={styles.container}
-            showsVerticalScrollIndicator={false}
-          >
+          <View style={styles.container}>
             <TextInput
               style={styles.input}
               placeholder="Business Name"
@@ -127,6 +124,8 @@ export default function BusinessProfileScreen() {
                 textInputProps={{
                   value: businessAddress,
                   onChangeText: setBusinessAddress,
+                  placeholderTextColor: '#999',
+                  returnKeyType: 'done',
                 }}
                 onPress={(data: GooglePlaceData, details: GooglePlaceDetails | null = null) => {
                   if (details) {
@@ -157,6 +156,7 @@ export default function BusinessProfileScreen() {
                     borderRadius: 8,
                     marginTop: 4,
                     zIndex: 1000,
+                    maxHeight: 200,
                   },
                   row: {
                     padding: 13,
@@ -169,6 +169,8 @@ export default function BusinessProfileScreen() {
                 }}
                 enablePoweredByContainer={false}
                 fetchDetails={true}
+                onFail={(error) => console.error('GooglePlaces Error:', error)}
+                listViewDisplayed={false}
               />
             </View>
 
@@ -189,7 +191,7 @@ export default function BusinessProfileScreen() {
                 {isLoading ? 'Updating...' : 'Update Profile'}
               </Text>
             </TouchableOpacity>
-          </ScrollView>
+          </View>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
     </BusinessLayout>
