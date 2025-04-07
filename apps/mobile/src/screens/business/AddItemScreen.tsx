@@ -14,7 +14,6 @@ import {
   ScrollView,
   FlatList,
   Modal,
-  Pressable,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
