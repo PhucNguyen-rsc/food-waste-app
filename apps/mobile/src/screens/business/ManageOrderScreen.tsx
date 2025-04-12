@@ -1,87 +1,94 @@
 // src/screens/business/ManageOrderScreen.tsx
 
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import BusinessLayout from '@/components/BusinessLayout';
-
-type Order = {
-  id: string;
-  customerName: string;
-  totalPrice: number;
-  status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'COMPLETED';
-};
+import { useAppSelector, useAppDispatch } from '@/store';
+import { setOrders, setLoading, setError } from '@/store/slices/ordersSlice';
+import api from '@/lib/api';
+import ManageOrderCard from '@/components/ManageOrderCard';
+import { Order } from '@/store/slices/ordersSlice';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function ManageOrderScreen() {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const dispatch = useAppDispatch();
+  const orders = useAppSelector((state) => state.orders.items) || [];
+  const loading = useAppSelector((state) => state.orders.loading);
+  const error = useAppSelector((state) => state.orders.error);
 
   useEffect(() => {
-    // TODO: fetch orders from your backend. For now, mock data:
-    setOrders([
-      { id: 'ORD123', customerName: 'John White', totalPrice: 39.5, status: 'PENDING' },
-      { id: 'ORD124', customerName: 'Sarah Ahmed', totalPrice: 15, status: 'PENDING' },
-    ]);
-  }, []);
+    const fetchOrders = async () => {
+      try {
+        dispatch(setLoading(true));
+        const { data } = await api.get('/business/orders');
+        dispatch(setOrders(data));
+      } catch (error) {
+        dispatch(setError('Failed to fetch orders'));
+        console.error('Error fetching orders:', error);
+      }
+    };
 
-  const handleAccept = (orderId: string) => {
-    setOrders(prev =>
-      prev.map(o => (o.id === orderId ? { ...o, status: 'ACCEPTED' } : o))
-    );
+    fetchOrders();
+  }, [dispatch]);
+
+  const handleUpdateStatus = async (orderId: string, newStatus: Order['status']) => {
+    try {
+      await api.patch(`/business/orders/${orderId}/status`, { status: newStatus });
+      dispatch(setOrders(
+        orders.map(order => 
+          order.id === orderId ? { ...order, status: newStatus } : order
+        )
+      ));
+    } catch (error) {
+      console.error('Error updating order status:', error);
+    }
   };
 
-  const handleReject = (orderId: string) => {
-    setOrders(prev =>
-      prev.map(o => (o.id === orderId ? { ...o, status: 'REJECTED' } : o))
-    );
-  };
-
-  const handleComplete = (orderId: string) => {
-    setOrders(prev =>
-      prev.map(o => (o.id === orderId ? { ...o, status: 'COMPLETED' } : o))
-    );
-  };
-
-  const renderOrder = ({ item }: { item: Order }) => {
-    let statusStyle = styles.statusDefault;
-    if (item.status === 'ACCEPTED') statusStyle = styles.statusAccepted;
-    else if (item.status === 'REJECTED') statusStyle = styles.statusRejected;
-    else if (item.status === 'COMPLETED') statusStyle = styles.statusCompleted;
-
+  if (loading) {
     return (
-      <View style={styles.orderCard}>
-        <Text style={styles.orderTitle}>Order #{item.id}</Text>
-        <Text style={styles.orderDetails}>Customer: {item.customerName}</Text>
-        <Text style={styles.orderDetails}>AED {item.totalPrice.toFixed(2)}</Text>
-        <View style={[styles.statusContainer, statusStyle]}>
-          <Text style={styles.statusText}>{item.status}</Text>
+      <BusinessLayout>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#22C55E" />
         </View>
-
-        {item.status === 'PENDING' && (
-          <View style={styles.buttonRow}>
-            <TouchableOpacity style={styles.acceptBtn} onPress={() => handleAccept(item.id)}>
-              <Text style={styles.btnText}>Accept</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.rejectBtn} onPress={() => handleReject(item.id)}>
-              <Text style={styles.btnText}>Reject</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {item.status === 'ACCEPTED' && (
-          <TouchableOpacity style={styles.completeBtn} onPress={() => handleComplete(item.id)}>
-            <Text style={styles.btnText}>Mark as Completed</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      </BusinessLayout>
     );
-  };
+  }
+
+  if (error) {
+    return (
+      <BusinessLayout>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      </BusinessLayout>
+    );
+  }
+
+  if (orders.length === 0) {
+    return (
+      <BusinessLayout>
+        <View style={styles.emptyContainer}>
+          <Ionicons name="receipt-outline" size={64} color="#CBD5E1" />
+          <Text style={styles.emptyTitle}>No Orders Yet</Text>
+          <Text style={styles.emptyText}>
+            When customers place orders, they will appear here
+          </Text>
+        </View>
+      </BusinessLayout>
+    );
+  }
 
   return (
     <BusinessLayout>
-      <Text style={styles.heading}>Manage Orders</Text>
       <FlatList
         data={orders}
+        renderItem={({ item }) => (
+          <ManageOrderCard
+            order={item}
+            onUpdateStatus={handleUpdateStatus}
+          />
+        )}
         keyExtractor={(item) => item.id}
-        renderItem={renderOrder}
         contentContainerStyle={styles.listContainer}
       />
     </BusinessLayout>
@@ -89,82 +96,42 @@ export default function ManageOrderScreen() {
 }
 
 const styles = StyleSheet.create({
-  heading: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 12,
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    color: '#EF4444',
+    fontSize: 16,
     textAlign: 'center',
   },
-  listContainer: {
-    paddingVertical: 8,
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
-  orderCard: {
-    backgroundColor: '#FFF',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-    elevation: 1,
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#1E293B',
+    marginTop: 16,
+    marginBottom: 8,
   },
-  orderTitle: {
+  emptyText: {
     fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
+    color: '#64748B',
+    textAlign: 'center',
+    paddingHorizontal: 32,
   },
-  orderDetails: {
-    fontSize: 14,
-    color: '#333',
-    marginBottom: 2,
-  },
-  statusContainer: {
-    alignSelf: 'flex-start',
-    marginTop: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  statusDefault: {
-    backgroundColor: '#EEE',
-  },
-  statusAccepted: {
-    backgroundColor: '#22C55E',
-  },
-  statusRejected: {
-    backgroundColor: '#FF5C5C',
-  },
-  statusCompleted: {
-    backgroundColor: '#007AFF',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    marginTop: 8,
-  },
-  acceptBtn: {
-    backgroundColor: '#22C55E',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    marginRight: 12,
-  },
-  rejectBtn: {
-    backgroundColor: '#FF5C5C',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-  },
-  completeBtn: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    marginTop: 8,
-    alignSelf: 'flex-start',
-  },
-  btnText: {
-    color: '#FFF',
-    fontWeight: '600',
+  listContainer: {
+    padding: 16,
   },
 });
