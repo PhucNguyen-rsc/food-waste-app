@@ -232,7 +232,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/kwaakuboamah-powers/Documents/food-waste-app/packages/database/client",
+      "value": "/Users/mahletatrsawandargei/Desktop/food-waste-app/packages/database/client",
       "fromEnvVar": null
     },
     "config": {
@@ -248,7 +248,7 @@ const config = {
     "previewFeatures": [
       "driverAdapters"
     ],
-    "sourceFilePath": "/Users/kwaakuboamah-powers/Documents/food-waste-app/packages/database/prisma/schema.prisma",
+    "sourceFilePath": "/Users/mahletatrsawandargei/Desktop/food-waste-app/packages/database/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -262,7 +262,6 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {

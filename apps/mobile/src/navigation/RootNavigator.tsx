@@ -24,7 +24,10 @@ import InventoryScreen from '@/screens/business/InventoryScreen';
 
 // Consumer Screen
 import ConsumerHomeScreen from '@/screens/consumer/ConsumerHomeScreen';
-
+import ProfileScreen from '@/screens/consumer/ProfileScreen';
+import ProductDetailScreen from '@/screens/consumer/ProductDetailScreen';
+import SettingsScreen from '@/screens/consumer/SettingsScreen';
+import ChangePasswordScreen from '@/screens/consumer/ChangePasswordScreen';
 // (Optional) Courier Screen
 // import CourierHomeScreen from '../screens/courier/CourierHomeScreen';
 
@@ -63,7 +66,10 @@ export const RootNavigator = () => {
 
         {/* Consumer Screen */}
         <Stack.Screen name="ConsumerHome" component={ConsumerHomeScreen} />
-
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
         {/* Optional Courier Screen */}
         {/* <Stack.Screen name="CourierHome" component={CourierHomeScreen} /> */}
 

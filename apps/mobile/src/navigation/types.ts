@@ -9,18 +9,22 @@ export type RootStackParamList = {
 
   // Business owner side
   BusinessHome: undefined;
-  Analytics: undefined;
   AddItem: undefined;
-  UpdatePrice: { itemId: string };
-  Inventory: undefined;
   ManageOrders: undefined;
-  BusinessProfile: undefined;
 
   // Consumer side
   ConsumerHome: undefined;
-  ConsumerProfile: undefined;
+  ProductDetail: undefined;
+  // Cart: undefined;
+  // Checkout: undefined;
+  // OrderSuccess: undefined;
+  // Orders: undefined;
+  Profile: undefined;
+  Settings: undefined;
+  ChangePassword: undefined;
 
   // Courier side
   CourierHome: undefined;
+  Deliveries: undefined;
   CourierProfile: undefined;
 };

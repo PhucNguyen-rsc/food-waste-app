@@ -1,68 +1,58 @@
+// Screen 1: ConsumerHomeScreen.tsx
 import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
-  ActivityIndicator,
   Image,
   TouchableOpacity,
-  Dimensions,
+  TextInput,
 } from 'react-native';
-import axios from 'axios';
+import api from '@/lib/api';
 import ConsumerLayout from '@/components/ConsumerLayout';
 
-const screenWidth = Dimensions.get('window').width;
-const itemWidth = (screenWidth - 48) / 2; // 16px padding * 3
+export default function ConsumerHomeScreen({ navigation }) {
+  const [items, setItems] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
-export type ItemData = {
-  id: string;
-  name: string;
-  originalPrice: number;
-  discountedPrice: number;
-  quantity: number;
-  bestBefore: string;
-  description: string;
-  imageUrl?: string;
-};
-
-export default function ConsumerHomeScreen() {
-  const [items, setItems] = useState<ItemData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const categories = ['All Items', 'Vegetables', 'Fruits', 'Bakery'];
 
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const res = await axios.get('https://fcd5-5-195-74-111.ngrok-free.app/items');
+        const res = await api.get('/items');
         setItems(res.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
+        setFilteredItems(res.data);
+      } catch (err) {
+        console.error(err);
       }
     };
     fetchItems();
   }, []);
 
-  const renderItem = ({ item }: { item: ItemData }) => {
-    const discountPercent = Math.round(
-      ((item.originalPrice - item.discountedPrice) / item.originalPrice) * 100
-    );
+  useEffect(() => {
+    const filtered = items.filter(item => {
+      const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+    setFilteredItems(filtered);
+  }, [searchQuery, selectedCategory, items]);
+
+  const renderItem = ({ item }) => {
+    const discountPercent = Math.round(((item.originalPrice - item.discountedPrice) / item.originalPrice) * 100);
 
     return (
-      <View style={styles.card}>
-        <Image
-          source={{
-            uri:
-              item.imageUrl ||
-              'https://via.placeholder.com/150?text=No+Image',
-          }}
-          style={styles.image}
-        />
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('ProductDetailScreen', { item })}
+      >
+        <Image source={{ uri: item.imageUrl || 'https://via.placeholder.com/150' }} style={styles.image} />
         <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.expiry}>
-          Expires {item.bestBefore.toLowerCase().includes('today') ? 'today' : `on ${item.bestBefore}`}
-        </Text>
+        <Text style={styles.expiry}>Expires {item.bestBefore}</Text>
         <View style={styles.priceRow}>
           <Text style={styles.discountedPrice}>AED {item.discountedPrice}</Text>
           <Text style={styles.originalPrice}>AED {item.originalPrice}</Text>
@@ -75,26 +65,47 @@ export default function ConsumerHomeScreen() {
             <Text style={styles.addButtonText}>+</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
   return (
     <ConsumerLayout>
       <View style={styles.container}>
-        <Text style={styles.heading}>Available Items</Text>
-        {loading ? (
-          <ActivityIndicator size="large" color="#22C55E" />
-        ) : (
-          <FlatList
-            data={items}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            numColumns={2}
-            columnWrapperStyle={styles.columnWrapper}
-            contentContainerStyle={styles.grid}
-          />
-        )}
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search for food items..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+
+        <View style={styles.categoryRow}>
+          {categories.map(cat => (
+            <TouchableOpacity
+              key={cat}
+              style={[styles.categoryButton, selectedCategory === cat && styles.categorySelected]}
+              onPress={() => setSelectedCategory(cat)}
+            >
+              <Text
+                style={[
+                  styles.categoryText,
+                  selectedCategory === cat && styles.categoryTextSelected,
+                ]}
+              >
+                {cat}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <FlatList
+          data={filteredItems}
+          keyExtractor={item => item.id}
+          renderItem={renderItem}
+          numColumns={2}
+          columnWrapperStyle={styles.columnWrapper}
+          contentContainerStyle={styles.grid}
+        />
       </View>
     </ConsumerLayout>
   );
@@ -107,11 +118,36 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     backgroundColor: '#fff',
   },
-  heading: {
-    fontSize: 24,
-    fontWeight: '600',
+  searchInput: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 16,
     marginBottom: 12,
-    textAlign: 'center',
+  },
+  categoryRow: {
+    flexDirection: 'row',
+    marginBottom: 12,
+    flexWrap: 'wrap',
+  },
+  categoryButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: '#F3F4F6',
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  categorySelected: {
+    backgroundColor: '#22C55E',
+  },
+  categoryText: {
+    color: '#4B5563',
+  },
+  categoryTextSelected: {
+    color: '#fff',
   },
   grid: {
     paddingBottom: 100,
@@ -121,10 +157,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   card: {
-    width: itemWidth,
+    flex: 1,
     backgroundColor: '#F9FAFB',
     borderRadius: 12,
     padding: 12,
+    marginHorizontal: 4,
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 4,
