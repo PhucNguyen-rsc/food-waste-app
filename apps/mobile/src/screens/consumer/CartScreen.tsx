@@ -19,7 +19,10 @@ export default function CartScreen() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  const totalPrice = cartItems.reduce((sum, item) => sum + item.discountedPrice * item.quantity, 0);
+  const totalPrice = cartItems.reduce(
+    (sum, item) => sum + (item.price ?? 0) * item.quantity,
+    0
+  );
 
   const handleRemove = (id: string) => {
     dispatch(removeFromCart(id));
@@ -41,7 +44,9 @@ export default function CartScreen() {
       />
       <View style={styles.details}>
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.price}>AED {item.discountedPrice} x {item.quantity}</Text>
+        <Text style={styles.price}>
+          AED {(item.price ?? 0).toFixed(2)} x {item.quantity}
+        </Text>
       </View>
       <TouchableOpacity onPress={() => handleRemove(item.id)}>
         <Text style={styles.remove}>✕</Text>
@@ -66,7 +71,9 @@ export default function CartScreen() {
             />
 
             <View style={styles.footer}>
-              <Text style={styles.total}>Total: AED {totalPrice.toFixed(2)}</Text>
+              <Text style={styles.total}>
+                Total: AED {totalPrice.toFixed(2)}
+              </Text>
               <TouchableOpacity style={styles.button} onPress={handleCheckout}>
                 <Text style={styles.buttonText}>Proceed to Checkout</Text>
               </TouchableOpacity>
