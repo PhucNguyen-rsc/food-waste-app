@@ -10,7 +10,7 @@ export default function OrderSuccessScreen() {
     <ConsumerLayout>
       <View style={styles.container}>
         <Image
-          source={require('@/assets/success.png')} // You can replace this with any checkmark or celebration icon
+          source={{ uri: 'https://cdn-icons-png.flaticon.com/512/845/845646.png' }} // ✅ checkmark icon
           style={styles.image}
         />
         <Text style={styles.title}>Order Placed!</Text>
@@ -20,7 +20,7 @@ export default function OrderSuccessScreen() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('ConsumerHomeScreen')}
+          onPress={() => navigation.navigate('ConsumerHome')}
         >
           <Text style={styles.buttonText}>Back to Home</Text>
         </TouchableOpacity>
@@ -38,8 +38,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   image: {
-    width: 160,
-    height: 160,
+    width: 120,
+    height: 120,
     marginBottom: 24,
   },
   title: {
