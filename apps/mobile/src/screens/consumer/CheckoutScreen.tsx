@@ -1,3 +1,4 @@
+// CheckoutScreen.tsx
 import React, { useState } from 'react';
 import {
   View,
@@ -9,21 +10,53 @@ import {
   Alert,
 } from 'react-native';
 import ConsumerLayout from '@/components/ConsumerLayout';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/store';
+import { clearCart } from '@/store/cartSlice';
+import { useNavigation } from '@react-navigation/native';
 
-export default function CheckoutScreen({ navigation }) {
+export default function CheckoutScreen() {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('Cash');
+  const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Card'>('Cash');
 
-  const handleCheckout = () => {
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+
+  const handleCheckout = async () => {
     if (!name || !address || !phone) {
       Alert.alert('Incomplete Info', 'Please fill all required fields.');
       return;
     }
 
-    // Normally you’d send this data to the backend
-    navigation.navigate('OrderSuccessScreen');
+    if (cartItems.length === 0) {
+      Alert.alert('Cart Empty', 'Please add items to your cart.');
+      return;
+    }
+
+    const payload = {
+      customerName: name,
+      deliveryAddress: address,
+      phoneNumber: phone,
+      paymentMethod,
+      items: cartItems.map((item) => ({
+        foodItemId: item.id,
+        quantity: item.quantity,
+      })),
+    };
+
+    try {
+      // Replace with: await api.post('/orders', payload);
+      console.log('[PLACE ORDER]', payload);
+
+      dispatch(clearCart());
+      navigation.navigate('OrderSuccessScreen');
+    } catch (error) {
+      console.error('Order failed', error);
+      Alert.alert('Error', 'Failed to place order. Please try again.');
+    }
   };
 
   return (
@@ -60,12 +93,29 @@ export default function CheckoutScreen({ navigation }) {
 
         <Text style={styles.label}>Payment Method</Text>
         <View style={styles.radioGroup}>
-          <TouchableOpacity onPress={() => setPaymentMethod('Cash')} style={styles.radioItem}>
-            <View style={[styles.radioCircle, paymentMethod === 'Cash' && styles.radioSelected]} />
+          <TouchableOpacity
+            onPress={() => setPaymentMethod('Cash')}
+            style={styles.radioItem}
+          >
+            <View
+              style={[
+                styles.radioCircle,
+                paymentMethod === 'Cash' && styles.radioSelected,
+              ]}
+            />
             <Text style={styles.radioText}>Cash on Delivery</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setPaymentMethod('Card')} style={styles.radioItem}>
-            <View style={[styles.radioCircle, paymentMethod === 'Card' && styles.radioSelected]} />
+
+          <TouchableOpacity
+            onPress={() => setPaymentMethod('Card')}
+            style={styles.radioItem}
+          >
+            <View
+              style={[
+                styles.radioCircle,
+                paymentMethod === 'Card' && styles.radioSelected,
+              ]}
+            />
             <Text style={styles.radioText}>Card</Text>
           </TouchableOpacity>
         </View>
