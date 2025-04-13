@@ -1,36 +1,56 @@
 import React from 'react';
-import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
+import { useRoute } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '@/store/cartSlice';
 import ConsumerLayout from '@/components/ConsumerLayout';
 
 type Product = {
   id: string;
   name: string;
-  imageUrl?: string;
+  images?: string[];
   description: string;
-  discountedPrice: number;
+  price: number;
   originalPrice: number;
   quantity: number;
-  bestBefore: string;
+  expiryDate: string;
 };
 
-type ProductDetailRouteProp = RouteProp<{ params: { product: Product } }, 'params'>;
-
 export default function ProductDetailScreen() {
-  const route = useRoute<ProductDetailRouteProp>();
-  const navigation = useNavigation();
+  const route = useRoute<any>();
   const { product } = route.params;
+  const dispatch = useDispatch();
 
-  const discountPercent = Math.round(
-    ((product.originalPrice - product.discountedPrice) / product.originalPrice) * 100
-  );
+  const discountPercent =
+    product.originalPrice && product.price
+      ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+      : 0;
+
+  const handleAddToCart = () => {
+    dispatch(
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: item.price,
+        imageUrl: product.images?.[0] || null,
+        quantity: 1,
+      })
+    );
+  };
 
   return (
     <ConsumerLayout>
       <ScrollView contentContainerStyle={styles.container}>
         <Image
           source={{
-            uri: product.imageUrl || 'https://via.placeholder.com/400x300.png?text=No+Image',
+            uri: product.images?.[0] || 'https://via.placeholder.com/400x300.png?text=No+Image',
           }}
           style={styles.image}
         />
@@ -40,8 +60,8 @@ export default function ProductDetailScreen() {
           <Text style={styles.description}>{product.description}</Text>
 
           <View style={styles.priceContainer}>
-            <Text style={styles.discountedPrice}>AED {product.discountedPrice}</Text>
-            <Text style={styles.originalPrice}>AED {product.originalPrice}</Text>
+            <Text style={styles.discountedPrice}>AED {product.price.toFixed(2)}</Text>
+            <Text style={styles.originalPrice}>AED {product.originalPrice.toFixed(2)}</Text>
             <Text style={styles.discountBadge}>-{discountPercent}%</Text>
           </View>
 
@@ -49,10 +69,10 @@ export default function ProductDetailScreen() {
             Quantity Available: <Text style={styles.bold}>{product.quantity}</Text>
           </Text>
           <Text style={styles.meta}>
-            Best Before: <Text style={styles.bold}>{product.bestBefore}</Text>
+            Best Before: <Text style={styles.bold}>{product.expiryDate?.split('T')[0]}</Text>
           </Text>
 
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={handleAddToCart}>
             <Text style={styles.buttonText}>Add to Cart</Text>
           </TouchableOpacity>
         </View>
