@@ -1,4 +1,3 @@
-// Screen 1: ConsumerHomeScreen.tsx
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -9,6 +8,8 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '@/store/cartSlice';
 import api from '@/lib/api';
 import ConsumerLayout from '@/components/ConsumerLayout';
 
@@ -17,6 +18,7 @@ export default function ConsumerHomeScreen({ navigation }) {
   const [filteredItems, setFilteredItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const dispatch = useDispatch();
 
   const categories = [
     'All',
@@ -51,6 +53,18 @@ export default function ConsumerHomeScreen({ navigation }) {
     setFilteredItems(filtered);
   }, [searchQuery, selectedCategory, items]);
 
+  const handleAddToCart = (item) => {
+    dispatch(
+      addToCart({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        imageUrl: item.images?.[0] || null,
+        quantity: 1,
+      })
+    );
+  };
+
   const renderItem = ({ item }) => {
     const discountPercent = Math.round(
       ((item.originalPrice - item.price) / item.originalPrice) * 100
@@ -59,7 +73,7 @@ export default function ConsumerHomeScreen({ navigation }) {
     return (
       <TouchableOpacity
         style={styles.card}
-        onPress={() => navigation.navigate('ProductDetailScreen', { item })}
+        onPress={() => navigation.navigate('ProductDetailScreen', { product: item })}
       >
         <Image
           source={{ uri: item.images?.[0] || 'https://via.placeholder.com/150' }}
@@ -75,7 +89,10 @@ export default function ConsumerHomeScreen({ navigation }) {
           <View style={styles.discountBadge}>
             <Text style={styles.discountText}>-{discountPercent}%</Text>
           </View>
-          <TouchableOpacity style={styles.addButton}>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => handleAddToCart(item)}
+          >
             <Text style={styles.addButtonText}>+</Text>
           </TouchableOpacity>
         </View>
