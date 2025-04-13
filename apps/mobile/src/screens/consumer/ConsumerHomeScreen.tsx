@@ -18,7 +18,15 @@ export default function ConsumerHomeScreen({ navigation }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const categories = ['All Items', 'Vegetables', 'Fruits', 'Bakery'];
+  const categories = [
+    'All',
+    'Meat',
+    'Dairy',
+    'Produce',
+    'Bakery',
+    'Prepared',
+    'Other',
+  ];
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -34,27 +42,33 @@ export default function ConsumerHomeScreen({ navigation }) {
   }, []);
 
   useEffect(() => {
-    const filtered = items.filter(item => {
+    const filtered = items.filter((item) => {
       const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
+      const matchesCategory =
+        selectedCategory === 'All' || item.category === selectedCategory.toUpperCase();
       return matchesSearch && matchesCategory;
     });
     setFilteredItems(filtered);
   }, [searchQuery, selectedCategory, items]);
 
   const renderItem = ({ item }) => {
-    const discountPercent = Math.round(((item.originalPrice - item.discountedPrice) / item.originalPrice) * 100);
+    const discountPercent = Math.round(
+      ((item.originalPrice - item.price) / item.originalPrice) * 100
+    );
 
     return (
       <TouchableOpacity
         style={styles.card}
         onPress={() => navigation.navigate('ProductDetailScreen', { item })}
       >
-        <Image source={{ uri: item.imageUrl || 'https://via.placeholder.com/150' }} style={styles.image} />
+        <Image
+          source={{ uri: item.images?.[0] || 'https://via.placeholder.com/150' }}
+          style={styles.image}
+        />
         <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.expiry}>Expires {item.bestBefore}</Text>
+        <Text style={styles.expiry}>Expires {item.expiryDate?.split('T')[0]}</Text>
         <View style={styles.priceRow}>
-          <Text style={styles.discountedPrice}>AED {item.discountedPrice}</Text>
+          <Text style={styles.discountedPrice}>AED {item.price}</Text>
           <Text style={styles.originalPrice}>AED {item.originalPrice}</Text>
         </View>
         <View style={styles.bottomRow}>
@@ -80,7 +94,7 @@ export default function ConsumerHomeScreen({ navigation }) {
         />
 
         <View style={styles.categoryRow}>
-          {categories.map(cat => (
+          {categories.map((cat) => (
             <TouchableOpacity
               key={cat}
               style={[styles.categoryButton, selectedCategory === cat && styles.categorySelected]}
@@ -100,7 +114,7 @@ export default function ConsumerHomeScreen({ navigation }) {
 
         <FlatList
           data={filteredItems}
-          keyExtractor={item => item.id}
+          keyExtractor={(item) => item.id}
           renderItem={renderItem}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
