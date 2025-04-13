@@ -4,26 +4,29 @@ export type RootStackParamList = {
   SignIn: undefined;
   SignUp: undefined;
 
-  // Role selection (after user logs in)
+  // Role Selection
   RoleSelection: undefined;
 
-  // Business owner side
+  // Business
   BusinessHome: undefined;
   AddItem: undefined;
   ManageOrders: undefined;
+  Analytics: undefined;
+  UpdatePrice: undefined;
+  Inventory: undefined;
+  BusinessProfile: undefined;
 
-  // Consumer side
+  // Consumer
   ConsumerHome: undefined;
-  ProductDetail: undefined;
-  // Cart: undefined;
-  // Checkout: undefined;
-  // OrderSuccess: undefined;
-  // Orders: undefined;
+  ProductDetail: { product: any }; // or your actual type
+  CartScreen: undefined;
+  CheckoutScreen: undefined;
+  OrderSuccessScreen: undefined;
   Profile: undefined;
   Settings: undefined;
   ChangePassword: undefined;
 
-  // Courier side
+  // Courier
   CourierHome: undefined;
   Deliveries: undefined;
   CourierProfile: undefined;
