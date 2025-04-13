@@ -1,14 +1,17 @@
+// src/screens/consumer/ProfileScreen.tsx
+
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import ConsumerLayout from '@/components/ConsumerLayout';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
+import { useAppSelector } from '@/store';
+import { useNavigation } from '@react-navigation/native';
 
-export default function ProfileScreen({ navigation }) {
-  const user = useSelector((state: RootState) => state.auth.user);
+export default function ProfileScreen() {
+  const user = useAppSelector((state) => state.auth.user);
+  const navigation = useNavigation();
 
   return (
-    <ConsumerLayout>
+    <ConsumerLayout title="My Profile">
       <View style={styles.container}>
         <Text style={styles.heading}>My Profile</Text>
 
@@ -25,7 +28,7 @@ export default function ProfileScreen({ navigation }) {
 
         <TouchableOpacity
           style={styles.editButton}
-          onPress={() => navigation.navigate('ChangePasswordScreen')}
+          onPress={() => navigation.navigate('ChangePassword')}
         >
           <Text style={styles.editButtonText}>Change Password</Text>
         </TouchableOpacity>
