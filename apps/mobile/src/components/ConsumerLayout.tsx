@@ -10,9 +10,10 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import NavBar from './ui/NavBar';
+import Icon from 'react-native-vector-icons/Ionicons'; // Make sure Ionicons is installed
 
 type ConsumerLayoutNavProp = NativeStackNavigationProp<RootStackParamList>;
-type ConsumerTabName = 'ConsumerHome' | 'ConsumerProfile';
+type ConsumerTabName = 'ConsumerHome' | 'Profile';
 
 interface ConsumerLayoutProps {
   children: React.ReactNode;
@@ -32,16 +33,26 @@ export default function ConsumerLayout({
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
+      <View style={styles.headerRow}>
         <NavBar 
           title={title} 
           showBackButton={showBackButton} 
           onBackPress={onBackPress} 
         />
+        <TouchableOpacity
+          style={styles.cartIcon}
+          onPress={() => navigation.navigate('CartScreen')}
+        >
+          <Icon name="cart-outline" size={24} color="#000" />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.container}>
         <View style={styles.content}>
           {children}
         </View>
       </View>
+
       <View style={styles.bottomNav}>
         <TouchableOpacity
           style={styles.navButton}
@@ -59,12 +70,12 @@ export default function ConsumerLayout({
 
         <TouchableOpacity
           style={styles.navButton}
-          onPress={() => navigation.navigate('ConsumerProfile')}
+          onPress={() => navigation.navigate('Profile')}
         >
           <Text
             style={[
               styles.navText,
-              route.name === 'ConsumerProfile' && styles.activeNavText,
+              route.name === 'Profile' && styles.activeNavText,
             ]}
           >
             Profile
@@ -79,6 +90,16 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 8,
+  },
+  cartIcon: {
+    padding: 8,
   },
   container: {
     flex: 1,
