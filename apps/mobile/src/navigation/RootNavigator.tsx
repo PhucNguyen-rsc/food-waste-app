@@ -1,5 +1,3 @@
-// src/navigation/RootNavigator.tsx
-
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -16,20 +14,21 @@ import RoleSelectionScreen from '@/screens/RoleSelectionScreen';
 // Business Screens
 import BusinessHomeScreen from '@/screens/business/BusinessHomeScreen';
 import AddItemScreen from '@/screens/business/AddItemScreen';
-import ManageOrderScreen from '@/screens/business/ManageOrderScreen'; // ✅ Singular, matches file + export
+import ManageOrderScreen from '@/screens/business/ManageOrderScreen';
 import BusinessProfileScreen from '@/screens/business/BusinessProfileScreen';
 import AnalyticsScreen from '@/screens/business/AnalyticsScreen';
 import UpdatePriceScreen from '@/screens/business/UpdatePriceScreen';
 import InventoryScreen from '@/screens/business/InventoryScreen';
 
-// Consumer Screen
+// Consumer Screens
 import ConsumerHomeScreen from '@/screens/consumer/ConsumerHomeScreen';
 import ProfileScreen from '@/screens/consumer/ProfileScreen';
 import ProductDetailScreen from '@/screens/consumer/ProductDetailScreen';
 import SettingsScreen from '@/screens/consumer/SettingsScreen';
 import ChangePasswordScreen from '@/screens/consumer/ChangePasswordScreen';
-// (Optional) Courier Screen
-// import CourierHomeScreen from '../screens/courier/CourierHomeScreen';
+import CartScreen from '@/screens/consumer/CartScreen';
+import CheckoutScreen from '@/screens/consumer/CheckoutScreen';
+import OrderSuccessScreen from '@/screens/consumer/OrderSuccessScreen';
 
 import { useAppSelector } from '@/store';
 
@@ -64,17 +63,15 @@ export const RootNavigator = () => {
         <Stack.Screen name="ManageOrders" component={ManageOrderScreen} />
         <Stack.Screen name="BusinessProfile" component={BusinessProfileScreen} />
 
-        {/* Consumer Screen */}
+        {/* Consumer Screens */}
         <Stack.Screen name="ConsumerHome" component={ConsumerHomeScreen} />
+        <Stack.Screen name="ProductDetailScreen" component={ProductDetailScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
-        {/* Optional Courier Screen */}
-        {/* <Stack.Screen name="CourierHome" component={CourierHomeScreen} /> */}
-
-        {/* Optional Old Home Screen */}
-        {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
+        <Stack.Screen name="CartScreen" component={CartScreen} />
+        <Stack.Screen name="CheckoutScreen" component={CheckoutScreen} />
+        <Stack.Screen name="OrderSuccessScreen" component={OrderSuccessScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
