@@ -34,16 +34,16 @@ export default function ProductDetailScreen() {
       : 0;
 
   const handleAddToCart = () => {
-    dispatch(
-      addToCart({
-        id: product.id,
-        name: product.name,
-        price: item.price,
-        imageUrl: product.images?.[0] || null,
-        quantity: 1,
-      })
-    );
-  };
+        dispatch(
+          addToCart({
+            id: product.id,
+            name: product.name,
+            price: product.price, // fixed here
+            imageUrl: product.images?.[0] || null,
+            quantity: 1,
+          })
+        );
+      };
 
   return (
     <ConsumerLayout>
