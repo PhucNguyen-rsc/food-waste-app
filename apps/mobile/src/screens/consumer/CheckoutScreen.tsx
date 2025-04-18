@@ -14,6 +14,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { clearCart } from '@/store/cartSlice';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
+
+type CheckoutScreenNavProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function CheckoutScreen() {
   const [name, setName] = useState('');
@@ -23,7 +27,7 @@ export default function CheckoutScreen() {
 
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const dispatch = useDispatch();
-  const navigation = useNavigation();
+  const navigation = useNavigation<CheckoutScreenNavProp>();
 
   const handleCheckout = async () => {
     if (!name || !address || !phone) {

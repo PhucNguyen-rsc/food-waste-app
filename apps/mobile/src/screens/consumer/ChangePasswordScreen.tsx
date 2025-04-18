@@ -28,8 +28,12 @@ export default function ChangePasswordScreen() {
       return Alert.alert('Error', 'New passwords do not match.');
     }
 
+    if (!user) {
+      return Alert.alert('Error', 'No user is currently signed in.');
+    }
+
     try {
-      const credential = EmailAuthProvider.credential(user?.email || '', currentPassword);
+      const credential = EmailAuthProvider.credential(user.email || '', currentPassword);
       await reauthenticateWithCredential(user, credential);
       await updatePassword(user, newPassword);
 

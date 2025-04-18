@@ -2,9 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import ConsumerLayout from '@/components/ConsumerLayout';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
+
+type OrderSuccessScreenNavProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function OrderSuccessScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<OrderSuccessScreenNavProp>();
 
   return (
     <ConsumerLayout>
@@ -15,7 +19,7 @@ export default function OrderSuccessScreen() {
         />
         <Text style={styles.title}>Order Placed!</Text>
         <Text style={styles.subtitle}>
-          Your order has been placed successfully. We’ll notify you once it's ready!
+          Your order has been placed successfully. We'll notify you once it's ready!
         </Text>
 
         <TouchableOpacity

@@ -12,7 +12,7 @@ export type RootStackParamList = {
   AddItem: undefined;
   ManageOrders: undefined;
   Analytics: undefined;
-  UpdatePrice: undefined;
+  UpdatePrice: { itemId: string };
   Inventory: undefined;
   BusinessProfile: undefined;
 
@@ -22,6 +22,7 @@ export type RootStackParamList = {
   CartScreen: undefined;
   CheckoutScreen: undefined;
   OrderSuccessScreen: undefined;
+  OrderDetailScreen: { order: Order };
   Profile: undefined;
   Settings: undefined;
   ChangePassword: undefined;

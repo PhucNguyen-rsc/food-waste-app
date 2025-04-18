@@ -12,10 +12,15 @@ import { useDispatch } from 'react-redux';
 import { addToCart } from '@/store/cartSlice';
 import api from '@/lib/api';
 import ConsumerLayout from '@/components/ConsumerLayout';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
+import { FoodItem } from '@/store/slices/foodItemsSlice';
 
-export default function ConsumerHomeScreen({ navigation }) {
-  const [items, setItems] = useState([]);
-  const [filteredItems, setFilteredItems] = useState([]);
+type ConsumerHomeScreenNavProp = NativeStackNavigationProp<RootStackParamList>;
+
+export default function ConsumerHomeScreen({ navigation }: { navigation: ConsumerHomeScreenNavProp }) {
+  const [items, setItems] = useState<FoodItem[]>([]);
+  const [filteredItems, setFilteredItems] = useState<FoodItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const dispatch = useDispatch();
@@ -53,19 +58,19 @@ export default function ConsumerHomeScreen({ navigation }) {
     setFilteredItems(filtered);
   }, [searchQuery, selectedCategory, items]);
 
-  const handleAddToCart = (item) => {
+  const handleAddToCart = (item: FoodItem) => {
     dispatch(
       addToCart({
         id: item.id,
         name: item.name,
         price: item.price,
-        imageUrl: item.images?.[0] || null,
+        imageUrl: item.images?.[0] || undefined,
         quantity: 1,
       })
     );
   };
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item }: { item: FoodItem }) => {
     const discountPercent = Math.round(
       ((item.originalPrice - item.price) / item.originalPrice) * 100
     );
@@ -73,7 +78,7 @@ export default function ConsumerHomeScreen({ navigation }) {
     return (
       <TouchableOpacity
         style={styles.card}
-        onPress={() => navigation.navigate('ProductDetailScreen', { product: item })}
+        onPress={() => navigation.navigate('ProductDetail', { product: item })}
       >
         <Image
           source={{ uri: item.images?.[0] || 'https://via.placeholder.com/150' }}

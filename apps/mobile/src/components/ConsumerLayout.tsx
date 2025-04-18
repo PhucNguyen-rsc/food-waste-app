@@ -10,10 +10,9 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import NavBar from './ui/NavBar';
-import Icon from 'react-native-vector-icons/Ionicons'; // Make sure Ionicons is installed
+import { Icon } from '@rneui/themed';
 
 type ConsumerLayoutNavProp = NativeStackNavigationProp<RootStackParamList>;
-type ConsumerTabName = 'ConsumerHome' | 'Profile';
 
 interface ConsumerLayoutProps {
   children: React.ReactNode;
@@ -21,6 +20,15 @@ interface ConsumerLayoutProps {
   showBackButton?: boolean;
   onBackPress?: () => void;
 }
+
+type ConsumerTabName = 'ConsumerHome' | 'CartScreen' | 'Profile';
+
+type TabType = {
+  name: ConsumerTabName;
+  label: string;
+  icon: string;
+  type: 'material' | 'material-community';
+};
 
 export default function ConsumerLayout({ 
   children, 
@@ -31,79 +39,80 @@ export default function ConsumerLayout({
   const navigation = useNavigation<ConsumerLayoutNavProp>();
   const route = useRoute();
 
+  const tabs: TabType[] = [
+    {
+      name: 'ConsumerHome',
+      label: 'Home',
+      icon: 'home',
+      type: 'material',
+    },
+    {
+      name: 'CartScreen',
+      label: 'Cart',
+      icon: 'shopping-cart',
+      type: 'material',
+    },
+    {
+      name: 'Profile',
+      label: 'Profile',
+      icon: 'person',
+      type: 'material',
+    },
+  ];
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.headerRow}>
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
         <NavBar 
           title={title} 
           showBackButton={showBackButton} 
           onBackPress={onBackPress} 
         />
-        <TouchableOpacity
-          style={styles.cartIcon}
-          onPress={() => navigation.navigate('CartScreen')}
-        >
-          <Icon name="cart-outline" size={24} color="#000" />
-        </TouchableOpacity>
+      </SafeAreaView>
+      <View style={styles.content}>
+        {children}
       </View>
-
-      <View style={styles.container}>
-        <View style={styles.content}>
-          {children}
+      <SafeAreaView style={styles.bottomSafeArea}>
+        <View style={styles.bottomNav}>
+          {tabs.map((tab) => (
+            <TouchableOpacity
+              key={tab.name}
+              style={styles.navButton}
+              onPress={() => navigation.navigate(tab.name)}
+              testID={`${tab.name.toLowerCase()}-button`}
+            >
+              <Icon
+                name={tab.icon}
+                type={tab.type}
+                size={24}
+                color={route.name === tab.name ? '#22C55E' : '#666'}
+              />
+              <Text
+                style={[
+                  styles.navText,
+                  route.name === tab.name && styles.activeNavText,
+                ]}
+              >
+                {tab.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
-      </View>
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => navigation.navigate('ConsumerHome')}
-        >
-          <Text
-            style={[
-              styles.navText,
-              route.name === 'ConsumerHome' && styles.activeNavText,
-            ]}
-          >
-            Home
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => navigation.navigate('Profile')}
-        >
-          <Text
-            style={[
-              styles.navText,
-              route.name === 'Profile' && styles.activeNavText,
-            ]}
-          >
-            Profile
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 8,
-  },
-  cartIcon: {
-    padding: 8,
-  },
   container: {
     flex: 1,
     backgroundColor: '#F3F4F6',
+  },
+  safeArea: {
+    backgroundColor: '#22C55E',
+  },
+  bottomSafeArea: {
+    backgroundColor: '#fff',
   },
   content: {
     flex: 1,
@@ -115,6 +124,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#ddd',
     backgroundColor: '#fff',
     paddingVertical: 8,
+    height: 60,
   },
   navButton: {
     flex: 1,
@@ -122,9 +132,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   navText: {
-    fontSize: 14,
-    color: '#000',
-    fontWeight: '400',
+    fontSize: 12,
+    color: '#666',
+    fontWeight: '500',
+    marginTop: 4,
   },
   activeNavText: {
     color: '#22C55E',

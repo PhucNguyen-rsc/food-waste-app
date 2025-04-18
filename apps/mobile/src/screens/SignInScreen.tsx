@@ -3,11 +3,17 @@ import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'reac
 import { useDispatch } from 'react-redux';
 import { setUser, setToken } from '@/store/slices/authSlice';
 import { signInWithEmailAndPassword } from '@/lib/auth';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
 
-export default function SignInScreen({ navigation }: any) {
+type SignInScreenNavProp = NativeStackNavigationProp<RootStackParamList, 'SignIn'>;
+
+export default function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
+  const navigation = useNavigation<SignInScreenNavProp>();
 
   const handleSignIn = async () => {
     if (!email || !password) {

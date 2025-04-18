@@ -29,6 +29,7 @@ import ChangePasswordScreen from '@/screens/consumer/ChangePasswordScreen';
 import CartScreen from '@/screens/consumer/CartScreen';
 import CheckoutScreen from '@/screens/consumer/CheckoutScreen';
 import OrderSuccessScreen from '@/screens/consumer/OrderSuccessScreen';
+import OrderDetailScreen from '@/screens/consumer/OrderDetailScreen';
 
 import { useAppSelector } from '@/store';
 
@@ -65,13 +66,14 @@ export const RootNavigator = () => {
 
         {/* Consumer Screens */}
         <Stack.Screen name="ConsumerHome" component={ConsumerHomeScreen} />
-        <Stack.Screen name="ProductDetailScreen" component={ProductDetailScreen} />
+        <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
         <Stack.Screen name="CartScreen" component={CartScreen} />
         <Stack.Screen name="CheckoutScreen" component={CheckoutScreen} />
         <Stack.Screen name="OrderSuccessScreen" component={OrderSuccessScreen} />
+        <Stack.Screen name="OrderDetailScreen" component={OrderDetailScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

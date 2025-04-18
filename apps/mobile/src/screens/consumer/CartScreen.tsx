@@ -13,11 +13,23 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { removeFromCart, clearCart } from '@/store/cartSlice';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
+
+type CartScreenNavProp = NativeStackNavigationProp<RootStackParamList>;
+
+type CartItem = {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  imageUrl?: string;
+};
 
 export default function CartScreen() {
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const dispatch = useDispatch();
-  const navigation = useNavigation();
+  const navigation = useNavigation<CartScreenNavProp>();
 
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + (item.price ?? 0) * item.quantity,
@@ -36,7 +48,7 @@ export default function CartScreen() {
     navigation.navigate('CheckoutScreen');
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: CartItem }) => (
     <View style={styles.card}>
       <Image
         source={{ uri: item.imageUrl || 'https://via.placeholder.com/100' }}

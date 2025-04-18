@@ -10,9 +10,16 @@ import {
 } from 'react-native';
 import ConsumerLayout from '@/components/ConsumerLayout';
 import api from '@/lib/api';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
+import { Order } from '@/store/slices/ordersSlice';
 
-export default function OrdersScreen({ navigation }) {
-  const [orders, setOrders] = useState([]);
+type OrdersScreenNavProp = NativeStackNavigationProp<RootStackParamList>;
+
+export default function OrdersScreen() {
+  const navigation = useNavigation<OrdersScreenNavProp>();
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,19 +37,15 @@ export default function OrdersScreen({ navigation }) {
     fetchOrders();
   }, []);
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: Order }) => (
     <TouchableOpacity
       style={styles.orderCard}
       onPress={() => navigation.navigate('OrderDetailScreen', { order: item })}
     >
-      <Image
-        source={{ uri: item.restaurantLogo || 'https://via.placeholder.com/60' }}
-        style={styles.logo}
-      />
       <View style={styles.orderContent}>
-        <Text style={styles.restaurant}>{item.restaurantName}</Text>
-        <Text style={styles.itemsText}>{item.items.length} items • {item.totalPrice} AED</Text>
         <Text style={styles.status}>{item.status}</Text>
+        <Text style={styles.itemsText}>{item.items.length} items • {item.totalAmount} AED</Text>
+        <Text style={styles.address}>{item.deliveryAddress}</Text>
       </View>
       <Text style={styles.arrow}>›</Text>
     </TouchableOpacity>
@@ -119,5 +122,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#888',
     marginLeft: 8,
+  },
+  address: {
+    fontSize: 12,
+    color: '#555',
   },
 });
