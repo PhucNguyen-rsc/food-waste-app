@@ -7,6 +7,7 @@ import { JwtStrategy } from '@common/strategies/jwt.strategy';
 import { FirebaseStrategy } from '@common/strategies/firebase.strategy';
 import { BusinessModule } from '@business/business.module';
 import { UsersModule } from '@users/users.module';
+import { AuthService } from './auth.service';
 
 @Module({
   imports: [
@@ -22,8 +23,8 @@ import { UsersModule } from '@users/users.module';
     UsersModule,
   ],
   controllers: [AuthController],
-  providers: [JwtStrategy, FirebaseStrategy],
-  exports: [JwtModule],
+  providers: [JwtStrategy, FirebaseStrategy, AuthService],
+  exports: [JwtModule, AuthService],
 })
 export class AuthModule {
   constructor(private configService: ConfigService) {
