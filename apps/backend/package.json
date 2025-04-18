@@ -8,7 +8,14 @@
     "start:dev": "npm run dev",
     "dev": "nest start --watch",
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\"",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:unit": "jest --testPathPattern=.*\\.spec\\.ts$",
+    "test:integration": "jest --testPathPattern=.*\\.integration\\.ts$"
   },
   "dependencies": {
     "@food-waste/config": "workspace:*",
