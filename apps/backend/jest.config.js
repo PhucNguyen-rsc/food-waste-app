@@ -15,6 +15,16 @@ module.exports = {
     '!**/prisma/**',
   ],
   coverageDirectory: '../coverage',
+  coverageReporters: [
+    'text',
+    'text-summary',
+    'json',
+    'json-summary',
+    'lcov',
+    'clover',
+    'html',
+    'cobertura'
+  ],
   testEnvironment: 'node',
   moduleNameMapper: {
     '^@app/(.*)$': '<rootDir>/$1',
