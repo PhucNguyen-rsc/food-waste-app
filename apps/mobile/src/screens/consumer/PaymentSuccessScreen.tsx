@@ -1,32 +1,31 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import ConsumerLayout from '@/components/ConsumerLayout';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import ConsumerLayout from '@/components/ConsumerLayout';
+import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '@/navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-export default function OrderSuccessScreen() {
+export default function PaymentSuccessScreen() {
   const navigation = useNavigation<NavigationProp>();
 
   return (
     <ConsumerLayout>
       <View style={styles.container}>
-        <Image
-          source={{ uri: 'https://cdn-icons-png.flaticon.com/512/845/845646.png' }} // ✅ checkmark icon
-          style={styles.image}
-        />
-        <Text style={styles.title}>Order Placed!</Text>
+        <View style={styles.iconContainer}>
+          <Ionicons name="checkmark-circle" size={80} color="#22C55E" />
+        </View>
+        <Text style={styles.title}>Payment Method Added!</Text>
         <Text style={styles.subtitle}>
-          Your order has been placed successfully. We'll notify you once it's ready!
+          Your payment method has been successfully added and is ready to use.
         </Text>
-
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('ConsumerHome')}
+          onPress={() => navigation.navigate('CheckoutScreen')}
         >
-          <Text style={styles.buttonText}>Back to Home</Text>
+          <Text style={styles.buttonText}>BACK TO CHECKOUT</Text>
         </TouchableOpacity>
       </View>
     </ConsumerLayout>
@@ -35,38 +34,35 @@ export default function OrderSuccessScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 24,
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: 'center',
+    padding: 20,
   },
-  image: {
-    width: 120,
-    height: 120,
-    marginBottom: 24,
+  iconContainer: {
+    marginBottom: 20,
   },
   title: {
-    fontSize: 26,
-    fontWeight: '700',
-    marginBottom: 12,
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#555',
+    color: '#666',
     textAlign: 'center',
-    marginBottom: 32,
+    marginBottom: 30,
   },
   button: {
     backgroundColor: '#22C55E',
-    paddingVertical: 14,
-    paddingHorizontal: 32,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
     borderRadius: 8,
   },
   buttonText: {
     color: '#fff',
-    fontWeight: '600',
     fontSize: 16,
+    fontWeight: '600',
   },
-});
+}); 

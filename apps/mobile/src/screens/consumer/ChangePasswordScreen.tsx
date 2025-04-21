@@ -20,6 +20,10 @@ export default function ChangePasswordScreen() {
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
   const handleChangePassword = async () => {
+    if (!user) {
+      return Alert.alert('Error', 'No user logged in.');
+    }
+
     if (!currentPassword || !newPassword || !confirmNewPassword) {
       return Alert.alert('Error', 'Please fill in all fields.');
     }
@@ -29,7 +33,7 @@ export default function ChangePasswordScreen() {
     }
 
     try {
-      const credential = EmailAuthProvider.credential(user?.email || '', currentPassword);
+      const credential = EmailAuthProvider.credential(user.email || '', currentPassword);
       await reauthenticateWithCredential(user, credential);
       await updatePassword(user, newPassword);
 

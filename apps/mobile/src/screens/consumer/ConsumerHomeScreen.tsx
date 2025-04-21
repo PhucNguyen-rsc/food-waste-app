@@ -8,17 +8,32 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '@/store/cartSlice';
 import api from '@/lib/api';
 import ConsumerLayout from '@/components/ConsumerLayout';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
+import { FoodItem } from '@/types';
+import { RootState } from '@/store';
+import { Ionicons } from '@expo/vector-icons';
+import QuantitySelector from '@/components/QuantitySelector';
 
-export default function ConsumerHomeScreen({ navigation }) {
-  const [items, setItems] = useState([]);
-  const [filteredItems, setFilteredItems] = useState([]);
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+export default function ConsumerHomeScreen() {
+  const [items, setItems] = useState<FoodItem[]>([]);
+  const [filteredItems, setFilteredItems] = useState<FoodItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
+  const [showQuantitySelector, setShowQuantitySelector] = useState(false);
+  
   const dispatch = useDispatch();
+  const navigation = useNavigation<NavigationProp>();
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+  const foodItems = useSelector((state: RootState) => state.foodItems.items);
 
   const categories = [
     'All',
@@ -44,7 +59,7 @@ export default function ConsumerHomeScreen({ navigation }) {
   }, []);
 
   useEffect(() => {
-    const filtered = items.filter((item) => {
+    const filtered = items.filter((item: FoodItem) => {
       const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory =
         selectedCategory === 'All' || item.category === selectedCategory.toUpperCase();
@@ -53,62 +68,70 @@ export default function ConsumerHomeScreen({ navigation }) {
     setFilteredItems(filtered);
   }, [searchQuery, selectedCategory, items]);
 
-  const handleAddToCart = (item) => {
-    dispatch(
-      addToCart({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        imageUrl: item.images?.[0] || null,
-        quantity: 1,
-      })
-    );
+  const handleAddToCart = (quantity: number) => {
+    if (selectedItem) {
+      dispatch(addToCart({
+        id: selectedItem.id,
+        name: selectedItem.name,
+        price: selectedItem.price,
+        imageUrl: selectedItem.images[0],
+        quantity: quantity,
+        maxQuantity: selectedItem.quantity,
+        businessId: selectedItem.businessId
+      }));
+      setShowQuantitySelector(false);
+      setSelectedItem(null);
+    }
   };
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item }: { item: FoodItem }) => {
     const discountPercent = Math.round(
       ((item.originalPrice - item.price) / item.originalPrice) * 100
     );
 
     return (
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => navigation.navigate('ProductDetailScreen', { product: item })}
-      >
+      <View style={styles.card}>
         <Image
           source={{ uri: item.images?.[0] || 'https://via.placeholder.com/150' }}
           style={styles.image}
         />
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.expiry}>Expires {item.expiryDate?.split('T')[0]}</Text>
-        <View style={styles.priceRow}>
-          <Text style={styles.discountedPrice}>AED {item.price}</Text>
-          <Text style={styles.originalPrice}>AED {item.originalPrice}</Text>
-        </View>
-        <View style={styles.bottomRow}>
-          <View style={styles.discountBadge}>
-            <Text style={styles.discountText}>-{discountPercent}%</Text>
+        <View style={styles.cardContent}>
+          <Text style={styles.itemName}>{item.name}</Text>
+          <Text style={styles.expiry}>Expires {item.expiryDate?.split('T')[0]}</Text>
+          <View style={styles.priceRow}>
+            <Text style={styles.discountedPrice}>AED {item.price}</Text>
+            <Text style={styles.originalPrice}>AED {item.originalPrice}</Text>
           </View>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => handleAddToCart(item)}
-          >
-            <Text style={styles.addButtonText}>+</Text>
-          </TouchableOpacity>
+          <View style={styles.bottomRow}>
+            <View style={styles.discountBadge}>
+              <Text style={styles.discountText}>-{discountPercent}%</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => {
+                setSelectedItem(item);
+                setShowQuantitySelector(true);
+              }}
+            >
+              <Ionicons name="add-circle" size={32} color="#22C55E" />
+            </TouchableOpacity>
+          </View>
         </View>
-      </TouchableOpacity>
+      </View>
     );
   };
 
   return (
     <ConsumerLayout>
       <View style={styles.container}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search for food items..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
+        <View style={styles.header}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search for food items..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
 
         <View style={styles.categoryRow}>
           {categories.map((cat) => (
@@ -137,6 +160,17 @@ export default function ConsumerHomeScreen({ navigation }) {
           columnWrapperStyle={styles.columnWrapper}
           contentContainerStyle={styles.grid}
         />
+
+        <QuantitySelector
+          visible={showQuantitySelector}
+          onClose={() => {
+            setShowQuantitySelector(false);
+            setSelectedItem(null);
+          }}
+          onConfirm={handleAddToCart}
+          maxQuantity={selectedItem?.quantity || 0}
+          currentQuantity={1}
+        />
       </View>
     </ConsumerLayout>
   );
@@ -149,14 +183,15 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     backgroundColor: '#fff',
   },
+  header: {
+    padding: 16,
+  },
   searchInput: {
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    height: 44,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 22,
+    paddingHorizontal: 16,
     fontSize: 16,
-    marginBottom: 12,
   },
   categoryRow: {
     flexDirection: 'row',
@@ -205,6 +240,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     backgroundColor: '#eee',
   },
+  cardContent: {
+    flex: 1,
+  },
   itemName: {
     fontSize: 16,
     fontWeight: '600',
@@ -248,16 +286,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   addButton: {
-    backgroundColor: '#22C55E',
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  addButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
   },
 });

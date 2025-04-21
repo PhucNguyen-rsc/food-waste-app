@@ -21,6 +21,7 @@ type Product = {
   originalPrice: number;
   quantity: number;
   expiryDate: string;
+  businessId: string;
 };
 
 export default function ProductDetailScreen() {
@@ -38,9 +39,11 @@ export default function ProductDetailScreen() {
           addToCart({
             id: product.id,
             name: product.name,
-            price: product.price, // fixed here
+            price: product.price,
             imageUrl: product.images?.[0] || null,
             quantity: 1,
+            maxQuantity: product.quantity,
+            businessId: product.businessId
           })
         );
       };

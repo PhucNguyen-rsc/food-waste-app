@@ -9,8 +9,8 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import NavBar from './ui/NavBar';
+import { Ionicons } from '@expo/vector-icons';
 
 type CourierLayoutNavProp = NativeStackNavigationProp<RootStackParamList>;
 type IconName = keyof typeof Ionicons.glyphMap;

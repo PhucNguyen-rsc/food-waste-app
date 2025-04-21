@@ -5,10 +5,14 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import ConsumerLayout from '@/components/ConsumerLayout';
 import { useAppSelector } from '@/store';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function ProfileScreen() {
   const user = useAppSelector((state) => state.auth.user);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
 
   return (
     <ConsumerLayout title="My Profile">

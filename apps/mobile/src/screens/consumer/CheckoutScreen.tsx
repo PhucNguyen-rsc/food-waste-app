@@ -1,5 +1,5 @@
 // CheckoutScreen.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,55 +8,241 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import ConsumerLayout from '@/components/ConsumerLayout';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { clearCart } from '@/store/cartSlice';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
+import api from '@/lib/api';
+import { auth } from '@/config/firebaseConfig';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+type PaymentMethod = {
+  id: string;
+  type: 'PAYPAL' | 'MASTERCARD' | 'VISA';
+  cardNumber: string;
+  cardBrand: string;
+  expiryDate: string;
+  isDefault: boolean;
+};
 
 export default function CheckoutScreen() {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Card'>('Cash');
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<string | null>(null);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const dispatch = useDispatch();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
 
-  const handleCheckout = async () => {
-    if (!name || !address || !phone) {
-      Alert.alert('Incomplete Info', 'Please fill all required fields.');
-      return;
-    }
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          Alert.alert(
+            'Authentication Required',
+            'Please sign in to proceed with checkout.',
+            [
+              {
+                text: 'Cancel',
+                style: 'cancel',
+                onPress: () => navigation.goBack(),
+              },
+              {
+                text: 'Sign In',
+                onPress: () => navigation.navigate('SignIn'),
+              },
+            ]
+          );
+          return;
+        }
 
-    if (cartItems.length === 0) {
-      Alert.alert('Cart Empty', 'Please add items to your cart.');
-      return;
-    }
-
-    const payload = {
-      customerName: name,
-      deliveryAddress: address,
-      phoneNumber: phone,
-      paymentMethod,
-      items: cartItems.map((item) => ({
-        foodItemId: item.id,
-        quantity: item.quantity,
-      })),
+        setIsAuthenticated(true);
+        await fetchPaymentMethods();
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        Alert.alert('Error', 'Failed to verify authentication. Please try again.');
+        navigation.goBack();
+      }
     };
 
-    try {
-      // Replace with: await api.post('/orders', payload);
-      console.log('[PLACE ORDER]', payload);
+    checkAuth();
+  }, []);
 
-      dispatch(clearCart());
-      navigation.navigate('OrderSuccessScreen');
-    } catch (error) {
-      console.error('Order failed', error);
-      Alert.alert('Error', 'Failed to place order. Please try again.');
+  useFocusEffect(
+    React.useCallback(() => {
+      if (isAuthenticated) {
+        fetchPaymentMethods();
+      }
+    }, [isAuthenticated])
+  );
+
+  const fetchPaymentMethods = async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        console.error('No authenticated user found');
+        setLoading(false);
+        return;
+      }
+
+      console.log('Fetching payment methods for user:', user.uid);
+      const response = await api.get('/users/payments/methods');
+      console.log('Payment methods response:', response.data);
+      
+      if (response.data && response.data.length > 0) {
+        console.log('First payment method details:', {
+          id: response.data[0].id,
+          type: response.data[0].type,
+          cardNumber: response.data[0].cardNumber,
+          cardBrand: response.data[0].cardBrand,
+          isDefault: response.data[0].isDefault,
+        });
+      }
+      
+      setPaymentMethods(response.data);
+    } catch (error: any) {
+      console.error('Failed to fetch payment methods:', error);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+      Alert.alert(
+        'Error',
+        'Failed to fetch payment methods. Please try again later.'
+      );
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleCheckout = async () => {
+    try {
+      // Validate all required fields
+      if (!name.trim()) {
+        Alert.alert('Error', 'Please enter your name');
+        return;
+      }
+      if (!address.trim()) {
+        Alert.alert('Error', 'Please enter your delivery address');
+        return;
+      }
+      if (!phone.trim()) {
+        Alert.alert('Error', 'Please enter your phone number');
+        return;
+      }
+      if (paymentMethod === 'Card' && !selectedPaymentMethodId) {
+        Alert.alert('Error', 'Please select a payment method');
+        return;
+      }
+
+      setIsProcessing(true);
+
+      // Clear cart
+      dispatch(clearCart());
+      
+      // Navigate to success screen with a temporary order ID
+      navigation.navigate('OrderSuccessScreen', {
+        orderId: 'temp-' + Date.now()
+      });
+    } catch (error: any) {
+      console.error('Checkout error:', error);
+      Alert.alert(
+        'Error',
+        'Something went wrong. Please try again.'
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleAddPaymentMethod = () => {
+    navigation.navigate('PaymentMethods');
+  };
+
+  const handleDeletePaymentMethod = async (methodId: string) => {
+    try {
+      await api.delete(`/users/payments/methods/${methodId}`);
+      // Refresh payment methods after deletion
+      await fetchPaymentMethods();
+      Alert.alert('Success', 'Payment method deleted successfully');
+    } catch (error) {
+      console.error('Error deleting payment method:', error);
+      Alert.alert('Error', 'Failed to delete payment method');
+    }
+  };
+
+  const renderPaymentMethods = () => {
+    if (paymentMethod !== 'Card') return null;
+
+    if (loading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      );
+    }
+
+    if (paymentMethods.length === 0) {
+      return (
+        <TouchableOpacity
+          style={styles.addPaymentButton}
+          onPress={handleAddPaymentMethod}
+        >
+          <Text style={styles.addPaymentButtonText}>Add Payment Method</Text>
+        </TouchableOpacity>
+      );
+    }
+
+    return (
+      <View style={styles.paymentMethodsContainer}>
+        {paymentMethods.map((method) => (
+          <View key={method.id} style={styles.paymentMethodItemContainer}>
+            <TouchableOpacity
+              style={[
+                styles.paymentMethodItem,
+                selectedPaymentMethodId === method.id && styles.selectedPaymentMethod,
+              ]}
+              onPress={() => setSelectedPaymentMethodId(method.id)}
+            >
+              <Text style={styles.paymentMethodText}>
+                {method.cardBrand} **** {method.cardNumber.slice(-4)}
+              </Text>
+              {method.isDefault && (
+                <Text style={styles.defaultBadge}>Default</Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => handleDeletePaymentMethod(method.id)}
+            >
+              <Text style={styles.deleteButtonText}>Delete</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+        <TouchableOpacity
+          style={styles.addAnotherPaymentButton}
+          onPress={handleAddPaymentMethod}
+        >
+          <Text style={styles.addAnotherPaymentButtonText}>
+            Add Another Payment Method
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
   };
 
   return (
@@ -92,36 +278,53 @@ export default function CheckoutScreen() {
         />
 
         <Text style={styles.label}>Payment Method</Text>
-        <View style={styles.radioGroup}>
+        <View style={styles.paymentMethodToggle}>
           <TouchableOpacity
+            style={[
+              styles.paymentMethodButton,
+              paymentMethod === 'Cash' && styles.selectedPaymentMethodButton,
+            ]}
             onPress={() => setPaymentMethod('Cash')}
-            style={styles.radioItem}
           >
-            <View
+            <Text
               style={[
-                styles.radioCircle,
-                paymentMethod === 'Cash' && styles.radioSelected,
+                styles.paymentMethodButtonText,
+                paymentMethod === 'Cash' && styles.selectedPaymentMethodButtonText,
               ]}
-            />
-            <Text style={styles.radioText}>Cash on Delivery</Text>
+            >
+              Cash
+            </Text>
           </TouchableOpacity>
-
           <TouchableOpacity
+            style={[
+              styles.paymentMethodButton,
+              paymentMethod === 'Card' && styles.selectedPaymentMethodButton,
+            ]}
             onPress={() => setPaymentMethod('Card')}
-            style={styles.radioItem}
           >
-            <View
+            <Text
               style={[
-                styles.radioCircle,
-                paymentMethod === 'Card' && styles.radioSelected,
+                styles.paymentMethodButtonText,
+                paymentMethod === 'Card' && styles.selectedPaymentMethodButtonText,
               ]}
-            />
-            <Text style={styles.radioText}>Card</Text>
+            >
+              Card
+            </Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleCheckout}>
-          <Text style={styles.buttonText}>Place Order</Text>
+        {renderPaymentMethods()}
+
+        <TouchableOpacity
+          style={[styles.checkoutButton, isProcessing && styles.disabledButton]}
+          onPress={handleCheckout}
+          disabled={isProcessing}
+        >
+          {isProcessing ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.checkoutButtonText}>Place Order</Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </ConsumerLayout>
@@ -130,67 +333,136 @@ export default function CheckoutScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    paddingBottom: 100,
-    backgroundColor: '#fff',
+    padding: 20,
   },
   heading: {
     fontSize: 24,
-    fontWeight: '700',
-    marginBottom: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 6,
-    marginTop: 12,
+    marginBottom: 8,
   },
   input: {
-    borderColor: '#ccc',
     borderWidth: 1,
+    borderColor: '#ddd',
     borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    padding: 12,
+    marginBottom: 16,
     fontSize: 16,
-    backgroundColor: '#F9FAFB',
   },
   multiline: {
-    height: 80,
+    height: 100,
     textAlignVertical: 'top',
   },
-  radioGroup: {
-    marginTop: 8,
+  paymentMethodToggle: {
+    flexDirection: 'row',
+    marginBottom: 20,
   },
-  radioItem: {
+  paymentMethodButton: {
+    flex: 1,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    alignItems: 'center',
+    marginHorizontal: 4,
+    borderRadius: 8,
+  },
+  selectedPaymentMethodButton: {
+    backgroundColor: '#22C55E',
+    borderColor: '#22C55E',
+  },
+  paymentMethodButtonText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  selectedPaymentMethodButtonText: {
+    color: '#fff',
+  },
+  paymentMethodsContainer: {
+    marginBottom: 20,
+  },
+  paymentMethodItemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
-  radioCircle: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#ccc',
-    marginRight: 10,
+  paymentMethodItem: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
   },
-  radioSelected: {
+  selectedPaymentMethod: {
     borderColor: '#22C55E',
-    backgroundColor: '#22C55E',
+    backgroundColor: '#F0FDF4',
   },
-  radioText: {
+  paymentMethodText: {
     fontSize: 16,
   },
-  button: {
-    marginTop: 24,
+  defaultBadge: {
+    fontSize: 12,
+    color: '#22C55E',
+    fontWeight: '600',
+  },
+  addPaymentButton: {
+    padding: 16,
     backgroundColor: '#22C55E',
-    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  addPaymentButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  addAnotherPaymentButton: {
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#22C55E',
     borderRadius: 8,
     alignItems: 'center',
   },
-  buttonText: {
+  addAnotherPaymentButtonText: {
+    color: '#22C55E',
     fontSize: 16,
     fontWeight: '600',
+  },
+  checkoutButton: {
+    backgroundColor: '#22C55E',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  disabledButton: {
+    opacity: 0.7,
+  },
+  checkoutButtonText: {
     color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  loadingContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  deleteButton: {
+    marginLeft: 8,
+    padding: 12,
+    backgroundColor: '#EF4444',
+    borderRadius: 8,
+  },
+  deleteButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

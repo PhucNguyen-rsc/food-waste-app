@@ -10,7 +10,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import NavBar from './ui/NavBar';
-import Icon from 'react-native-vector-icons/Ionicons'; // Make sure Ionicons is installed
+import { Ionicons } from '@expo/vector-icons';
 
 type ConsumerLayoutNavProp = NativeStackNavigationProp<RootStackParamList>;
 type ConsumerTabName = 'ConsumerHome' | 'Profile';
@@ -22,73 +22,95 @@ interface ConsumerLayoutProps {
   onBackPress?: () => void;
 }
 
-export default function ConsumerLayout({ 
-  children, 
+type TabType = {
+  name: ConsumerTabName;
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  activeIcon: keyof typeof Ionicons.glyphMap;
+};
+
+export default function ConsumerLayout({
+  children,
   title,
   showBackButton,
-  onBackPress 
+  onBackPress,
 }: ConsumerLayoutProps) {
   const navigation = useNavigation<ConsumerLayoutNavProp>();
   const route = useRoute();
 
+  const tabs: TabType[] = [
+    {
+      name: 'ConsumerHome',
+      label: 'Home',
+      icon: 'home-outline',
+      activeIcon: 'home',
+    },
+    {
+      name: 'Profile',
+      label: 'Profile',
+      icon: 'person-outline',
+      activeIcon: 'person',
+    },
+  ];
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.headerRow}>
-        <NavBar 
-          title={title} 
-          showBackButton={showBackButton} 
-          onBackPress={onBackPress} 
-        />
-        <TouchableOpacity
-          style={styles.cartIcon}
-          onPress={() => navigation.navigate('CartScreen')}
-        >
-          <Icon name="cart-outline" size={24} color="#000" />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.container}>
-        <View style={styles.content}>
-          {children}
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.headerRow}>
+          <NavBar
+            title={title}
+            showBackButton={showBackButton}
+            onBackPress={onBackPress}
+          />
+          <TouchableOpacity
+            style={styles.cartIcon}
+            onPress={() => navigation.navigate('CartScreen')}
+          >
+            <Ionicons name="cart-outline" size={24} color="#000" />
+          </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
 
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => navigation.navigate('ConsumerHome')}
-        >
-          <Text
-            style={[
-              styles.navText,
-              route.name === 'ConsumerHome' && styles.activeNavText,
-            ]}
-          >
-            Home
-          </Text>
-        </TouchableOpacity>
+      <View style={styles.content}>{children}</View>
 
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => navigation.navigate('Profile')}
-        >
-          <Text
-            style={[
-              styles.navText,
-              route.name === 'Profile' && styles.activeNavText,
-            ]}
-          >
-            Profile
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      <SafeAreaView style={styles.bottomSafeArea}>
+        <View style={styles.bottomNav}>
+          {tabs.map((tab) => (
+            <TouchableOpacity
+              key={tab.name}
+              style={styles.navButton}
+              onPress={() => navigation.navigate(tab.name)}
+            >
+              <Ionicons
+                name={route.name === tab.name ? tab.activeIcon : tab.icon}
+                size={24}
+                color={route.name === tab.name ? '#22C55E' : '#666'}
+              />
+              <Text
+                style={[
+                  styles.navText,
+                  route.name === tab.name && styles.activeNavText,
+                ]}
+              >
+                {tab.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
+    backgroundColor: '#F3F4F6',
+  },
+  safeArea: {
+    backgroundColor: '#22C55E',
+  },
+  bottomSafeArea: {
     backgroundColor: '#fff',
   },
   headerRow: {
@@ -101,10 +123,6 @@ const styles = StyleSheet.create({
   cartIcon: {
     padding: 8,
   },
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-  },
   content: {
     flex: 1,
     padding: 16,
@@ -115,6 +133,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#ddd',
     backgroundColor: '#fff',
     paddingVertical: 8,
+    height: 60,
   },
   navButton: {
     flex: 1,
@@ -122,9 +141,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   navText: {
-    fontSize: 14,
-    color: '#000',
-    fontWeight: '400',
+    fontSize: 12,
+    color: '#666',
+    fontWeight: '500',
+    marginTop: 4,
   },
   activeNavText: {
     color: '#22C55E',

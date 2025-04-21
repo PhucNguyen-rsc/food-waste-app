@@ -1,41 +1,37 @@
 // src/store/slices/cartSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { CartItem } from '@/types';
 
-type CartItem = {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  imageUrl?: string;
-};
-
-type CartState = {
+interface CartState {
   items: CartItem[];
-};
+}
 
 const initialState: CartState = {
   items: [],
 };
 
-export const cartSlice = createSlice({
+const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
     addToCart: (state, action: PayloadAction<CartItem>) => {
-      const existingItem = state.items.find((item) => item.id === action.payload.id);
+      const existingItem = state.items.find(item => item.id === action.payload.id);
       if (existingItem) {
-        existingItem.quantity += 1;
+        existingItem.quantity = Math.min(
+          existingItem.quantity + action.payload.quantity,
+          existingItem.maxQuantity
+        );
       } else {
-        state.items.push({ ...action.payload, quantity: 1 });
+        state.items.push(action.payload);
       }
     },
     removeFromCart: (state, action: PayloadAction<string>) => {
-      state.items = state.items.filter((item) => item.id !== action.payload);
+      state.items = state.items.filter(item => item.id !== action.payload);
     },
     updateQuantity: (state, action: PayloadAction<{ id: string; quantity: number }>) => {
-      const item = state.items.find((item) => item.id === action.payload.id);
+      const item = state.items.find(item => item.id === action.payload.id);
       if (item) {
-        item.quantity = action.payload.quantity;
+        item.quantity = Math.min(action.payload.quantity, item.maxQuantity);
       }
     },
     clearCart: (state) => {

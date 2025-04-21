@@ -74,7 +74,11 @@ export default function AddItemScreen() {
     }
   };
 
-  const formatDate = (date: Date) => {
+  const formatDateForAPI = (date: Date) => {
+    return date.toISOString();
+  };
+
+  const formatDateForDisplay = (date: Date) => {
     return date.toISOString().split('T')[0];
   };
 
@@ -130,7 +134,7 @@ export default function AddItemScreen() {
         price: parseFloat(price),
         originalPrice: parseFloat(originalPrice),
         quantity: parseInt(quantity, 10),
-        expiryDate: formatDate(expiryDate),
+        expiryDate: formatDateForAPI(expiryDate),
         category,
         images: uploadedImageUrls,
         status: FoodStatus.AVAILABLE,
@@ -244,7 +248,7 @@ export default function AddItemScreen() {
               onPress={() => setShowDatePicker(true)}
             >
               <Text style={styles.dateText}>
-                {formatDate(expiryDate)}
+                {formatDateForDisplay(expiryDate)}
               </Text>
             </TouchableOpacity>
 

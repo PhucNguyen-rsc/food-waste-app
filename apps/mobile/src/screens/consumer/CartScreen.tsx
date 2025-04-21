@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,13 +11,22 @@ import {
 import ConsumerLayout from '@/components/ConsumerLayout';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
-import { removeFromCart, clearCart } from '@/store/cartSlice';
+import { removeFromCart, clearCart, updateQuantity } from '@/store/cartSlice';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
+import { Ionicons } from '@expo/vector-icons';
+import { CartItem } from '@/types';
+import QuantitySelector from '@/components/QuantitySelector';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function CartScreen() {
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const dispatch = useDispatch();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
+  const [selectedItem, setSelectedItem] = useState<CartItem | null>(null);
+  const [showQuantitySelector, setShowQuantitySelector] = useState(false);
 
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + (item.price ?? 0) * item.quantity,
@@ -28,6 +37,21 @@ export default function CartScreen() {
     dispatch(removeFromCart(id));
   };
 
+  const handleUpdateQuantity = (id: string, newQuantity: number) => {
+    if (newQuantity < 1) {
+      handleRemove(id);
+      return;
+    }
+    dispatch(updateQuantity({ id, quantity: newQuantity }));
+  };
+
+  const handleQuantitySelect = (quantity: number) => {
+    if (selectedItem) {
+      handleUpdateQuantity(selectedItem.id, quantity);
+      setSelectedItem(null);
+    }
+  };
+
   const handleCheckout = () => {
     if (cartItems.length === 0) {
       Alert.alert('Cart is empty', 'Please add items before checking out.');
@@ -36,7 +60,7 @@ export default function CartScreen() {
     navigation.navigate('CheckoutScreen');
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: CartItem }) => (
     <View style={styles.card}>
       <Image
         source={{ uri: item.imageUrl || 'https://via.placeholder.com/100' }}
@@ -44,12 +68,32 @@ export default function CartScreen() {
       />
       <View style={styles.details}>
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.price}>
-          AED {(item.price ?? 0).toFixed(2)} x {item.quantity}
-        </Text>
+        <Text style={styles.price}>AED {item.price.toFixed(2)}</Text>
+        
+        <View style={styles.quantityContainer}>
+          <TouchableOpacity 
+            style={styles.quantityButton}
+            onPress={() => {
+              setSelectedItem(item);
+              setShowQuantitySelector(true);
+            }}
+          >
+            <Ionicons name="add-circle" size={24} color="#22C55E" />
+          </TouchableOpacity>
+          <Text style={styles.quantity}>{item.quantity}</Text>
+          <TouchableOpacity 
+            style={styles.quantityButton}
+            onPress={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+          >
+            <Ionicons name="remove-circle" size={24} color="#EF4444" />
+          </TouchableOpacity>
+        </View>
       </View>
-      <TouchableOpacity onPress={() => handleRemove(item.id)}>
-        <Text style={styles.remove}>✕</Text>
+      <TouchableOpacity 
+        style={styles.removeButton}
+        onPress={() => handleRemove(item.id)}
+      >
+        <Ionicons name="trash-outline" size={24} color="#EF4444" />
       </TouchableOpacity>
     </View>
   );
@@ -57,29 +101,63 @@ export default function CartScreen() {
   return (
     <ConsumerLayout>
       <View style={styles.container}>
-        <Text style={styles.heading}>My Cart</Text>
+        <View style={styles.header}>
+          <Text style={styles.heading}>My Cart</Text>
+          <View style={styles.cartIconContainer}>
+            <Ionicons name="cart" size={24} color="#22C55E" />
+            {cartItems.length > 0 && (
+              <View style={styles.cartBadge}>
+                <Text style={styles.cartBadgeText}>{cartItems.length}</Text>
+              </View>
+            )}
+          </View>
+        </View>
 
         {cartItems.length === 0 ? (
-          <Text style={styles.emptyText}>Your cart is empty.</Text>
+          <View style={styles.emptyContainer}>
+            <Ionicons name="cart-outline" size={64} color="#ccc" />
+            <Text style={styles.emptyText}>Your cart is empty</Text>
+            <TouchableOpacity 
+              style={styles.shopButton}
+              onPress={() => navigation.navigate('ConsumerHome')}
+            >
+              <Text style={styles.shopButtonText}>Start Shopping</Text>
+            </TouchableOpacity>
+          </View>
         ) : (
           <>
             <FlatList
               data={cartItems}
               keyExtractor={(item) => item.id}
               renderItem={renderItem}
-              contentContainerStyle={{ paddingBottom: 120 }}
+              contentContainerStyle={styles.listContent}
             />
 
             <View style={styles.footer}>
-              <Text style={styles.total}>
-                Total: AED {totalPrice.toFixed(2)}
-              </Text>
-              <TouchableOpacity style={styles.button} onPress={handleCheckout}>
-                <Text style={styles.buttonText}>Proceed to Checkout</Text>
+              <View style={styles.totalContainer}>
+                <Text style={styles.totalLabel}>Total</Text>
+                <Text style={styles.totalPrice}>AED {totalPrice.toFixed(2)}</Text>
+              </View>
+              <TouchableOpacity 
+                style={styles.checkoutButton} 
+                onPress={handleCheckout}
+              >
+                <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
               </TouchableOpacity>
             </View>
           </>
         )}
+
+        <QuantitySelector
+          visible={showQuantitySelector}
+          onClose={() => {
+            setShowQuantitySelector(false);
+            setSelectedItem(null);
+          }}
+          onConfirm={handleQuantitySelect}
+          maxQuantity={selectedItem?.maxQuantity || 10}
+          currentQuantity={selectedItem?.quantity}
+        />
       </View>
     </ConsumerLayout>
   );
@@ -87,20 +165,43 @@ export default function CartScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: '#fff',
     flex: 1,
+    backgroundColor: '#fff',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
   },
   heading: {
     fontSize: 24,
     fontWeight: '700',
-    marginBottom: 16,
   },
-  emptyText: {
-    fontSize: 16,
-    color: '#888',
-    textAlign: 'center',
-    marginTop: 100,
+  cartIconContainer: {
+    position: 'relative',
+  },
+  cartBadge: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    backgroundColor: '#22C55E',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cartBadgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  listContent: {
+    padding: 16,
+    paddingBottom: 120,
   },
   card: {
     flexDirection: 'row',
@@ -111,8 +212,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   image: {
-    width: 60,
-    height: 60,
+    width: 80,
+    height: 80,
     borderRadius: 8,
     backgroundColor: '#eee',
   },
@@ -123,17 +224,57 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: '600',
+    marginBottom: 4,
   },
   price: {
-    fontSize: 14,
-    color: '#555',
-    marginTop: 4,
+    fontSize: 16,
+    color: '#22C55E',
+    fontWeight: '600',
+    marginBottom: 8,
   },
-  remove: {
-    fontSize: 20,
-    color: '#EF4444',
-    fontWeight: 'bold',
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 4,
+    alignSelf: 'flex-start',
+  },
+  quantityButton: {
+    padding: 4,
+  },
+  quantity: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginHorizontal: 8,
+    minWidth: 20,
+    textAlign: 'center',
+  },
+  removeButton: {
     padding: 8,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 16,
+    marginBottom: 24,
+  },
+  shopButton: {
+    backgroundColor: '#22C55E',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  shopButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   footer: {
     position: 'absolute',
@@ -145,20 +286,30 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#eee',
   },
-  total: {
+  totalContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  totalLabel: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 8,
   },
-  button: {
+  totalPrice: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#22C55E',
+  },
+  checkoutButton: {
     backgroundColor: '#22C55E',
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
   },
-  buttonText: {
-    fontSize: 16,
+  checkoutButtonText: {
     color: '#fff',
+    fontSize: 16,
     fontWeight: '600',
   },
 });

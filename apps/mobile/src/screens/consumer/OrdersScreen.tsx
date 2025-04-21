@@ -10,9 +10,16 @@ import {
 } from 'react-native';
 import ConsumerLayout from '@/components/ConsumerLayout';
 import api from '@/lib/api';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
+import { Order } from '@/types';
 
-export default function OrdersScreen({ navigation }) {
-  const [orders, setOrders] = useState([]);
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+export default function OrdersScreen() {
+  const navigation = useNavigation<NavigationProp>();
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,18 +37,18 @@ export default function OrdersScreen({ navigation }) {
     fetchOrders();
   }, []);
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: Order }) => (
     <TouchableOpacity
       style={styles.orderCard}
       onPress={() => navigation.navigate('OrderDetailScreen', { order: item })}
     >
       <Image
-        source={{ uri: item.restaurantLogo || 'https://via.placeholder.com/60' }}
+        source={{ uri: 'https://via.placeholder.com/60' }}
         style={styles.logo}
       />
       <View style={styles.orderContent}>
-        <Text style={styles.restaurant}>{item.restaurantName}</Text>
-        <Text style={styles.itemsText}>{item.items.length} items • {item.totalPrice} AED</Text>
+        <Text style={styles.restaurant}>Order #{item.id}</Text>
+        <Text style={styles.itemsText}>{item.items.length} items • {item.totalAmount} AED</Text>
         <Text style={styles.status}>{item.status}</Text>
       </View>
       <Text style={styles.arrow}>›</Text>

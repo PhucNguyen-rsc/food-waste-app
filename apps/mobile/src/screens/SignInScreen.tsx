@@ -71,7 +71,6 @@ export default function SignInScreen({ navigation }: any) {
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
       />
       <TouchableOpacity style={styles.button} onPress={handleSignIn}>
         <Text style={styles.buttonText}>Sign In</Text>
