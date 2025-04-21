@@ -353,8 +353,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.5.0
-   * Query Engine version: 173f8d54f8d52e692c7e27e72a88314ec7aeff60
+   * Prisma Client JS version: 6.6.0
+   * Query Engine version: f676762280b54cd07c770017ed3711ddde35f37a
    */
   export type PrismaVersion = {
     client: string
@@ -1277,7 +1277,7 @@ export namespace Prisma {
     /**
      * Instance of a Driver Adapter, e.g., like one provided by `@prisma/adapter-planetscale`
      */
-    adapter?: runtime.DriverAdapter | null
+    adapter?: runtime.SqlDriverAdapterFactory | null
     /**
      * Global configuration for omitting model fields by default.
      * 
@@ -2278,7 +2278,7 @@ export namespace Prisma {
 
   /**
    * Fields of the Account model
-   */ 
+   */
   interface AccountFieldRefs {
     readonly id: FieldRef<"Account", 'String'>
     readonly userId: FieldRef<"Account", 'String'>
@@ -3487,7 +3487,7 @@ export namespace Prisma {
 
   /**
    * Fields of the User model
-   */ 
+   */
   interface UserFieldRefs {
     readonly id: FieldRef<"User", 'String'>
     readonly name: FieldRef<"User", 'String'>
@@ -4629,7 +4629,7 @@ export namespace Prisma {
 
   /**
    * Fields of the VerificationToken model
-   */ 
+   */
   interface VerificationTokenFieldRefs {
     readonly identifier: FieldRef<"VerificationToken", 'String'>
     readonly token: FieldRef<"VerificationToken", 'String'>
@@ -5777,7 +5777,7 @@ export namespace Prisma {
 
   /**
    * Fields of the FoodItem model
-   */ 
+   */
   interface FoodItemFieldRefs {
     readonly id: FieldRef<"FoodItem", 'String'>
     readonly name: FieldRef<"FoodItem", 'String'>
@@ -6971,7 +6971,7 @@ export namespace Prisma {
 
   /**
    * Fields of the Order model
-   */ 
+   */
   interface OrderFieldRefs {
     readonly id: FieldRef<"Order", 'String'>
     readonly consumerId: FieldRef<"Order", 'String'>
@@ -8122,7 +8122,7 @@ export namespace Prisma {
 
   /**
    * Fields of the OrderItem model
-   */ 
+   */
   interface OrderItemFieldRefs {
     readonly id: FieldRef<"OrderItem", 'String'>
     readonly orderId: FieldRef<"OrderItem", 'String'>
@@ -8676,7 +8676,7 @@ export namespace Prisma {
 
 
   /**
-   * Field references 
+   * Field references
    */
 
 

@@ -1,0 +1,281 @@
+.
+├── .gitignore
+├── .husky
+│   └── _
+│       ├── .gitignore
+│       ├── applypatch-msg
+│       ├── commit-msg
+│       ├── h
+│       ├── husky.sh
+│       ├── post-applypatch
+│       ├── post-checkout
+│       ├── post-commit
+│       ├── post-merge
+│       ├── post-rewrite
+│       ├── pre-applypatch
+│       ├── pre-auto-gc
+│       ├── pre-commit
+│       ├── pre-merge-commit
+│       ├── pre-push
+│       ├── pre-rebase
+│       └── prepare-commit-msg
+├── README.md
+├── apps
+│   ├── backend
+│   │   ├── .env
+│   │   ├── .env.example
+│   │   ├── firebase.serviceAccount.json.json
+│   │   ├── nest-cli.json
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── app.controller.ts
+│   │   │   ├── app.module.ts
+│   │   │   ├── app.service.ts
+│   │   │   ├── common
+│   │   │   │   ├── common.module.ts
+│   │   │   │   ├── decorators
+│   │   │   │   │   ├── public.decorator.ts
+│   │   │   │   │   └── roles.decorator.ts
+│   │   │   │   ├── guards
+│   │   │   │   │   ├── firebase-auth.guard.ts
+│   │   │   │   │   └── jwt-auth.guard.ts
+│   │   │   │   ├── middleware
+│   │   │   │   │   └── logger.middleware.ts
+│   │   │   │   └── strategies
+│   │   │   │       ├── firebase.strategy.ts
+│   │   │   │       └── jwt.strategy.ts
+│   │   │   ├── main.ts
+│   │   │   ├── modules
+│   │   │   │   ├── auth
+│   │   │   │   │   ├── auth.controller.ts
+│   │   │   │   │   └── auth.module.ts
+│   │   │   │   ├── business
+│   │   │   │   │   ├── business.controller.ts
+│   │   │   │   │   ├── business.module.ts
+│   │   │   │   │   ├── business.service.ts
+│   │   │   │   │   └── dto
+│   │   │   │   │       ├── create-food-item.dto.ts
+│   │   │   │   │       ├── update-business.dto.ts
+│   │   │   │   │       └── update-food-item.dto.ts
+│   │   │   │   ├── foodItem
+│   │   │   │   │   ├── foodItem.controller.ts
+│   │   │   │   │   ├── foodItem.module.ts
+│   │   │   │   │   └── foodItem.service.ts
+│   │   │   │   └── users
+│   │   │   │       ├── users.controller.ts
+│   │   │   │       ├── users.module.ts
+│   │   │   │       └── users.service.ts
+│   │   │   └── prisma
+│   │   │       ├── prisma.module.ts
+│   │   │       └── prisma.service.ts
+│   │   └── tsconfig.json
+│   ├── mobile
+│   │   ├── .env
+│   │   ├── .env.example
+│   │   ├── .gitignore
+│   │   ├── .npmrc
+│   │   ├── App.tsx
+│   │   ├── __mocks__
+│   │   │   └── fileMock.js
+│   │   ├── __tests__
+│   │   │   └── App.test.tsx
+│   │   ├── app.json
+│   │   ├── assets
+│   │   │   ├── adaptive-icon.png
+│   │   │   ├── favicon.png
+│   │   │   ├── icon.png
+│   │   │   └── splash-icon.png
+│   │   ├── babel.config.js
+│   │   ├── index.ts
+│   │   ├── jest.config.js
+│   │   ├── jest.setup.js
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── __tests__
+│   │   │   │   └── sample.test.ts
+│   │   │   ├── components
+│   │   │   │   ├── BusinessLayout.tsx
+│   │   │   │   ├── ConsumerLayout.tsx
+│   │   │   │   ├── CourierLayout.tsx
+│   │   │   │   ├── FoodItemCard.tsx
+│   │   │   │   ├── ManageOrderCard.tsx
+│   │   │   │   ├── OrderCard.tsx
+│   │   │   │   └── ui
+│   │   │   │       ├── Button.tsx
+│   │   │   │       ├── NavBar.tsx
+│   │   │   │       └── Text.tsx
+│   │   │   ├── config
+│   │   │   │   └── firebaseConfig.ts
+│   │   │   ├── lib
+│   │   │   │   ├── api.ts
+│   │   │   │   ├── auth.ts
+│   │   │   │   └── cloudinary.ts
+│   │   │   ├── navigation
+│   │   │   │   ├── RootNavigator.tsx
+│   │   │   │   └── types.ts
+│   │   │   ├── screens
+│   │   │   │   ├── GetStartedScreen.tsx
+│   │   │   │   ├── RoleSelectionScreen.tsx
+│   │   │   │   ├── SignInScreen.tsx
+│   │   │   │   ├── SignUpScreen.tsx
+│   │   │   │   ├── business
+│   │   │   │   │   ├── AddItemScreen.tsx
+│   │   │   │   │   ├── AnalyticsScreen.tsx
+│   │   │   │   │   ├── BusinessHomeScreen.tsx
+│   │   │   │   │   ├── BusinessProfileScreen.tsx
+│   │   │   │   │   ├── InventoryScreen.tsx
+│   │   │   │   │   ├── ManageOrderScreen.tsx
+│   │   │   │   │   └── UpdatePriceScreen.tsx
+│   │   │   │   └── consumer
+│   │   │   │       ├── CartScreen.tsx
+│   │   │   │       ├── ChangePasswordScreen.tsx
+│   │   │   │       ├── CheckoutScreen.tsx
+│   │   │   │       ├── ConsumerHomeScreen.tsx
+│   │   │   │       ├── OrderSuccessScreen.tsx
+│   │   │   │       ├── OrdersScreen.tsx
+│   │   │   │       ├── ProductDetailScreen.tsx
+│   │   │   │       ├── ProfileScreen.tsx
+│   │   │   │       └── SettingsScreen.tsx
+│   │   │   └── store
+│   │   │       ├── cartSlice.ts
+│   │   │       ├── index.ts
+│   │   │       └── slices
+│   │   │           ├── appSlice.ts
+│   │   │           ├── authSlice.ts
+│   │   │           ├── foodItemsSlice.ts
+│   │   │           └── ordersSlice.ts
+│   │   └── tsconfig.json
+│   └── web
+│       ├── .eslintrc.json
+│       ├── .gitignore
+│       ├── .prettierrc
+│       ├── README.md
+│       ├── components.json
+│       ├── eslint.config.mjs
+│       ├── next.config.mjs
+│       ├── package.json
+│       ├── postcss.config.js
+│       ├── public
+│       │   ├── file.svg
+│       │   ├── globe.svg
+│       │   ├── leaf.jpg
+│       │   ├── next.svg
+│       │   ├── vercel.svg
+│       │   └── window.svg
+│       ├── src
+│       │   ├── app
+│       │   │   ├── api
+│       │   │   │   └── auth
+│       │   │   │       ├── [...nextauth]
+│       │   │   │       │   └── route.ts
+│       │   │   │       ├── register
+│       │   │   │       │   └── route.ts
+│       │   │   │       └── register-oauth
+│       │   │   │           └── route.ts
+│       │   │   ├── auth
+│       │   │   │   ├── login
+│       │   │   │   │   └── page.tsx
+│       │   │   │   ├── register
+│       │   │   │   │   └── page.tsx
+│       │   │   │   └── register-oauth
+│       │   │   │       └── page.tsx
+│       │   │   ├── dashboard
+│       │   │   │   ├── business
+│       │   │   │   │   └── page.tsx
+│       │   │   │   └── page.tsx
+│       │   │   ├── favicon.ico
+│       │   │   ├── globals.css
+│       │   │   ├── layout.tsx
+│       │   │   └── page.tsx
+│       │   ├── auth.ts
+│       │   ├── components
+│       │   │   ├── dashboard
+│       │   │   │   └── business
+│       │   │   │       └── profile-settings-form.tsx
+│       │   │   ├── icons.tsx
+│       │   │   ├── login-form.tsx
+│       │   │   ├── providers
+│       │   │   │   ├── auth-provider.tsx
+│       │   │   │   └── theme-provider.tsx
+│       │   │   └── ui
+│       │   │       ├── button.tsx
+│       │   │       ├── card.tsx
+│       │   │       ├── form.tsx
+│       │   │       ├── input.tsx
+│       │   │       ├── label.tsx
+│       │   │       ├── select.tsx
+│       │   │       ├── tabs.tsx
+│       │   │       ├── textarea.tsx
+│       │   │       ├── toast.tsx
+│       │   │       ├── toaster.tsx
+│       │   │       └── use-toast.ts
+│       │   ├── lib
+│       │   │   ├── api.ts
+│       │   │   ├── prisma.ts
+│       │   │   └── utils.ts
+│       │   ├── middleware.ts
+│       │   └── types
+│       │       └── next-auth.d.ts
+│       ├── tailwind.config.ts
+│       └── tsconfig.json
+├── package.json
+├── packages
+│   ├── config
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.d.ts
+│   │   │   └── index.ts
+│   │   ├── tsconfig.cjs.json
+│   │   └── tsconfig.json
+│   ├── database
+│   │   ├── client
+│   │   │   ├── client.d.ts
+│   │   │   ├── client.js
+│   │   │   ├── default.d.ts
+│   │   │   ├── default.js
+│   │   │   ├── edge.d.ts
+│   │   │   ├── edge.js
+│   │   │   ├── index-browser.js
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── libquery_engine-darwin-arm64.dylib.node
+│   │   │   ├── package.json
+│   │   │   ├── query_engine_bg.js
+│   │   │   ├── query_engine_bg.wasm
+│   │   │   ├── runtime
+│   │   │   │   ├── edge-esm.js
+│   │   │   │   ├── edge.js
+│   │   │   │   ├── index-browser.d.ts
+│   │   │   │   ├── index-browser.js
+│   │   │   │   ├── library.d.ts
+│   │   │   │   ├── library.js
+│   │   │   │   ├── react-native.js
+│   │   │   │   └── wasm.js
+│   │   │   ├── schema.prisma
+│   │   │   ├── wasm-edge-light-loader.mjs
+│   │   │   ├── wasm-worker-loader.mjs
+│   │   │   ├── wasm.d.ts
+│   │   │   └── wasm.js
+│   │   ├── package.json
+│   │   ├── prisma
+│   │   │   ├── migrations
+│   │   │   │   ├── 20250408052506_init
+│   │   │   │   │   └── migration.sql
+│   │   │   │   └── migration_lock.toml
+│   │   │   └── schema.prisma
+│   │   ├── src
+│   │   │   └── index.ts
+│   │   ├── tsconfig.cjs.json
+│   │   └── tsconfig.json
+│   └── types
+│       ├── package.json
+│       ├── src
+│       │   └── index.ts
+│       └── tsconfig.json
+├── pnpm-lock.yaml
+├── pnpm-workspace.yaml
+├── project_structure.txt
+├── tsconfig.json
+└── turbo.json
+
+68 directories, 211 files

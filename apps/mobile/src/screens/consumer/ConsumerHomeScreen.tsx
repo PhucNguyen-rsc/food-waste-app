@@ -7,17 +7,41 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  Modal,
+  Alert,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '@/store/cartSlice';
 import api from '@/lib/api';
 import ConsumerLayout from '@/components/ConsumerLayout';
+import { Ionicons } from '@expo/vector-icons';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
 
-export default function ConsumerHomeScreen({ navigation }) {
-  const [items, setItems] = useState([]);
-  const [filteredItems, setFilteredItems] = useState([]);
+type FoodItem = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  originalPrice: number;
+  quantity: number;
+  expiryDate: string;
+  images?: string[];
+  category: string;
+};
+
+type ConsumerHomeScreenProps = {
+  navigation: NativeStackNavigationProp<RootStackParamList>;
+};
+
+export default function ConsumerHomeScreen({ navigation }: ConsumerHomeScreenProps) {
+  const [items, setItems] = useState<FoodItem[]>([]);
+  const [filteredItems, setFilteredItems] = useState<FoodItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
+  const [selectedQuantity, setSelectedQuantity] = useState('1');
+  const [showQuantityModal, setShowQuantityModal] = useState(false);
   const dispatch = useDispatch();
 
   const categories = [
@@ -53,19 +77,41 @@ export default function ConsumerHomeScreen({ navigation }) {
     setFilteredItems(filtered);
   }, [searchQuery, selectedCategory, items]);
 
-  const handleAddToCart = (item) => {
-    dispatch(
-      addToCart({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        imageUrl: item.images?.[0] || null,
-        quantity: 1,
-      })
-    );
+  const handleAddToCart = (item: FoodItem) => {
+    setSelectedItem(item);
+    setSelectedQuantity('1');
+    setShowQuantityModal(true);
   };
 
-  const renderItem = ({ item }) => {
+  const handleConfirmAddToCart = () => {
+    if (!selectedItem) return;
+    
+    const quantity = parseInt(selectedQuantity, 10);
+    
+    if (isNaN(quantity) || quantity < 1) {
+      Alert.alert('Error', 'Please enter a valid quantity');
+      return;
+    }
+
+    if (quantity > selectedItem.quantity) {
+      Alert.alert('Error', `Only ${selectedItem.quantity} items available`);
+      return;
+    }
+
+    dispatch(
+      addToCart({
+        id: selectedItem.id,
+        name: selectedItem.name,
+        price: selectedItem.price,
+        imageUrl: selectedItem.images?.[0] || undefined,
+        quantity: quantity,
+      })
+    );
+    setShowQuantityModal(false);
+    Alert.alert('Success', 'Item added to cart!');
+  };
+
+  const renderItem = ({ item }: { item: FoodItem }) => {
     const discountPercent = Math.round(
       ((item.originalPrice - item.price) / item.originalPrice) * 100
     );
@@ -73,7 +119,7 @@ export default function ConsumerHomeScreen({ navigation }) {
     return (
       <TouchableOpacity
         style={styles.card}
-        onPress={() => navigation.navigate('ProductDetailScreen', { product: item })}
+        onPress={() => navigation.navigate('ProductDetail', { product: item })}
       >
         <Image
           source={{ uri: item.images?.[0] || 'https://via.placeholder.com/150' }}
@@ -129,14 +175,54 @@ export default function ConsumerHomeScreen({ navigation }) {
           ))}
         </View>
 
-        <FlatList
-          data={filteredItems}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          numColumns={2}
-          columnWrapperStyle={styles.columnWrapper}
-          contentContainerStyle={styles.grid}
-        />
+        {filteredItems.length === 0 ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: 40 }}>
+            <Text style={{ fontSize: 16, color: '#888' }}>No items available at the moment</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredItems}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            numColumns={2}
+            columnWrapperStyle={styles.columnWrapper}
+            contentContainerStyle={styles.grid}
+          />
+        )}
+
+        <Modal
+          visible={showQuantityModal}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setShowQuantityModal(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Select Quantity</Text>
+              <TextInput
+                style={styles.quantityInput}
+                keyboardType="numeric"
+                value={selectedQuantity}
+                onChangeText={setSelectedQuantity}
+                placeholder="Enter quantity"
+              />
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={() => setShowQuantityModal(false)}
+                >
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.modalAddButton]}
+                  onPress={handleConfirmAddToCart}
+                >
+                  <Text style={styles.buttonText}>Add to Cart</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     </ConsumerLayout>
   );
@@ -259,5 +345,51 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 24,
+    width: '80%',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  quantityInput: {
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    fontSize: 16,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  modalButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginLeft: 8,
+  },
+  cancelButton: {
+    backgroundColor: '#F3F4F6',
+  },
+  modalAddButton: {
+    backgroundColor: '#22C55E',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

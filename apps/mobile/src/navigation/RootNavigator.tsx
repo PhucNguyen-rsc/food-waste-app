@@ -65,7 +65,7 @@ export const RootNavigator = () => {
 
         {/* Consumer Screens */}
         <Stack.Screen name="ConsumerHome" component={ConsumerHomeScreen} />
-        <Stack.Screen name="ProductDetailScreen" component={ProductDetailScreen} />
+        <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
