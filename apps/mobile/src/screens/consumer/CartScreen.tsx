@@ -16,7 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import { Ionicons } from '@expo/vector-icons';
-import { CartItem } from '@/types';
+import { CartItem } from '@/store/slices/cartSlice';
 import QuantitySelector from '@/components/QuantitySelector';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -155,7 +155,7 @@ export default function CartScreen() {
             setSelectedItem(null);
           }}
           onConfirm={handleQuantitySelect}
-          maxQuantity={selectedItem?.maxQuantity || 10}
+          maxQuantity={selectedItem?.quantity || 10}
           currentQuantity={selectedItem?.quantity}
         />
       </View>

@@ -22,6 +22,8 @@ import { uploadImages } from '@/lib/cloudinary';
 import BusinessLayout from '@/components/BusinessLayout';
 import { FoodCategory, FoodStatus } from '@food-waste/types';
 
+const PLACEHOLDER_IMAGE = 'https://www.allrecipes.com/thmb/CjzJwg2pACUzGODdxJL1BJDRx9Y=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/6788-amish-white-bread-DDMFS-4x3-6faa1e552bdb4f6eabdd7791e59b3c84.jpg';
+
 export default function AddItemScreen() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -117,16 +119,12 @@ export default function AddItemScreen() {
       return;
     }
 
-    if (images.length === 0) {
-      Alert.alert('Validation', 'Please add at least one image of the food item.');
-      return;
-    }
-
     try {
       setUploading(true);
-      
-      // Upload images to Cloudinary
-      const uploadedImageUrls = await uploadImages(images);
+
+      const imagesToUpload = images.length === 0 ? [PLACEHOLDER_IMAGE] : images;
+
+      const uploadedImageUrls = await uploadImages(imagesToUpload);
 
       const itemPayload = {
         name: name.trim(),
@@ -134,17 +132,15 @@ export default function AddItemScreen() {
         price: parseFloat(price),
         originalPrice: parseFloat(originalPrice),
         quantity: parseInt(quantity, 10),
-        expiryDate: formatDateForAPI(expiryDate),
+        expiryDate: expiryDate.toISOString(),  // full ISO format
         category,
         images: uploadedImageUrls,
         status: FoodStatus.AVAILABLE,
       };
 
-
       const response = await api.post('/business/food-items', itemPayload);
 
       Alert.alert('Success', 'Food item added successfully!');
-      // Reset form
       setName('');
       setDescription('');
       setPrice('');
@@ -183,24 +179,21 @@ export default function AddItemScreen() {
             <View style={styles.imagesContainer}>
               <FlatList
                 horizontal
-                data={images}
+                data={images.length === 0 ? [PLACEHOLDER_IMAGE] : images}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
                   <View style={styles.imageItem}>
                     <Image source={{ uri: item }} style={styles.imagePreview} />
-                    <TouchableOpacity
-                      style={styles.removeImageButton}
-                      onPress={() => removeImage(index)}
-                    >
-                      <Text style={styles.removeImageText}>×</Text>
-                    </TouchableOpacity>
+                    {images.length !== 0 && (
+                      <TouchableOpacity
+                        style={styles.removeImageButton}
+                        onPress={() => removeImage(index)}
+                      >
+                        <Text style={styles.removeImageText}>×</Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
                 )}
-                ListEmptyComponent={
-                  <View style={styles.placeholderContainer}>
-                    <Text style={styles.placeholderText}>No images selected</Text>
-                  </View>
-                }
               />
               <TouchableOpacity style={styles.addImageButton} onPress={pickImage}>
                 <Text style={styles.addImageText}>Add Image</Text>
@@ -365,17 +358,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  placeholderContainer: {
-    width: 120,
-    height: 120,
-    backgroundColor: '#F2F2F2',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
-  },
-  placeholderText: {
-    color: '#999',
   },
   addImageButton: {
     marginTop: 8,

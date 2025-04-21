@@ -1,3 +1,5 @@
+import * as FileSystem from 'expo-file-system';
+
 const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME}/upload`;
 
 export const uploadImage = async (uri: string, options = {}) => {
@@ -35,18 +37,37 @@ export const uploadImage = async (uri: string, options = {}) => {
   }
 };
 
-export const uploadImages = async (uris: string[]) => {
+export const uploadImages = async (images: string[]): Promise<string[]> => {
   try {
-    const uploadedUrls: string[] = [];
-    
-    for (const uri of uris) {
-      const url = await uploadImage(uri);
-      uploadedUrls.push(url);
+    // If no images are provided, return the placeholder image
+    if (!images || images.length === 0) {
+      return ['https://images-cdn.ubuy.ae/66e369e1b9dd2d0d754d4eab-freshness-french-bakery-bread-loaf-14.jpg'];
     }
-    
+
+    const uploadedUrls: string[] = [];
+
+    for (const imageUri of images) {
+      try {
+        // Check if the image is already a URL
+        if (imageUri.startsWith('http')) {
+          uploadedUrls.push(imageUri);
+          continue;
+        }
+
+        // For local images, upload to Cloudinary
+        const url = await uploadImage(imageUri);
+        uploadedUrls.push(url);
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        // If upload fails, use placeholder image
+        uploadedUrls.push('https://images-cdn.ubuy.ae/66e369e1b9dd2d0d754d4eab-freshness-french-bakery-bread-loaf-14.jpg');
+      }
+    }
+
     return uploadedUrls;
   } catch (error) {
-    console.error('Error uploading images:', error);
-    throw new Error('Failed to upload images');
+    console.error('Error in uploadImages:', error);
+    // Return placeholder image if all uploads fail
+    return ['https://images-cdn.ubuy.ae/66e369e1b9dd2d0d754d4eab-freshness-french-bakery-bread-loaf-14.jpg'];
   }
 }; 

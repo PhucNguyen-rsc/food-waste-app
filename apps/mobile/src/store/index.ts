@@ -6,7 +6,8 @@ import appReducer from './slices/appSlice';
 import authReducer from './slices/authSlice';
 import foodItemsReducer from './slices/foodItemsSlice';
 import ordersReducer from './slices/ordersSlice';
-import cartReducer from './cartSlice';
+import cartReducer from './slices/cartSlice';
+import inventoryReducer from './slices/inventorySlice';
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     foodItems: foodItemsReducer,
     orders: ordersReducer,
     cart: cartReducer,
+    inventory: inventoryReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

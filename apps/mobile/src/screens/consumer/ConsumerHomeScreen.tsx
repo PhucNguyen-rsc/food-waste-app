@@ -7,31 +7,39 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  Modal,
+  Alert,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '@/store/cartSlice';
 import api from '@/lib/api';
 import ConsumerLayout from '@/components/ConsumerLayout';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
-import { FoodItem } from '@/types';
 import { RootState } from '@/store';
-import { Ionicons } from '@expo/vector-icons';
-import QuantitySelector from '@/components/QuantitySelector';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type FoodItem = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  originalPrice: number;
+  quantity: number;
+  expiryDate: string;
+  images?: string[];
+  category: string;
+  businessId: string;
+};
 
 export default function ConsumerHomeScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [items, setItems] = useState<FoodItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<FoodItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
-  const [showQuantitySelector, setShowQuantitySelector] = useState(false);
-  
   const dispatch = useDispatch();
-  const navigation = useNavigation<NavigationProp>();
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const foodItems = useSelector((state: RootState) => state.foodItems.items);
 
@@ -68,29 +76,16 @@ export default function ConsumerHomeScreen() {
     setFilteredItems(filtered);
   }, [searchQuery, selectedCategory, items]);
 
-  const handleAddToCart = (quantity: number) => {
-    if (selectedItem) {
-      dispatch(addToCart({
-        id: selectedItem.id,
-        name: selectedItem.name,
-        price: selectedItem.price,
-        imageUrl: selectedItem.images[0],
-        quantity: quantity,
-        maxQuantity: selectedItem.quantity,
-        businessId: selectedItem.businessId
-      }));
-      setShowQuantitySelector(false);
-      setSelectedItem(null);
-    }
-  };
-
   const renderItem = ({ item }: { item: FoodItem }) => {
     const discountPercent = Math.round(
       ((item.originalPrice - item.price) / item.originalPrice) * 100
     );
 
     return (
-      <View style={styles.card}>
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('ProductDetail', { product: item })}
+      >
         <Image
           source={{ uri: item.images?.[0] || 'https://via.placeholder.com/150' }}
           style={styles.image}
@@ -106,18 +101,9 @@ export default function ConsumerHomeScreen() {
             <View style={styles.discountBadge}>
               <Text style={styles.discountText}>-{discountPercent}%</Text>
             </View>
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={() => {
-                setSelectedItem(item);
-                setShowQuantitySelector(true);
-              }}
-            >
-              <Ionicons name="add-circle" size={32} color="#22C55E" />
-            </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -152,25 +138,20 @@ export default function ConsumerHomeScreen() {
           ))}
         </View>
 
-        <FlatList
-          data={filteredItems}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          numColumns={2}
-          columnWrapperStyle={styles.columnWrapper}
-          contentContainerStyle={styles.grid}
-        />
-
-        <QuantitySelector
-          visible={showQuantitySelector}
-          onClose={() => {
-            setShowQuantitySelector(false);
-            setSelectedItem(null);
-          }}
-          onConfirm={handleAddToCart}
-          maxQuantity={selectedItem?.quantity || 0}
-          currentQuantity={1}
-        />
+        {filteredItems.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No items available at the moment</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredItems}
+            keyExtractor={(item) => item.id}
+            renderItem={renderItem}
+            numColumns={2}
+            columnWrapperStyle={styles.columnWrapper}
+            contentContainerStyle={styles.grid}
+          />
+        )}
       </View>
     </ConsumerLayout>
   );
@@ -271,7 +252,7 @@ const styles = StyleSheet.create({
   },
   bottomRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   discountBadge: {
@@ -285,9 +266,13 @@ const styles = StyleSheet.create({
     color: '#22C55E',
     fontWeight: '600',
   },
-  addButton: {
-    position: 'absolute',
-    bottom: 16,
-    right: 16,
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    color: '#888',
+    fontSize: 16,
   },
 });

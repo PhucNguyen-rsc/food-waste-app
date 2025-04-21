@@ -76,14 +76,19 @@ export default function AddPaymentMethodScreen() {
         return;
       }
 
-      // Determine card type based on first digit
+      // Determine card type based on card number pattern
+      const cleanCardNumber = cardNumber.replace(/\D/g, '');
       let cardType: PaymentType;
-      if (cardNumber.startsWith('4')) {
+      
+      // Visa: Starts with 4, length 13-16
+      if (/^4[0-9]{12}(?:[0-9]{3})?$/.test(cleanCardNumber)) {
         cardType = PaymentType.VISA;
-      } else if (cardNumber.startsWith('5')) {
+      } 
+      // Mastercard: Starts with 51-55 or 2221-2720, length 16
+      else if (/^(5[1-5][0-9]{14}|2[2-7][0-9]{14})$/.test(cleanCardNumber)) {
         cardType = PaymentType.MASTERCARD;
       } else {
-        Alert.alert('Error', 'Only VISA and Mastercard are supported');
+        Alert.alert('Error', 'Only VISA and Mastercard are supported. Please check your card number.');
         return;
       }
 
