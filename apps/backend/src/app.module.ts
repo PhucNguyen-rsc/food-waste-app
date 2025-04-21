@@ -1,26 +1,26 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from '@app/app.controller';
-import { AppService } from '@app/app.service';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { PrismaModule } from '@prisma/prisma.module';
-import { CommonModule } from '@common/common.module';
-import { BusinessModule } from '@business/business.module';
-import { AuthModule } from '@auth/auth.module';
-import { UsersModule } from '@users/users.module';
+import { BusinessModule } from '@app/modules/business/business.module';
+import { AuthModule } from '@app/modules/auth/auth.module';
+import { UsersModule } from '@app/modules/users/users.module';
 import { LoggerMiddleware } from '@middleware/logger.middleware';
-import { ItemModule } from '@app/modules/foodItem/foodItem.module'; // ✅ Import your new module here
+import { ItemModule } from '@app/modules/foodItem/foodItem.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      cache: true,
+      envFilePath: ['.env', '.env.local'],
     }),
     PrismaModule,
-    CommonModule,
     BusinessModule,
-    ItemModule, // ✅ Register the new module here
     AuthModule,
     UsersModule,
+    ItemModule,
   ],
   controllers: [AppController],
   providers: [AppService],

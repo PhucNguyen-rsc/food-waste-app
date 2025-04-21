@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "module": "NodeNext", 
-    "moduleResolution": "NodeNext",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "esModuleInterop": true,
     "declaration": true,
     "removeComments": true,
@@ -25,7 +25,10 @@
       "@guards/*": ["./src/common/guards/*"],
       "@decorators/*": ["./src/common/decorators/*"],
       "@prisma/*": ["./src/prisma/*"],
-      "@middleware/*": ["./src/common/middleware/*"]
+      "@middleware/*": ["./src/common/middleware/*"],
+      "@food-waste/types": ["../../packages/types/src"],
+      "@food-waste/database": ["../../packages/database/src"],
+      "@food-waste/config": ["../../packages/config/src"]
     },
     "incremental": true,
     "skipLibCheck": true,

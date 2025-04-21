@@ -50,6 +50,7 @@ model User {
 
   // Consumer specific fields
   deliveryAddress String?
+  paymentMethods  PaymentMethod[]
 
   // Courier specific fields
   isAvailable     Boolean @default(false)
@@ -115,6 +116,19 @@ model OrderItem {
   price      Float
 }
 
+model PaymentMethod {
+  id         String      @id @default(cuid())
+  type       PaymentType
+  cardNumber String? // Last 4 digits only for display
+  cardBrand  String? // VISA, MasterCard, etc.
+  expiryDate String? // MM/YY format
+  isDefault  Boolean     @default(false)
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
 enum UserRole {
   UNASSIGNED
   BUSINESS
@@ -147,4 +161,10 @@ enum OrderStatus {
   PICKED_UP
   DELIVERED
   CANCELLED
+}
+
+enum PaymentType {
+  PAYPAL
+  MASTERCARD
+  VISA
 }

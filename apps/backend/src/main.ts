@@ -25,10 +25,15 @@ async function bootstrap() {
       if (!origin) return callback(null, true);
 
       // Allow known frontend origins (local IPs and localhost)
-      if (
-        API_CONFIG.CORS.ORIGINS.includes(origin) ||
-        API_CONFIG.CORS.ORIGINS.includes('*')
-      ) {
+      const allowedOrigins = [
+        ...API_CONFIG.CORS.ORIGINS,
+        'http://192.168.10.245:3002', // Mobile app
+        'http://localhost:3002',
+        'http://127.0.0.1:3002',
+        '*'
+      ];
+
+      if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
         callback(null, true);
       } else {
         callback(new Error(`❌ Not allowed by CORS: ${origin}`));

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
 import { UserRole } from '@food-waste/types';
 import { JwtService } from '@nestjs/jwt';
@@ -16,12 +16,24 @@ export class UsersService {
     });
   }
 
+  async findByEmail(email: string) {
+    return this.prisma.user.findUnique({
+      where: { email },
+    });
+  }
+
   async create(data: {
     email: string;
     id: string; // This will be the Firebase UID
     role: UserRole;
     name?: string;
   }) {
+    // Check if user with this email already exists
+    const existingUser = await this.findByEmail(data.email);
+    if (existingUser) {
+      throw new ConflictException('A user with this email already exists');
+    }
+
     return this.prisma.user.create({
       data: {
         id: data.id,

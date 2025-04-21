@@ -97,4 +97,10 @@ export enum OrderStatus {
   PICKED_UP = 'PICKED_UP',
   DELIVERED = 'DELIVERED',
   CANCELLED = 'CANCELLED'
+}
+
+export enum PaymentType {
+  VISA = 'VISA',
+  MASTERCARD = 'MASTERCARD',
+  PAYPAL = 'PAYPAL'
 } 

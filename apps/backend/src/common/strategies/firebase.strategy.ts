@@ -11,19 +11,30 @@ export class FirebaseStrategy extends PassportStrategy(Strategy, 'firebase') {
   }
 
   async validate(req: any): Promise<any> {
-    const token = req.body.token;
+    // Try to get token from query params first, then body
+    const token = req.query.token || req.body?.token;
+    
     if (!token) {
+      console.error('[Firebase Strategy] No token found in request:', {
+        query: req.query,
+        body: req.body,
+        method: req.method
+      });
       throw new UnauthorizedException('No Firebase token provided');
     }
 
     try {
+      console.log('[Firebase Strategy] Verifying token...');
       const decodedToken = await auth().verifyIdToken(token);
+      console.log('[Firebase Strategy] Token verified successfully for user:', decodedToken.uid);
+      
       return {
         id: decodedToken.uid,
         email: decodedToken.email,
         role: decodedToken.role || UserRole.UNASSIGNED, // Default to CONSUMER if role not set
       };
     } catch (error) {
+      console.error('[Firebase Strategy] Token verification failed:', error);
       throw new UnauthorizedException('Invalid Firebase token');
     }
   }
