@@ -2,14 +2,15 @@ import { Controller, Get, Post, Patch, Delete, Req, Res, Body, Param, UseGuards 
 import { PaymentsService } from './payments.service';
 import { User, PaymentType } from '@food-waste/types';
 import { Request, Response } from 'express';
-import { FirebaseAuthGuard } from '../../../common/guards/firebase-auth.guard';
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
+import { NotFoundException } from '@nestjs/common';
 
 interface AuthRequest extends Request {
   user?: User;
 }
 
 @Controller('users/payments')
-@UseGuards(FirebaseAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
@@ -49,21 +50,43 @@ export class PaymentsController {
   async addPaymentMethod(@Req() req: AuthRequest, @Res() res: Response) {
     try {
       const userId = req.user?.id;
+      console.log('Adding payment method for user:', {
+        userId,
+        user: req.user,
+        body: req.body
+      });
+
       if (!userId) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        console.error('No user ID found in request');
+        return res.status(401).json({ message: 'Unauthorized - No user ID found' });
       }
 
       const { type, cardNumber, expiryDate } = req.body;
-      const paymentMethod = await this.paymentsService.addPaymentMethod(userId, {
-        type: type as PaymentType,
-        cardNumber,
-        expiryDate
-      });
-
-      res.status(201).json(paymentMethod);
+      
+      try {
+        const paymentMethod = await this.paymentsService.addPaymentMethod(userId, {
+          type: type as PaymentType,
+          cardNumber,
+          expiryDate
+        });
+        
+        console.log('Successfully added payment method:', paymentMethod);
+        res.status(201).json(paymentMethod);
+      } catch (error) {
+        console.error('Error in PaymentsService.addPaymentMethod:', {
+          error,
+          userId,
+          type,
+          cardNumber: cardNumber?.slice(-4),
+          expiryDate
+        });
+        throw error;
+      }
     } catch (error) {
       console.error('Error adding payment method:', error);
-      res.status(500).json({ message: 'Failed to add payment method' });
+      const status = error instanceof NotFoundException ? 404 : 500;
+      const message = error instanceof NotFoundException ? error.message : 'Failed to add payment method';
+      res.status(status).json({ message });
     }
   }
 

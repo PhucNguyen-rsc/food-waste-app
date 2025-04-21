@@ -26,12 +26,16 @@ export class FirebaseStrategy extends PassportStrategy(Strategy, 'firebase') {
     try {
       console.log('[Firebase Strategy] Verifying token...');
       const decodedToken = await auth().verifyIdToken(token);
-      console.log('[Firebase Strategy] Token verified successfully for user:', decodedToken.uid);
+      console.log('[Firebase Strategy] Token verification details:', {
+        uid: decodedToken.uid,
+        email: decodedToken.email,
+        role: decodedToken.role || 'UNASSIGNED'
+      });
       
       return {
         id: decodedToken.uid,
         email: decodedToken.email,
-        role: decodedToken.role || UserRole.UNASSIGNED, // Default to CONSUMER if role not set
+        role: decodedToken.role || UserRole.UNASSIGNED,
       };
     } catch (error) {
       console.error('[Firebase Strategy] Token verification failed:', error);

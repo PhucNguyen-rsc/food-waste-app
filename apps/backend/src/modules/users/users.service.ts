@@ -11,9 +11,16 @@ export class UsersService {
   ) {}
 
   async findByFirebaseUid(id: string) {
-    return this.prisma.user.findUnique({
+    console.log('Finding user by Firebase UID:', id);
+    const user = await this.prisma.user.findUnique({
       where: { id },
     });
+    console.log('User search result:', user ? {
+      id: user.id,
+      email: user.email,
+      role: user.role
+    } : 'Not found');
+    return user;
   }
 
   async findByEmail(email: string) {

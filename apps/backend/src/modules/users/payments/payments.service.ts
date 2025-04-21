@@ -1,13 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
-import { UserRole } from '@food-waste/types';
-import { PaymentType } from '@food-waste/database';
+import { PaymentType, UserRole } from '@food-waste/types';
 import { UsersService } from '../users.service';
 
 @Injectable()
 export class PaymentsService {
   constructor(
-    private readonly prisma: PrismaService,
+    private prisma: PrismaService,
     private usersService: UsersService,
   ) {}
 
@@ -25,28 +24,28 @@ export class PaymentsService {
     isDefault?: boolean;
   }) {
     // Check if user exists
-    let user = await this.usersService.findByFirebaseUid(userId);
+    const user = await this.usersService.findByFirebaseUid(userId);
     if (!user) {
-      // If user doesn't exist, try to find them by email
-      const firebaseUser = await this.prisma.user.findUnique({
-        where: { id: userId },
-        select: { email: true }
-      });
-      
-      if (!firebaseUser || !firebaseUser.email) {
-        throw new NotFoundException('User not found');
-      }
+      throw new NotFoundException('User not found');
+    }
 
-      // Create the user if they don't exist
-      user = await this.usersService.create({
-        id: userId,
-        email: firebaseUser.email,
-        role: UserRole.CONSUMER, // Use the exact enum value from Prisma schema
+    // For PayPal, we don't need card validation
+    if (data.type === PaymentType.PAYPAL) {
+      return this.prisma.paymentMethod.create({
+        data: {
+          type: PaymentType.PAYPAL,
+          cardNumber: null,
+          cardBrand: 'PAYPAL',
+          expiryDate: null,
+          isDefault: data.isDefault || false,
+          userId,
+        },
       });
     }
 
-    // Validate card number
-    if (!data.cardNumber || data.cardNumber.length < 4) {
+    // For credit cards, validate the details
+    const cleanCardNumber = data.cardNumber.replace(/\D/g, '');
+    if (!cleanCardNumber || cleanCardNumber.length < 13 || cleanCardNumber.length > 16) {
       throw new Error('Invalid card number');
     }
 
@@ -57,12 +56,19 @@ export class PaymentsService {
     }
 
     // Extract last 4 digits
-    const lastFourDigits = data.cardNumber.slice(-4);
+    const lastFourDigits = cleanCardNumber.slice(-4);
 
-    // Determine card brand based on first digit
-    const cardBrand = data.cardNumber.startsWith('4') ? 'VISA' : 
-                     data.cardNumber.startsWith('5') ? 'MASTERCARD' : null;
+    // Determine card brand based on card number pattern
+    let cardBrand;
+    if (/^4[0-9]{12}(?:[0-9]{3})?$/.test(cleanCardNumber)) {
+      cardBrand = 'VISA';
+    } else if (/^(5[1-5][0-9]{14}|2[2-7][0-9]{14})$/.test(cleanCardNumber)) {
+      cardBrand = 'MASTERCARD';
+    } else {
+      throw new Error('Only VISA and Mastercard are supported');
+    }
 
+    // Create payment method
     return this.prisma.paymentMethod.create({
       data: {
         type: data.type,
@@ -76,13 +82,13 @@ export class PaymentsService {
   }
 
   async setDefaultPaymentMethod(userId: string, methodId: string) {
-    // First, set all payment methods to non-default
+    // First, unset any existing default
     await this.prisma.paymentMethod.updateMany({
-      where: { userId },
+      where: { userId, isDefault: true },
       data: { isDefault: false },
     });
 
-    // Then set the specified method as default
+    // Then set the new default
     return this.prisma.paymentMethod.update({
       where: { id: methodId },
       data: { isDefault: true },
