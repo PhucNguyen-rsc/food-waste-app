@@ -1,30 +1,38 @@
 import axios from 'axios';
-import { getApiConfig } from '@food-waste/config';
-import { store } from '@/store';
+import { store } from '../store';
 
-const apiConfig = getApiConfig({
-  apiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001',
-  mobileAppUrl: process.env.EXPO_PUBLIC_MOBILE_APP_URL || 'http://localhost:3002',
-});
+// API configuration function
+const getApiConfig = (config = {}) => {
+  const apiUrl = process.env.API_URL || 'http://localhost:3000';
+  const mobileAppUrl = process.env.MOBILE_APP_URL || 'http://localhost:19006';
+  
+  return {
+    baseURL: apiUrl,
+    timeout: 30000,
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    withCredentials: true,
+    ...config,
+  };
+};
 
-// Create axios instance with default config
-const api = axios.create({
-  baseURL: apiConfig.BASE_URL,
-  timeout: apiConfig.TIMEOUT,
-  headers: apiConfig.HEADERS,
-  withCredentials: apiConfig.CORS.CREDENTIALS,
-});
+// Create an axios instance with the API configuration
+const api = axios.create(getApiConfig());
 
-// Add request interceptor for auth token
+// Request interceptor to attach the auth token
 api.interceptors.request.use(
   (config) => {
-    const state = store.getState();
-    const token = state.auth.token;
-
+    // Get the token from Redux store
+    const { auth } = store.getState();
+    const token = auth?.token;
+    
+    // If token exists and this is an authenticated route, add it to headers
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
-
+    
     return config;
   },
   (error) => {
@@ -32,21 +40,21 @@ api.interceptors.request.use(
   }
 );
 
-// Add response interceptor for error handling
+// Response interceptor to handle errors
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
   (error) => {
-    // Handle common errors here
-    if (error.response) {
-      // Server responded with error
-      console.error('API Error:', error.response.data);
-    } else if (error.request) {
-      // Request made but no response
-      console.error('Network Error:', error.request);
-    } else {
-      // Something else went wrong
-      console.error('Error:', error.message);
+    // Log the API error
+    console.error('API Error:', error);
+    
+    // Handle 401 Unauthorized error
+    if (error.response && error.response.status === 401) {
+      // Clear the token and log out
+      store.dispatch({ type: 'auth/clearToken' });
     }
+    
     return Promise.reject(error);
   }
 );
