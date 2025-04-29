@@ -35,13 +35,13 @@ export default function RoleSelectionScreen() {
           navigation.replace('BusinessProfile');
           break;
         case UserRole.CONSUMER:
-          navigation.replace('ConsumerHome');
+          navigation.replace('Consumer');
           break;
         case UserRole.COURIER:
-          navigation.replace('CourierHome');
+          navigation.replace('Courier', { screen: 'CourierHome' });
           break;
         default:
-          navigation.replace('ConsumerHome'); // Default to consumer home
+          navigation.replace('Consumer'); // Default to consumer home
       }
     } catch (error) {
       console.error('Error updating role:', error);

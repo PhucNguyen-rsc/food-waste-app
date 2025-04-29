@@ -8,6 +8,8 @@ import { AuthModule } from '@app/modules/auth/auth.module';
 import { UsersModule } from '@app/modules/users/users.module';
 import { LoggerMiddleware } from '@middleware/logger.middleware';
 import { ItemModule } from '@app/modules/foodItem/foodItem.module';
+import { CourierModule } from '@app/modules/courier/courier.module';
+import { ConsumerModule } from '@app/modules/consumer/consumer.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { ItemModule } from '@app/modules/foodItem/foodItem.module';
     AuthModule,
     UsersModule,
     ItemModule,
+    CourierModule,
+    ConsumerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

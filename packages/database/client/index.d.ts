@@ -88,10 +88,12 @@ export type FoodStatus = (typeof FoodStatus)[keyof typeof FoodStatus]
 
 export const OrderStatus: {
   PENDING: 'PENDING',
+  BUSINESS_CONFIRMED: 'BUSINESS_CONFIRMED',
   CONFIRMED: 'CONFIRMED',
   PREPARING: 'PREPARING',
   READY: 'READY',
   PICKED_UP: 'PICKED_UP',
+  COURIER_DELIVERED: 'COURIER_DELIVERED',
   DELIVERED: 'DELIVERED',
   CANCELLED: 'CANCELLED'
 };
@@ -6399,6 +6401,7 @@ export namespace Prisma {
     totalAmount: number | null
     status: $Enums.OrderStatus | null
     deliveryAddress: string | null
+    completedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -6411,6 +6414,7 @@ export namespace Prisma {
     totalAmount: number | null
     status: $Enums.OrderStatus | null
     deliveryAddress: string | null
+    completedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -6423,6 +6427,7 @@ export namespace Prisma {
     totalAmount: number
     status: number
     deliveryAddress: number
+    completedAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -6445,6 +6450,7 @@ export namespace Prisma {
     totalAmount?: true
     status?: true
     deliveryAddress?: true
+    completedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -6457,6 +6463,7 @@ export namespace Prisma {
     totalAmount?: true
     status?: true
     deliveryAddress?: true
+    completedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -6469,6 +6476,7 @@ export namespace Prisma {
     totalAmount?: true
     status?: true
     deliveryAddress?: true
+    completedAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -6568,6 +6576,7 @@ export namespace Prisma {
     totalAmount: number
     status: $Enums.OrderStatus
     deliveryAddress: string
+    completedAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: OrderCountAggregateOutputType | null
@@ -6599,6 +6608,7 @@ export namespace Prisma {
     totalAmount?: boolean
     status?: boolean
     deliveryAddress?: boolean
+    completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     consumer?: boolean | UserDefaultArgs<ExtArgs>
@@ -6616,6 +6626,7 @@ export namespace Prisma {
     totalAmount?: boolean
     status?: boolean
     deliveryAddress?: boolean
+    completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     consumer?: boolean | UserDefaultArgs<ExtArgs>
@@ -6631,6 +6642,7 @@ export namespace Prisma {
     totalAmount?: boolean
     status?: boolean
     deliveryAddress?: boolean
+    completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     consumer?: boolean | UserDefaultArgs<ExtArgs>
@@ -6646,11 +6658,12 @@ export namespace Prisma {
     totalAmount?: boolean
     status?: boolean
     deliveryAddress?: boolean
+    completedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "consumerId" | "businessId" | "courierId" | "totalAmount" | "status" | "deliveryAddress" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "consumerId" | "businessId" | "courierId" | "totalAmount" | "status" | "deliveryAddress" | "completedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     consumer?: boolean | UserDefaultArgs<ExtArgs>
     business?: boolean | UserDefaultArgs<ExtArgs>
@@ -6685,6 +6698,7 @@ export namespace Prisma {
       totalAmount: number
       status: $Enums.OrderStatus
       deliveryAddress: string
+      completedAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["order"]>
@@ -7121,6 +7135,7 @@ export namespace Prisma {
     readonly totalAmount: FieldRef<"Order", 'Float'>
     readonly status: FieldRef<"Order", 'OrderStatus'>
     readonly deliveryAddress: FieldRef<"Order", 'String'>
+    readonly completedAt: FieldRef<"Order", 'DateTime'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
   }
@@ -9884,6 +9899,7 @@ export namespace Prisma {
     totalAmount: 'totalAmount',
     status: 'status',
     deliveryAddress: 'deliveryAddress',
+    completedAt: 'completedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -10454,6 +10470,7 @@ export namespace Prisma {
     totalAmount?: FloatFilter<"Order"> | number
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     deliveryAddress?: StringFilter<"Order"> | string
+    completedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     consumer?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -10470,6 +10487,7 @@ export namespace Prisma {
     totalAmount?: SortOrder
     status?: SortOrder
     deliveryAddress?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     consumer?: UserOrderByWithRelationInput
@@ -10489,6 +10507,7 @@ export namespace Prisma {
     totalAmount?: FloatFilter<"Order"> | number
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     deliveryAddress?: StringFilter<"Order"> | string
+    completedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
     consumer?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -10505,6 +10524,7 @@ export namespace Prisma {
     totalAmount?: SortOrder
     status?: SortOrder
     deliveryAddress?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: OrderCountOrderByAggregateInput
@@ -10525,6 +10545,7 @@ export namespace Prisma {
     totalAmount?: FloatWithAggregatesFilter<"Order"> | number
     status?: EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
     deliveryAddress?: StringWithAggregatesFilter<"Order"> | string
+    completedAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
   }
@@ -11087,6 +11108,7 @@ export namespace Prisma {
     totalAmount: number
     status?: $Enums.OrderStatus
     deliveryAddress: string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     consumer: UserCreateNestedOneWithoutOrdersInput
@@ -11103,6 +11125,7 @@ export namespace Prisma {
     totalAmount: number
     status?: $Enums.OrderStatus
     deliveryAddress: string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -11113,6 +11136,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     deliveryAddress?: StringFieldUpdateOperationsInput | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     consumer?: UserUpdateOneRequiredWithoutOrdersNestedInput
@@ -11129,6 +11153,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     deliveryAddress?: StringFieldUpdateOperationsInput | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -11142,6 +11167,7 @@ export namespace Prisma {
     totalAmount: number
     status?: $Enums.OrderStatus
     deliveryAddress: string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -11151,6 +11177,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     deliveryAddress?: StringFieldUpdateOperationsInput | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11163,6 +11190,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     deliveryAddress?: StringFieldUpdateOperationsInput | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11849,6 +11877,7 @@ export namespace Prisma {
     totalAmount?: SortOrder
     status?: SortOrder
     deliveryAddress?: SortOrder
+    completedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11865,6 +11894,7 @@ export namespace Prisma {
     totalAmount?: SortOrder
     status?: SortOrder
     deliveryAddress?: SortOrder
+    completedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11877,6 +11907,7 @@ export namespace Prisma {
     totalAmount?: SortOrder
     status?: SortOrder
     deliveryAddress?: SortOrder
+    completedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -13046,6 +13077,7 @@ export namespace Prisma {
     totalAmount: number
     status?: $Enums.OrderStatus
     deliveryAddress: string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     business: UserCreateNestedOneWithoutBusinessOrdersInput
@@ -13060,6 +13092,7 @@ export namespace Prisma {
     totalAmount: number
     status?: $Enums.OrderStatus
     deliveryAddress: string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -13080,6 +13113,7 @@ export namespace Prisma {
     totalAmount: number
     status?: $Enums.OrderStatus
     deliveryAddress: string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     consumer: UserCreateNestedOneWithoutOrdersInput
@@ -13094,6 +13128,7 @@ export namespace Prisma {
     totalAmount: number
     status?: $Enums.OrderStatus
     deliveryAddress: string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -13114,6 +13149,7 @@ export namespace Prisma {
     totalAmount: number
     status?: $Enums.OrderStatus
     deliveryAddress: string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     consumer: UserCreateNestedOneWithoutOrdersInput
@@ -13128,6 +13164,7 @@ export namespace Prisma {
     totalAmount: number
     status?: $Enums.OrderStatus
     deliveryAddress: string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
@@ -13270,6 +13307,7 @@ export namespace Prisma {
     totalAmount?: FloatFilter<"Order"> | number
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     deliveryAddress?: StringFilter<"Order"> | string
+    completedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
   }
@@ -13850,6 +13888,7 @@ export namespace Prisma {
     totalAmount: number
     status?: $Enums.OrderStatus
     deliveryAddress: string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     consumer: UserCreateNestedOneWithoutOrdersInput
@@ -13865,6 +13904,7 @@ export namespace Prisma {
     totalAmount: number
     status?: $Enums.OrderStatus
     deliveryAddress: string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13927,6 +13967,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     deliveryAddress?: StringFieldUpdateOperationsInput | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     consumer?: UserUpdateOneRequiredWithoutOrdersNestedInput
@@ -13942,6 +13983,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     deliveryAddress?: StringFieldUpdateOperationsInput | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14148,6 +14190,7 @@ export namespace Prisma {
     totalAmount: number
     status?: $Enums.OrderStatus
     deliveryAddress: string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14159,6 +14202,7 @@ export namespace Prisma {
     totalAmount: number
     status?: $Enums.OrderStatus
     deliveryAddress: string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14170,6 +14214,7 @@ export namespace Prisma {
     totalAmount: number
     status?: $Enums.OrderStatus
     deliveryAddress: string
+    completedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14301,6 +14346,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     deliveryAddress?: StringFieldUpdateOperationsInput | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     business?: UserUpdateOneRequiredWithoutBusinessOrdersNestedInput
@@ -14315,6 +14361,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     deliveryAddress?: StringFieldUpdateOperationsInput | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -14327,6 +14374,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     deliveryAddress?: StringFieldUpdateOperationsInput | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14336,6 +14384,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     deliveryAddress?: StringFieldUpdateOperationsInput | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     consumer?: UserUpdateOneRequiredWithoutOrdersNestedInput
@@ -14350,6 +14399,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     deliveryAddress?: StringFieldUpdateOperationsInput | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -14362,6 +14412,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     deliveryAddress?: StringFieldUpdateOperationsInput | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14371,6 +14422,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     deliveryAddress?: StringFieldUpdateOperationsInput | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     consumer?: UserUpdateOneRequiredWithoutOrdersNestedInput
@@ -14385,6 +14437,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     deliveryAddress?: StringFieldUpdateOperationsInput | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
@@ -14397,6 +14450,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     deliveryAddress?: StringFieldUpdateOperationsInput | string
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

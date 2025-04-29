@@ -102,6 +102,7 @@ model Order {
   totalAmount     Float
   status          OrderStatus @default(PENDING)
   deliveryAddress String
+  completedAt     DateTime?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 }
@@ -154,13 +155,15 @@ enum FoodStatus {
 }
 
 enum OrderStatus {
-  PENDING
-  CONFIRMED
-  PREPARING
-  READY
-  PICKED_UP
-  DELIVERED
-  CANCELLED
+  PENDING           // Initial state when order is created
+  BUSINESS_CONFIRMED // Business has confirmed the order
+  CONFIRMED         // Courier has accepted the order
+  PREPARING         // Business is preparing the order
+  READY            // Order is ready for pickup
+  PICKED_UP        // Courier has picked up the order
+  COURIER_DELIVERED // Courier has marked as delivered, waiting for consumer confirmation
+  DELIVERED        // Consumer has confirmed delivery
+  CANCELLED        // Order was cancelled
 }
 
 enum PaymentType {

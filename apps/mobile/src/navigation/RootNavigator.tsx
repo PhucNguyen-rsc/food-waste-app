@@ -33,6 +33,15 @@ import NoPaymentMethodScreen from '@/screens/consumer/NoPaymentMethodScreen';
 import PaymentMethodsScreen from '@/screens/consumer/PaymentMethodsScreen';
 import AddPaymentMethodScreen from '@/screens/consumer/AddPaymentMethodScreen';
 import PaymentSuccessScreen from '@/screens/consumer/PaymentSuccessScreen';
+import OrdersScreen from '@/screens/consumer/OrdersScreen';
+
+// Courier Screens
+import CourierHomeScreen from '@/screens/courier/CourierHomeScreen';
+import ActiveDeliveryScreen from '@/screens/courier/ActiveDeliveryScreen';
+import DeliveryDetailsScreen from '@/screens/courier/DeliveryDetailsScreen';
+import EarningsScreen from '@/screens/courier/EarningsScreen';
+import HistoryScreen from '@/screens/courier/HistoryScreen';
+import CourierProfileScreen from '@/screens/courier/CourierProfileScreen';
 
 import { useAppSelector } from '@/store';
 
@@ -73,9 +82,18 @@ export const RootNavigator = () => {
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
-        <Stack.Screen name="CartScreen" component={CartScreen} />
+        <Stack.Screen name="Cart" component={CartScreen} />
+        <Stack.Screen name="Orders" component={OrdersScreen} />
         <Stack.Screen name="CheckoutScreen" component={CheckoutScreen} />
         <Stack.Screen name="OrderSuccessScreen" component={OrderSuccessScreen} />
+
+        {/* Courier Screens */}
+        <Stack.Screen name="CourierHome" component={CourierHomeScreen} />
+        <Stack.Screen name="ActiveDelivery" component={ActiveDeliveryScreen} />
+        <Stack.Screen name="DeliveryDetails" component={DeliveryDetailsScreen} />
+        <Stack.Screen name="Earnings" component={EarningsScreen} />
+        <Stack.Screen name="History" component={HistoryScreen} />
+        <Stack.Screen name="CourierProfile" component={CourierProfileScreen} />
 
         {/* Payment Screens */}
         <Stack.Screen

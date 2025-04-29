@@ -90,13 +90,15 @@ export interface OrderItem {
 }
 
 export enum OrderStatus {
-  PENDING = 'PENDING',
-  CONFIRMED = 'CONFIRMED',
-  PREPARING = 'PREPARING',
-  READY = 'READY',
-  PICKED_UP = 'PICKED_UP',
-  DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED'
+  PENDING = 'PENDING',           // Initial state when order is created
+  BUSINESS_CONFIRMED = 'BUSINESS_CONFIRMED', // Business has confirmed the order
+  CONFIRMED = 'CONFIRMED',       // Courier has accepted the order
+  PREPARING = 'PREPARING',       // Business is preparing the order
+  READY = 'READY',              // Order is ready for pickup
+  PICKED_UP = 'PICKED_UP',      // Courier has picked up the order
+  COURIER_DELIVERED = 'COURIER_DELIVERED', // Courier has marked as delivered, waiting for consumer confirmation
+  DELIVERED = 'DELIVERED',       // Consumer has confirmed delivery
+  CANCELLED = 'CANCELLED'        // Order was cancelled
 }
 
 export enum PaymentType {

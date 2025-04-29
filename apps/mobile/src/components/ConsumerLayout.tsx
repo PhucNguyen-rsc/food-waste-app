@@ -13,7 +13,7 @@ import NavBar from './ui/NavBar';
 import { Ionicons } from '@expo/vector-icons';
 
 type ConsumerLayoutNavProp = NativeStackNavigationProp<RootStackParamList>;
-type ConsumerTabName = 'ConsumerHome' | 'Profile';
+type ConsumerTabName = 'ConsumerHome' | 'Orders' | 'Profile';
 
 interface ConsumerLayoutProps {
   children: React.ReactNode;
@@ -46,6 +46,12 @@ export default function ConsumerLayout({
       activeIcon: 'home',
     },
     {
+      name: 'Orders',
+      label: 'Orders',
+      icon: 'receipt-outline',
+      activeIcon: 'receipt',
+    },
+    {
       name: 'Profile',
       label: 'Profile',
       icon: 'person-outline',
@@ -64,7 +70,7 @@ export default function ConsumerLayout({
           />
           <TouchableOpacity
             style={styles.cartIcon}
-            onPress={() => navigation.navigate('CartScreen')}
+            onPress={() => navigation.navigate('Cart')}
           >
             <Ionicons name="cart-outline" size={24} color="#000" />
           </TouchableOpacity>

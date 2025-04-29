@@ -4,16 +4,19 @@ import { store } from '@/store';
 import { auth } from '@/config/firebaseConfig';
 
 const apiConfig = getApiConfig({
-  apiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001',
+  apiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3001', // Use 10.0.2.2 for Android emulator
   mobileAppUrl: process.env.EXPO_PUBLIC_MOBILE_APP_URL || 'http://localhost:3002',
 });
 
 // Create axios instance with default config
 const api = axios.create({
   baseURL: apiConfig.BASE_URL,
-  timeout: apiConfig.TIMEOUT,
-  headers: apiConfig.HEADERS,
-  withCredentials: apiConfig.CORS.CREDENTIALS,
+  timeout: 10000, // 10 seconds timeout
+  headers: {
+    'Content-Type': 'application/json',
+    ...apiConfig.HEADERS,
+  },
+  withCredentials: true,
 });
 
 // Add request interceptor for auth token
@@ -55,9 +58,11 @@ api.interceptors.response.use(
     } else if (error.request) {
       // Request made but no response
       console.error('Network Error:', error.request);
+      throw new Error('Network error. Please check your internet connection.');
     } else {
       // Something else went wrong
       console.error('Error:', error.message);
+      throw new Error('An unexpected error occurred. Please try again.');
     }
     return Promise.reject(error);
   }

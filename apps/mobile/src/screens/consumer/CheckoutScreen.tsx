@@ -19,12 +19,14 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import api from '@/lib/api';
 import { auth } from '@/config/firebaseConfig';
+import { PaymentType } from '@food-waste/types';
+import { isValidPaymentMethod } from '@/config/paymentConfig';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 type PaymentMethod = {
   id: string;
-  type: 'PAYPAL' | 'MASTERCARD' | 'VISA';
+  type: PaymentType;
   cardNumber: string;
   cardBrand: string;
   expiryDate: string;
@@ -102,17 +104,12 @@ export default function CheckoutScreen() {
       const response = await api.get('/users/payments/methods');
       console.log('Payment methods response:', response.data);
       
-      if (response.data && response.data.length > 0) {
-        console.log('First payment method details:', {
-          id: response.data[0].id,
-          type: response.data[0].type,
-          cardNumber: response.data[0].cardNumber,
-          cardBrand: response.data[0].cardBrand,
-          isDefault: response.data[0].isDefault,
-        });
-      }
+      // Validate payment methods using the isValidPaymentMethod function
+      const validPaymentMethods = response.data.filter(method => 
+        isValidPaymentMethod(method.type)
+      );
       
-      setPaymentMethods(response.data);
+      setPaymentMethods(validPaymentMethods);
     } catch (error: any) {
       console.error('Failed to fetch payment methods:', error);
       console.error('Error details:', {
@@ -142,27 +139,41 @@ export default function CheckoutScreen() {
       }
       if (!phone.trim()) {
         Alert.alert('Error', 'Please enter your phone number');
-        return;
-      }
+      return;
+    }
       if (paymentMethod === 'Card' && !selectedPaymentMethodId) {
         Alert.alert('Error', 'Please select a payment method');
-        return;
-      }
+      return;
+    }
 
       setIsProcessing(true);
+
+      // Create order
+      const orderData = {
+      deliveryAddress: address,
+        items: cartItems.map(item => ({
+        foodItemId: item.id,
+          quantity: item.quantity
+        }))
+    };
+
+      const response = await api.post('/consumer/orders', orderData);
+      const orders = response.data;
 
       // Clear cart
       dispatch(clearCart());
       
-      // Navigate to success screen with a temporary order ID
+      // Navigate to success screen with the first order ID
+      // Note: We take the first order ID since the backend might create multiple orders
+      // if items are from different businesses
       navigation.navigate('OrderSuccessScreen', {
-        orderId: 'temp-' + Date.now()
+        orderId: orders[0].id
       });
     } catch (error: any) {
       console.error('Checkout error:', error);
       Alert.alert(
         'Error',
-        'Something went wrong. Please try again.'
+        error.response?.data?.message || 'Something went wrong. Please try again.'
       );
     } finally {
       setIsProcessing(false);

@@ -1,6 +1,52 @@
+import { NavigatorScreenParams } from '@react-navigation/native';
 import { PaymentType } from '@food-waste/types';
-import { Order } from '@/types';
+import { Order } from '@/types'; // Ensure this exists and is typed correctly
 
+// ==========================
+// Courier Stack
+// ==========================
+export type CourierStackParamList = {
+  CourierHome: undefined;
+  ActiveDelivery: undefined;
+  DeliveryDetails: { deliveryId: string };
+  DeliveryHistory: undefined;
+  Earnings: undefined;
+  CourierProfile: undefined;
+  History: undefined;
+};
+
+// ==========================
+// Consumer Stack
+// ==========================
+export type ConsumerStackParamList = {
+  Home: undefined;
+  Cart: undefined;
+  Orders: undefined;
+  Profile: undefined;
+  ProductDetail: { productId: string };
+  Settings: undefined;
+  ChangePassword: undefined;
+  CheckoutScreen: undefined;
+  OrderSuccessScreen: { orderId: string };
+  OrderDetails: { orderId: string };
+};
+
+// ==========================
+// Business Stack
+// ==========================
+export type BusinessStackParamList = {
+  BusinessHome: undefined;
+  AddItem: undefined;
+  ManageOrders: undefined;
+  Analytics: undefined;
+  UpdatePrice: { itemId: string };
+  Inventory: undefined;
+  BusinessProfile: undefined;
+};
+
+// ==========================
+// Root Stack (high level)
+// ==========================
 export type RootStackParamList = {
   // Onboarding / Auth
   GetStarted: undefined;
@@ -10,38 +56,43 @@ export type RootStackParamList = {
   // Role Selection
   RoleSelection: undefined;
 
-  // Business
+  // Consumer Screens (direct from root)
+  ConsumerHome: undefined;
+  ProductDetail: { productId: string };
+  Cart: undefined;
+  Orders: undefined;
+  Profile: undefined;
+  Settings: undefined;
+  ChangePassword: undefined;
+  CheckoutScreen: undefined;
+  OrderSuccessScreen: { orderId: string };
+  OrderDetailScreen: { order: Order };
+
+  // Courier Screens
+  CourierHome: undefined;
+  ActiveDelivery: undefined;
+  DeliveryDetails: { deliveryId: string };
+  Earnings: undefined;
+  History: undefined;
+  CourierProfile: undefined;
+
+  // Business Screens
   BusinessHome: undefined;
   AddItem: undefined;
   ManageOrders: undefined;
   Analytics: undefined;
-  UpdatePrice: undefined;
+  UpdatePrice: { itemId: string };
   Inventory: undefined;
   BusinessProfile: undefined;
 
-  // Consumer
-  ConsumerHome: undefined;
-  ProductDetail: { product: any }; // or your actual type
-  CartScreen: undefined;
-  CheckoutScreen: undefined;
-  OrderSuccessScreen: {
-    orderId: string;
-  };
-  Profile: undefined;
-  Settings: undefined;
-  ChangePassword: undefined;
-
-  // Courier
-  CourierHome: undefined;
-  Deliveries: undefined;
-  CourierProfile: undefined;
-
-  // Payment
+  // Payment Screens
   NoPaymentMethod: undefined;
   PaymentMethods: undefined;
   AddPaymentMethod: { type: PaymentType };
   PaymentSuccess: undefined;
 
-  Orders: undefined;
-  OrderDetailScreen: { order: Order };
+  // Nested Navigators (optional if you use stack containers)
+  Courier?: NavigatorScreenParams<CourierStackParamList>;
+  Consumer?: NavigatorScreenParams<ConsumerStackParamList>;
+  Business?: NavigatorScreenParams<BusinessStackParamList>;
 };

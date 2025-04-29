@@ -181,6 +181,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   totalAmount: 'totalAmount',
   status: 'status',
   deliveryAddress: 'deliveryAddress',
+  completedAt: 'completedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -245,10 +246,12 @@ exports.FoodStatus = exports.$Enums.FoodStatus = {
 
 exports.OrderStatus = exports.$Enums.OrderStatus = {
   PENDING: 'PENDING',
+  BUSINESS_CONFIRMED: 'BUSINESS_CONFIRMED',
   CONFIRMED: 'CONFIRMED',
   PREPARING: 'PREPARING',
   READY: 'READY',
   PICKED_UP: 'PICKED_UP',
+  COURIER_DELIVERED: 'COURIER_DELIVERED',
   DELIVERED: 'DELIVERED',
   CANCELLED: 'CANCELLED'
 };

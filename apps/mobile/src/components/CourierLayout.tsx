@@ -7,75 +7,87 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/navigation/types';
+import { CourierStackParamList } from '@/navigation/types';
 import NavBar from './ui/NavBar';
 import { Ionicons } from '@expo/vector-icons';
 
-type ConsumerLayoutNavProp = NativeStackNavigationProp<RootStackParamList>;
-type ConsumerTabName = 'ConsumerHome' | 'Profile';
+type CourierLayoutNavProp = NativeStackNavigationProp<CourierStackParamList>;
 
-interface ConsumerLayoutProps {
+export default function CourierLayout({
+  children,
+  title,
+  showBackButton,
+  onBackPress,
+}: {
   children: React.ReactNode;
   title?: string;
   showBackButton?: boolean;
   onBackPress?: () => void;
-}
-
-export default function ConsumerLayout({ 
-  children, 
-  title,
-  showBackButton,
-  onBackPress 
-}: ConsumerLayoutProps) {
-  const navigation = useNavigation<ConsumerLayoutNavProp>();
+}) {
+  const navigation = useNavigation<CourierLayoutNavProp>();
   const route = useRoute();
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Header */}
       <View style={styles.headerRow}>
         <NavBar 
           title={title} 
           showBackButton={showBackButton} 
           onBackPress={onBackPress} 
         />
-        <TouchableOpacity
-          style={styles.cartIcon}
-          onPress={() => navigation.navigate('CartScreen')}
-        >
-          <Ionicons
-            name="cart-outline"
-            size={24}
-            color="#000"
-          />
-        </TouchableOpacity>
       </View>
 
+      {/* Main Content */}
       <View style={styles.container}>
         <View style={styles.content}>
           {children}
         </View>
       </View>
 
+      {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
         <TouchableOpacity
           style={styles.navButton}
-          onPress={() => navigation.navigate('ConsumerHome')}
+          onPress={() => navigation.navigate('CourierHome')}
         >
           <Ionicons
-            name={route.name === 'ConsumerHome' ? 'home' : 'home-outline'}
+            name={route.name === 'CourierHome' ? 'home' : 'home-outline'}
             size={24}
-            color={route.name === 'ConsumerHome' ? '#22C55E' : '#666'}
+            color={route.name === 'CourierHome' ? '#22C55E' : '#666'}
           />
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.navButton}
-          onPress={() => navigation.navigate('Profile')}
+          onPress={() => navigation.navigate('History')}
         >
           <Ionicons
-            name={route.name === 'Profile' ? 'person' : 'person-outline'}
+            name={route.name === 'History' ? 'time' : 'time-outline'}
             size={24}
-            color={route.name === 'Profile' ? '#22C55E' : '#666'}
+            color={route.name === 'History' ? '#22C55E' : '#666'}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate('Earnings')}
+        >
+          <Ionicons
+            name={route.name === 'Earnings' ? 'wallet' : 'wallet-outline'}
+            size={24}
+            color={route.name === 'Earnings' ? '#22C55E' : '#666'}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate('CourierProfile')}
+        >
+          <Ionicons
+            name={route.name === 'CourierProfile' ? 'person' : 'person-outline'}
+            size={24}
+            color={route.name === 'CourierProfile' ? '#22C55E' : '#666'}
           />
         </TouchableOpacity>
       </View>
@@ -94,9 +106,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingTop: 8,
-  },
-  cartIcon: {
-    padding: 8,
   },
   container: {
     flex: 1,
