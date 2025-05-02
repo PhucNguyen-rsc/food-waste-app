@@ -255,7 +255,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/mahletatrsawandargei/Desktop/food-waste-app/packages/database/client",
+      "value": "/Users/kwaakuboamah-powers/Documents/food-waste-app/packages/database/client",
       "fromEnvVar": null
     },
     "config": {
@@ -271,7 +271,7 @@ const config = {
     "previewFeatures": [
       "driverAdapters"
     ],
-    "sourceFilePath": "/Users/mahletatrsawandargei/Desktop/food-waste-app/packages/database/prisma/schema.prisma",
+    "sourceFilePath": "/Users/kwaakuboamah-powers/Documents/food-waste-app/packages/database/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -289,7 +289,7 @@ const config = {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgresql://postgres:newpassword@localhost:5432/foodwaste"
+        "value": "postgres://neondb_owner:npg_XYjt0mFLxVw4@ep-small-brook-a4vv7css-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require"
       }
     }
   },

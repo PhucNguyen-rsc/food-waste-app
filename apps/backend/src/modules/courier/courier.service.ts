@@ -134,7 +134,10 @@ export class CourierService {
     // Validate status transitions
     const validTransitions: Record<OrderStatus, OrderStatus[]> = {
       [OrderStatus.PENDING]: [],
+      [OrderStatus.BUSINESS_CONFIRMED]: [],
       [OrderStatus.CONFIRMED]: [OrderStatus.PICKED_UP],
+      [OrderStatus.PREPARING]: [],
+      [OrderStatus.READY]: [],
       [OrderStatus.PICKED_UP]: [OrderStatus.COURIER_DELIVERED],
       [OrderStatus.COURIER_DELIVERED]: [OrderStatus.DELIVERED],
       [OrderStatus.DELIVERED]: [],
