@@ -11,10 +11,8 @@ import {
   Alert,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '@/store/cartSlice';
 import api from '@/lib/api';
 import ConsumerLayout from '@/components/ConsumerLayout';
-import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';

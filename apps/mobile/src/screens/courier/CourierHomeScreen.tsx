@@ -13,7 +13,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import CourierLayout from '@/components/CourierLayout';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '@rneui/themed';
 import { API_ENDPOINTS, handleApiError } from '@/config/api';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -144,7 +144,7 @@ export default function CourierHomeScreen() {
       <CourierLayout title="New Deliveries">
         <View style={styles.centerContainer}>
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={fetchCourierData}>
+          <TouchableOpacity style={styles.retryButton} onPress={() => fetchCourierData()}>
             <Text style={styles.retryText}>Retry</Text>
           </TouchableOpacity>
         </View>
@@ -169,7 +169,7 @@ export default function CourierHomeScreen() {
               </View>
               <View style={styles.statItem}>
                 <Text style={styles.statNumber}>
-                  {stats.rating} <Ionicons name="star" size={14} color="#FACC15" />
+                  {stats.rating} <Icon name="star" type="material-community" size={14} color="#FACC15" />
                 </Text>
                 <Text style={styles.statLabel}>Rating</Text>
               </View>
@@ -207,7 +207,7 @@ export default function CourierHomeScreen() {
               </View>
 
               <View style={styles.addressRow}>
-                <Ionicons name="location" size={16} color="#6B7280" />
+                <Icon name="map-marker" type="material-community" size={16} color="#6B7280" />
                 <Text style={styles.addressText}>{item.pickupAddress}</Text>
               </View>
 

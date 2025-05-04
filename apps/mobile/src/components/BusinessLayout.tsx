@@ -10,7 +10,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import NavBar from './ui/NavBar';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '@rneui/themed';
 
 type BusinessLayoutNavProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -26,8 +26,8 @@ type BusinessTabName = 'BusinessHome' | 'Analytics' | 'AddItem' | 'ManageOrders'
 type TabType = {
   name: BusinessTabName;
   label: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  activeIcon: keyof typeof Ionicons.glyphMap;
+  icon: string;
+  type: 'material' | 'material-community';
 };
 
 export default function BusinessLayout({ 
@@ -43,32 +43,32 @@ export default function BusinessLayout({
     {
       name: 'BusinessHome',
       label: 'Home',
-      icon: 'home-outline',
-      activeIcon: 'home',
+      icon: 'home',
+      type: 'material',
     },
     {
       name: 'Analytics',
       label: 'Analytics',
-      icon: 'stats-chart-outline',
-      activeIcon: 'stats-chart',
+      icon: 'analytics',
+      type: 'material',
     },
     {
       name: 'AddItem',
       label: 'Add',
-      icon: 'add-circle-outline',
-      activeIcon: 'add-circle',
+      icon: 'add-circle',
+      type: 'material',
     },
     {
       name: 'ManageOrders',
       label: 'Orders',
-      icon: 'cube-outline',
-      activeIcon: 'cube',
+      icon: 'package-variant',
+      type: 'material-community',
     },
     {
       name: 'BusinessProfile',
       label: 'Profile',
-      icon: 'person-outline',
-      activeIcon: 'person',
+      icon: 'person',
+      type: 'material',
     },
   ];
 
@@ -92,8 +92,9 @@ export default function BusinessLayout({
               style={styles.navButton}
               onPress={() => navigation.navigate(tab.name)}
             >
-              <Ionicons
-                name={route.name === tab.name ? tab.activeIcon : tab.icon}
+              <Icon
+                name={tab.icon}
+                type={tab.type}
                 size={24}
                 color={route.name === tab.name ? '#22C55E' : '#666'}
               />
@@ -141,11 +142,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  emoji: {
+    fontSize: 24,
+    marginBottom: 4,
+  },
+  activeEmoji: {
+    opacity: 1,
+  },
   navText: {
     fontSize: 12,
     color: '#666',
     fontWeight: '500',
-    marginTop: 4,
   },
   activeNavText: {
     color: '#22C55E',

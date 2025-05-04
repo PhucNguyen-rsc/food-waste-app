@@ -12,7 +12,7 @@ import {
   ImageSourcePropType,
 } from 'react-native';
 import CourierLayout from '@/components/CourierLayout';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '@rneui/themed';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { API_ENDPOINTS, handleApiError } from '@/config/api';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -124,22 +124,22 @@ export default function DeliveryDetailsScreen() {
           <Text style={styles.name}>{delivery.customerName}</Text>
 
           <View style={styles.section}>
-            <Ionicons name="restaurant" size={20} color="#22C55E" />
+            <Icon name="store" type="material-community" size={20} color="#22C55E" />
             <Text style={styles.detailText}>Pickup: {delivery.pickupAddress}</Text>
           </View>
 
           <View style={styles.section}>
-            <Ionicons name="home" size={20} color="#22C55E" />
+            <Icon name="home" type="material-community" size={20} color="#22C55E" />
             <Text style={styles.detailText}>Delivery: {delivery.deliveryAddress}</Text>
           </View>
 
           <View style={styles.section}>
-            <Ionicons name="location" size={20} color="#22C55E" />
+            <Icon name="map-marker" type="material-community" size={20} color="#22C55E" />
             <Text style={styles.detailText}>{delivery.distanceKm} km</Text>
           </View>
 
           <View style={styles.section}>
-            <Ionicons name="time" size={20} color="#22C55E" />
+            <Icon name="clock" type="material-community" size={20} color="#22C55E" />
             <Text style={styles.detailText}>ETA: {delivery.estimatedTime}</Text>
           </View>
 

@@ -38,7 +38,7 @@ export default function RoleSelectionScreen() {
           navigation.replace('Consumer');
           break;
         case UserRole.COURIER:
-          navigation.replace('Courier', { screen: 'CourierHome' });
+          navigation.replace('Courier');
           break;
         default:
           navigation.replace('Consumer'); // Default to consumer home

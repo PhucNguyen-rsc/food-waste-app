@@ -1,5 +1,3 @@
-import * as FileSystem from 'expo-file-system';
-
 const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME}/upload`;
 
 export const uploadImage = async (uri: string, options = {}) => {

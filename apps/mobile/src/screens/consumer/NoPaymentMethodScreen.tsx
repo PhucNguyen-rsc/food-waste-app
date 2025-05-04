@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import ConsumerLayout from '@/components/ConsumerLayout';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '@rneui/themed';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -15,7 +15,7 @@ export default function NoPaymentMethodScreen() {
     <ConsumerLayout>
       <View style={styles.container}>
         <View style={styles.iconContainer}>
-          <Ionicons name="card-outline" size={80} color="#22C55E" />
+          <Icon name="card-outline" size={80} color="#22C55E" />
         </View>
         <Text style={styles.title}>Don't have any card</Text>
         <Text style={styles.subtitle}>

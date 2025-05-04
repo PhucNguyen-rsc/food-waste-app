@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { format } from 'date-fns';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '@rneui/themed';
 
 interface OrderItem {
   id: string;
@@ -67,14 +67,14 @@ export default function OrderCard({
 
       <View style={styles.content}>
         <View style={styles.itemsContainer}>
-          <Ionicons name="fast-food-outline" size={16} color="#666" />
+          <Icon name="fast-food-outline" size={16} color="#666" />
           <Text style={styles.itemsText} numberOfLines={1}>
             {formatItems(items)}
           </Text>
         </View>
 
         <View style={styles.addressContainer}>
-          <Ionicons name="location-outline" size={16} color="#666" />
+          <Icon name="location-outline" size={16} color="#666" />
           <Text style={styles.addressText} numberOfLines={1}>
             {deliveryAddress}
           </Text>

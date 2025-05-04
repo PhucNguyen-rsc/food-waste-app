@@ -105,4 +105,16 @@ export type OrderItem = {
   foodItemId: string;
   quantity: number;
   price: number;
+};
+
+export type Product = {
+  id: string;
+  name: string;
+  images?: string[];
+  description: string;
+  price: number;
+  originalPrice: number;
+  quantity: number;
+  expiryDate: string;
+  businessId: string;
 }; 

@@ -10,9 +10,9 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
-import { addToCart } from '@/store/cartSlice';
+import { addToCart } from '@/store/slices/cartSlice';
 import ConsumerLayout from '@/components/ConsumerLayout';
 
 type Product = {
@@ -29,10 +29,27 @@ type Product = {
 
 export default function ProductDetailScreen() {
   const route = useRoute<any>();
-  const { product } = route.params;
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const [selectedQuantity, setSelectedQuantity] = useState('1');
   const [showQuantityModal, setShowQuantityModal] = useState(false);
+
+  // Add error handling for missing product
+  if (!route.params?.product) {
+    Alert.alert(
+      'Error',
+      'Product information not found',
+      [
+        {
+          text: 'Go Back',
+          onPress: () => navigation.goBack(),
+        },
+      ]
+    );
+    return null;
+  }
+
+  const product = route.params.product as Product;
 
   const discountPercent =
     product.originalPrice && product.price
@@ -57,7 +74,7 @@ export default function ProductDetailScreen() {
         id: product.id,
         name: product.name,
         price: product.price,
-        imageUrl: product.images?.[0] || null,
+        imageUrl: product.images?.[0] || undefined,
         quantity: quantity,
         maxQuantity: product.quantity,
         businessId: product.businessId
@@ -83,8 +100,12 @@ export default function ProductDetailScreen() {
 
           <View style={styles.priceContainer}>
             <Text style={styles.discountedPrice}>AED {product.price.toFixed(2)}</Text>
-            <Text style={styles.originalPrice}>AED {product.originalPrice.toFixed(2)}</Text>
-            <Text style={styles.discountBadge}>-{discountPercent}%</Text>
+            {product.originalPrice > product.price && (
+              <>
+                <Text style={styles.originalPrice}>AED {product.originalPrice.toFixed(2)}</Text>
+                <Text style={styles.discountBadge}>-{discountPercent}%</Text>
+              </>
+            )}
           </View>
 
           <Text style={styles.meta}>

@@ -1,6 +1,6 @@
 // src/screens/business/BusinessHomeScreen.tsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { 
   View,
   Text,
@@ -12,9 +12,8 @@ import {
 } from 'react-native';
 import BusinessLayout from '@/components/BusinessLayout'; // Use your BusinessLayout for a bottom bar
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
-import { Ionicons } from '@expo/vector-icons';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { setOrders, setLoading as setOrdersLoading, setError as setOrdersError } from '@/store/slices/ordersSlice';
 import { setFoodItems, setLoading as setFoodItemsLoading, setError as setFoodItemsError } from '@/store/slices/foodItemsSlice';
@@ -22,6 +21,7 @@ import FoodItemCard from '@/components/FoodItemCard';
 import OrderCard from '@/components/OrderCard';
 import { FoodItem } from '@/store/slices/foodItemsSlice';
 import api from '@/lib/api';
+import { Icon } from '@rneui/themed';
 
 type QuickAction = {
   title: 'Add Item' | 'Update Price' | 'Inventory';
@@ -105,7 +105,12 @@ export default function BusinessHomeScreen() {
                 }
               }}
             >
-              <Ionicons name={action.icon} size={24} color="#22C55E" />
+              <Icon
+                name="add-circle"
+                type="material"
+                size={24}
+                color="#22C55E"
+              />
               <Text style={styles.actionTitle}>{action.title}</Text>
             </TouchableOpacity>
           ))}
@@ -120,7 +125,12 @@ export default function BusinessHomeScreen() {
               onPress={() => navigation.navigate('Inventory')}
             >
               <Text style={styles.seeAllText}>See All</Text>
-              <Ionicons name="chevron-forward" size={16} color="#22C55E" />
+              <Icon
+                name="chevron-right"
+                type="material"
+                size={16}
+                color="#22C55E"
+              />
             </TouchableOpacity>
           </View>
 
@@ -162,7 +172,12 @@ export default function BusinessHomeScreen() {
               onPress={() => navigation.navigate('ManageOrders')}
             >
               <Text style={styles.seeAllText}>See All</Text>
-              <Ionicons name="chevron-forward" size={16} color="#22C55E" />
+              <Icon
+                name="chevron-right"
+                type="material"
+                size={16}
+                color="#22C55E"
+              />
             </TouchableOpacity>
           </View>
 
@@ -274,5 +289,8 @@ const styles = StyleSheet.create({
   loadingContainer: {
     padding: 24,
     alignItems: 'center',
+  },
+  emoji: {
+    fontSize: 20,
   },
 });

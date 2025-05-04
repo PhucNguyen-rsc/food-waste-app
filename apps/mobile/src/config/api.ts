@@ -1,4 +1,3 @@
-import { api } from '@/lib/api';
 
 export const API_ENDPOINTS = {
   CONSUMER: {

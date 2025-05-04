@@ -1,33 +1,53 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { setUser, setToken } from '@/store/slices/authSlice';
 import { signInWithEmailAndPassword } from '@/lib/auth';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
 
-export default function SignInScreen({ navigation }: any) {
+type SignInScreenNavProp = NativeStackNavigationProp<RootStackParamList, 'SignIn'>;
+
+export default function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+  const navigation = useNavigation<SignInScreenNavProp>();
 
-  const handleSignIn = async () => {
+  const validateInputs = () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please fill in all fields');
-      return;
+      return false;
     }
+    if (!email.includes('@')) {
+      Alert.alert('Error', 'Please enter a valid email address');
+      return false;
+    }
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters');
+      return false;
+    }
+    return true;
+  };
 
+  const handleSignIn = async () => {
+    if (!validateInputs()) return;
+    
+    setIsLoading(true);
     try {
       const { user, accessToken } = await signInWithEmailAndPassword(email, password);
       
       dispatch(setUser(user));
       dispatch(setToken(accessToken));
       
-      // Navigate to appropriate screen based on role
       switch (user.role) {
         case 'CONSUMER':
-          navigation.replace('ConsumerHome');
+          navigation.replace('Consumer');
           break;
         case 'BUSINESS':
-          navigation.replace('BusinessHome');
+          navigation.replace('Business');
           break;
         case 'COURIER':
           navigation.replace('CourierHome');
@@ -48,11 +68,16 @@ export default function SignInScreen({ navigation }: any) {
         case 'auth/invalid-email':
           errorMessage = 'Please enter a valid email address';
           break;
+        case 'auth/network-request-failed':
+          errorMessage = 'Network error. Please check your connection';
+          break;
         default:
           errorMessage = error.message || errorMessage;
       }
       
       Alert.alert('Error', errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -65,17 +90,31 @@ export default function SignInScreen({ navigation }: any) {
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
+        editable={!isLoading}
       />
       <TextInput
         style={styles.input}
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
+        secureTextEntry
+        editable={!isLoading}
       />
-      <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-        <Text style={styles.buttonText}>Sign In</Text>
+      <TouchableOpacity 
+        style={[styles.button, isLoading && styles.buttonDisabled]} 
+        onPress={handleSignIn}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <ActivityIndicator color="white" />
+        ) : (
+          <Text style={styles.buttonText}>Sign In</Text>
+        )}
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+      <TouchableOpacity 
+        onPress={() => navigation.navigate('SignUp')}
+        disabled={isLoading}
+      >
         <Text style={styles.linkText}>Don't have an account? Sign Up</Text>
       </TouchableOpacity>
     </View>
@@ -100,6 +139,9 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 5,
     alignItems: 'center',
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   buttonText: {
     color: 'white',

@@ -1,21 +1,20 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { signOut } from 'firebase/auth';
-
-import ConsumerLayout from '@/components/ConsumerLayout';
-import { auth } from '@/config/firebaseConfig';
+import { signOut } from '@/lib/auth';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+import ConsumerLayout from '@/components/ConsumerLayout';
+
+type SettingsScreenNavProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function SettingsScreen() {
-  const navigation = useNavigation<NavigationProp>();
+  const navigation = useNavigation<SettingsScreenNavProp>();
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await signOut();
       navigation.reset({
         index: 0,
         routes: [{ name: 'GetStarted' }],

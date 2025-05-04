@@ -5,14 +5,14 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
 import { PaymentType } from '@food-waste/types';
 import ConsumerLayout from '@/components/ConsumerLayout';
-import { FontAwesome } from '@expo/vector-icons';
+import { Icon } from '@rneui/themed';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 type PaymentMethodInfo = {
   type: PaymentType;
   name: string;
-  icon: keyof typeof FontAwesome.glyphMap;
+  icon: string;
   color: string;
 };
 
@@ -56,7 +56,12 @@ export default function PaymentMethodsScreen() {
               style={styles.method}
               onPress={() => handleSelectMethod(method.type)}
             >
-              <FontAwesome name={method.icon} size={40} color={method.color} />
+              <Icon 
+                name={method.icon} 
+                type="font-awesome" 
+                size={40} 
+                color={method.color} 
+              />
               <Text style={styles.methodName}>{method.name}</Text>
             </TouchableOpacity>
           ))}

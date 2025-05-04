@@ -13,7 +13,7 @@ import {
 import ConsumerLayout from '@/components/ConsumerLayout';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
-import { clearCart } from '@/store/cartSlice';
+import { clearCart } from '@/store/slices/cartSlice';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
@@ -105,7 +105,7 @@ export default function CheckoutScreen() {
       console.log('Payment methods response:', response.data);
       
       // Validate payment methods using the isValidPaymentMethod function
-      const validPaymentMethods = response.data.filter(method => 
+      const validPaymentMethods = response.data.filter((method: PaymentMethod) => 
         isValidPaymentMethod(method.type)
       );
       

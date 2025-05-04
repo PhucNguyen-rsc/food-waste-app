@@ -10,15 +10,15 @@ import {
   Alert,
 } from 'react-native';
 import CourierLayout from '@/components/CourierLayout';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '@rneui/themed';
 import { API_ENDPOINTS, handleApiError } from '@/config/api';
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CourierStackParamList } from '@/navigation/types';
 import api from '@/lib/api';
 import { OrderStatus } from '@food-waste/types';
 
-type ActiveDeliveryScreenNavigationProp = StackNavigationProp<CourierStackParamList, 'ActiveDelivery'>;
+type ActiveDeliveryScreenNavigationProp = NativeStackNavigationProp<CourierStackParamList, 'ActiveDelivery'>;
 
 type ActiveDelivery = {
   id: string;
@@ -131,11 +131,11 @@ export default function ActiveDeliveryScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Customer Details</Text>
             <View style={styles.detailRow}>
-              <Ionicons name="person" size={20} color="#22C55E" />
+              <Icon name="account" type="material-community" size={20} color="#22C55E" />
               <Text style={styles.detailText}>{delivery.customerName}</Text>
             </View>
             <View style={styles.detailRow}>
-              <Ionicons name="call" size={20} color="#22C55E" />
+              <Icon name="phone" type="material-community" size={20} color="#22C55E" />
               <Text style={styles.detailText}>{delivery.customerPhone}</Text>
             </View>
           </View>
@@ -143,7 +143,7 @@ export default function ActiveDeliveryScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Pickup Location</Text>
             <View style={styles.detailRow}>
-              <Ionicons name="restaurant" size={20} color="#22C55E" />
+              <Icon name="store" type="material-community" size={20} color="#22C55E" />
               <Text style={styles.detailText}>{delivery.pickupAddress}</Text>
             </View>
           </View>
@@ -151,7 +151,7 @@ export default function ActiveDeliveryScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Delivery Location</Text>
             <View style={styles.detailRow}>
-              <Ionicons name="home" size={20} color="#22C55E" />
+              <Icon name="home" type="material-community" size={20} color="#22C55E" />
               <Text style={styles.detailText}>{delivery.deliveryAddress}</Text>
             </View>
           </View>

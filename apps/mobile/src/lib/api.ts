@@ -1,7 +1,6 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
 import { getApiConfig } from '@food-waste/config';
 import { store } from '@/store';
-import { auth } from '@/config/firebaseConfig';
 
 const apiConfig = getApiConfig({
   apiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://10.0.2.2:3001', // Use 10.0.2.2 for Android emulator
@@ -13,8 +12,8 @@ const api = axios.create({
   baseURL: apiConfig.BASE_URL,
   timeout: 10000, // 10 seconds timeout
   headers: {
-    'Content-Type': 'application/json',
     ...apiConfig.HEADERS,
+    'Content-Type': 'application/json',
   },
   withCredentials: true,
 });

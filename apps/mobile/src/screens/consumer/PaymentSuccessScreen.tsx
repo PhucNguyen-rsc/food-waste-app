@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ConsumerLayout from '@/components/ConsumerLayout';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '@rneui/themed';
 import { RootStackParamList } from '@/navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -15,7 +15,7 @@ export default function PaymentSuccessScreen() {
     <ConsumerLayout>
       <View style={styles.container}>
         <View style={styles.iconContainer}>
-          <Ionicons name="checkmark-circle" size={80} color="#22C55E" />
+          <Icon name="checkmark-circle" size={80} color="#22C55E" />
         </View>
         <Text style={styles.title}>Payment Method Added!</Text>
         <Text style={styles.subtitle}>

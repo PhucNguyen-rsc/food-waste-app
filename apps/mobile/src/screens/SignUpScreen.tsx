@@ -3,12 +3,18 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'reac
 import { useDispatch } from 'react-redux';
 import { setUser, setToken } from '@/store/slices/authSlice';
 import { createUserWithEmailAndPassword } from '@/lib/auth';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
 
-export default function SignUpScreen({ navigation }: any) {
+type SignUpScreenNavProp = NativeStackNavigationProp<RootStackParamList>;
+
+export default function SignUpScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const dispatch = useDispatch();
+  const navigation = useNavigation<SignUpScreenNavProp>();
 
   const handleSignUp = async () => {
     if (!email || !password || !name) {
@@ -31,16 +37,28 @@ export default function SignUpScreen({ navigation }: any) {
       // Navigate to appropriate screen based on role
       switch (user.role) {
         case 'CONSUMER':
-          navigation.replace('ConsumerHome');
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Consumer' }],
+          });
           break;
         case 'BUSINESS':
-          navigation.replace('BusinessHome');
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Business' }],
+          });
           break;
         case 'COURIER':
-          navigation.replace('CourierHome');
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'CourierHome' }],
+          });
           break;
         default:
-          navigation.replace('RoleSelection');
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'RoleSelection' }],
+          });
       }
     } catch (error: any) {
       let errorMessage = 'An error occurred during sign up';

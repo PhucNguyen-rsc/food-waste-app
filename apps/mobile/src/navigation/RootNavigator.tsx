@@ -11,29 +11,9 @@ import SignUpScreen from '@/screens/SignUpScreen';
 // Role Selection
 import RoleSelectionScreen from '@/screens/RoleSelectionScreen';
 
-// Business Screens
-import BusinessHomeScreen from '@/screens/business/BusinessHomeScreen';
-import AddItemScreen from '@/screens/business/AddItemScreen';
-import ManageOrderScreen from '@/screens/business/ManageOrderScreen';
-import BusinessProfileScreen from '@/screens/business/BusinessProfileScreen';
-import AnalyticsScreen from '@/screens/business/AnalyticsScreen';
-import UpdatePriceScreen from '@/screens/business/UpdatePriceScreen';
-import InventoryScreen from '@/screens/business/InventoryScreen';
-
-// Consumer Screens
-import ConsumerHomeScreen from '@/screens/consumer/ConsumerHomeScreen';
-import ProfileScreen from '@/screens/consumer/ProfileScreen';
-import ProductDetailScreen from '@/screens/consumer/ProductDetailScreen';
-import SettingsScreen from '@/screens/consumer/SettingsScreen';
-import ChangePasswordScreen from '@/screens/consumer/ChangePasswordScreen';
-import CartScreen from '@/screens/consumer/CartScreen';
-import CheckoutScreen from '@/screens/consumer/CheckoutScreen';
-import OrderSuccessScreen from '@/screens/consumer/OrderSuccessScreen';
-import NoPaymentMethodScreen from '@/screens/consumer/NoPaymentMethodScreen';
-import PaymentMethodsScreen from '@/screens/consumer/PaymentMethodsScreen';
-import AddPaymentMethodScreen from '@/screens/consumer/AddPaymentMethodScreen';
-import PaymentSuccessScreen from '@/screens/consumer/PaymentSuccessScreen';
-import OrdersScreen from '@/screens/consumer/OrdersScreen';
+// Navigators
+import ConsumerNavigator from './ConsumerNavigator';
+import BusinessNavigator from './BusinessNavigator';
 
 // Courier Screens
 import CourierHomeScreen from '@/screens/courier/CourierHomeScreen';
@@ -42,6 +22,12 @@ import DeliveryDetailsScreen from '@/screens/courier/DeliveryDetailsScreen';
 import EarningsScreen from '@/screens/courier/EarningsScreen';
 import HistoryScreen from '@/screens/courier/HistoryScreen';
 import CourierProfileScreen from '@/screens/courier/CourierProfileScreen';
+
+// Payment Screens
+import NoPaymentMethodScreen from '@/screens/consumer/NoPaymentMethodScreen';
+import PaymentMethodsScreen from '@/screens/consumer/PaymentMethodsScreen';
+import AddPaymentMethodScreen from '@/screens/consumer/AddPaymentMethodScreen';
+import PaymentSuccessScreen from '@/screens/consumer/PaymentSuccessScreen';
 
 import { useAppSelector } from '@/store';
 
@@ -67,25 +53,11 @@ export const RootNavigator = () => {
         {/* Role Selection */}
         <Stack.Screen name="RoleSelection" component={RoleSelectionScreen} />
 
-        {/* Business Screens */}
-        <Stack.Screen name="BusinessHome" component={BusinessHomeScreen} />
-        <Stack.Screen name="Analytics" component={AnalyticsScreen} />
-        <Stack.Screen name="AddItem" component={AddItemScreen} />
-        <Stack.Screen name="UpdatePrice" component={UpdatePriceScreen} />
-        <Stack.Screen name="Inventory" component={InventoryScreen} />
-        <Stack.Screen name="ManageOrders" component={ManageOrderScreen} />
-        <Stack.Screen name="BusinessProfile" component={BusinessProfileScreen} />
+        {/* Business Navigator */}
+        <Stack.Screen name="Business" component={BusinessNavigator} />
 
-        {/* Consumer Screens */}
-        <Stack.Screen name="ConsumerHome" component={ConsumerHomeScreen} />
-        <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
-        <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
-        <Stack.Screen name="Cart" component={CartScreen} />
-        <Stack.Screen name="Orders" component={OrdersScreen} />
-        <Stack.Screen name="CheckoutScreen" component={CheckoutScreen} />
-        <Stack.Screen name="OrderSuccessScreen" component={OrderSuccessScreen} />
+        {/* Consumer Navigator */}
+        <Stack.Screen name="Consumer" component={ConsumerNavigator} />
 
         {/* Courier Screens */}
         <Stack.Screen name="CourierHome" component={CourierHomeScreen} />

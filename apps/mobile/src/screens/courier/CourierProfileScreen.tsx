@@ -15,7 +15,6 @@ import { API_ENDPOINTS, handleApiError } from '@/config/api';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
-import { Ionicons } from '@expo/vector-icons';
 import api from '@/lib/api';
 
 type CourierProfileScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;

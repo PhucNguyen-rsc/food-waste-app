@@ -13,7 +13,7 @@ import {
   ScrollView,
 } from 'react-native';
 import CourierLayout from '@/components/CourierLayout';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '@rneui/themed';
 import { API_ENDPOINTS } from '@/config/api';
 import api from '@/lib/api';
 import { OrderStatus } from '@food-waste/types';
@@ -158,11 +158,11 @@ export default function HistoryScreen() {
       </View>
       <View style={styles.addressContainer}>
         <View style={styles.addressRow}>
-          <Ionicons name="location" size={16} color="#6B7280" />
+          <Icon name="map-marker" type="material-community" size={16} color="#6B7280" />
           <Text style={styles.address}>Pickup: {item.pickupAddress}</Text>
         </View>
         <View style={styles.addressRow}>
-          <Ionicons name="flag" size={16} color="#6B7280" />
+          <Icon name="flag-checkered" type="material-community" size={16} color="#6B7280" />
           <Text style={styles.address}>Delivery: {item.deliveryAddress}</Text>
         </View>
       </View>

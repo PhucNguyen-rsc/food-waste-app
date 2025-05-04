@@ -11,11 +11,11 @@ import {
 import ConsumerLayout from '@/components/ConsumerLayout';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
-import { removeFromCart, clearCart, updateQuantity } from '@/store/cartSlice';
+import { removeFromCart, clearCart, updateQuantity } from '@/store/slices/cartSlice';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@/navigation/types';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '@rneui/themed';
 import { CartItem } from '@/store/slices/cartSlice';
 import QuantitySelector from '@/components/QuantitySelector';
 
@@ -78,14 +78,14 @@ export default function CartScreen() {
               setShowQuantitySelector(true);
             }}
           >
-            <Ionicons name="add-circle" size={24} color="#22C55E" />
+            <Icon name="add-circle" type="material" size={24} color="#22C55E" />
           </TouchableOpacity>
           <Text style={styles.quantity}>{item.quantity}</Text>
           <TouchableOpacity 
             style={styles.quantityButton}
             onPress={() => handleUpdateQuantity(item.id, item.quantity - 1)}
           >
-            <Ionicons name="remove-circle" size={24} color="#EF4444" />
+            <Icon name="remove-circle" type="material" size={24} color="#EF4444" />
           </TouchableOpacity>
         </View>
       </View>
@@ -93,7 +93,7 @@ export default function CartScreen() {
         style={styles.removeButton}
         onPress={() => handleRemove(item.id)}
       >
-        <Ionicons name="trash-outline" size={24} color="#EF4444" />
+        <Icon name="delete" type="material" size={24} color="#EF4444" />
       </TouchableOpacity>
     </View>
   );
@@ -104,7 +104,7 @@ export default function CartScreen() {
         <View style={styles.header}>
           <Text style={styles.heading}>My Cart</Text>
           <View style={styles.cartIconContainer}>
-            <Ionicons name="cart" size={24} color="#22C55E" />
+            <Icon name="shopping-cart" size={24} color="#22C55E" />
             {cartItems.length > 0 && (
               <View style={styles.cartBadge}>
                 <Text style={styles.cartBadgeText}>{cartItems.length}</Text>
@@ -115,7 +115,7 @@ export default function CartScreen() {
 
         {cartItems.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Ionicons name="cart-outline" size={64} color="#ccc" />
+            <Icon name="shopping-cart" size={64} color="#ccc" />
             <Text style={styles.emptyText}>Your cart is empty</Text>
             <TouchableOpacity 
               style={styles.shopButton}
@@ -155,7 +155,7 @@ export default function CartScreen() {
             setSelectedItem(null);
           }}
           onConfirm={handleQuantitySelect}
-          maxQuantity={selectedItem?.quantity || 10}
+          maxQuantity={selectedItem?.maxQuantity || 10}
           currentQuantity={selectedItem?.quantity}
         />
       </View>

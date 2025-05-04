@@ -1,6 +1,7 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
 import { PaymentType } from '@food-waste/types';
 import { Order } from '@/types'; // Ensure this exists and is typed correctly
+import { Product } from '@/types'; // Ensure this exists and is typed correctly
 
 // ==========================
 // Courier Stack
@@ -19,22 +20,25 @@ export type CourierStackParamList = {
 // Consumer Stack
 // ==========================
 export type ConsumerStackParamList = {
+  ConsumerTabs: undefined;
   Home: undefined;
   Cart: undefined;
   Orders: undefined;
   Profile: undefined;
-  ProductDetail: { productId: string };
+  ProductDetail: { product: Product };
   Settings: undefined;
   ChangePassword: undefined;
   CheckoutScreen: undefined;
   OrderSuccessScreen: { orderId: string };
   OrderDetails: { orderId: string };
+  BusinessDetails: undefined;
 };
 
 // ==========================
 // Business Stack
 // ==========================
 export type BusinessStackParamList = {
+  BusinessTabs: undefined;
   BusinessHome: undefined;
   AddItem: undefined;
   ManageOrders: undefined;
@@ -58,7 +62,7 @@ export type RootStackParamList = {
 
   // Consumer Screens (direct from root)
   ConsumerHome: undefined;
-  ProductDetail: { productId: string };
+  ProductDetail: { product: Product };
   Cart: undefined;
   Orders: undefined;
   Profile: undefined;

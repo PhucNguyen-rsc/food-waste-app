@@ -11,9 +11,14 @@ export class BusinessService {
 
   async createFoodItem(businessId: string, createFoodItemDto: CreateFoodItemDto) {
     console.log(`[BusinessService] Creating food item for business ${businessId}:`, createFoodItemDto);
+    
+    // Convert expiryDate string to DateTime
+    const expiryDate = new Date(createFoodItemDto.expiryDate);
+    
     const foodItem = await this.prisma.foodItem.create({
       data: {
         ...createFoodItemDto,
+        expiryDate,
         businessId,
       },
     });

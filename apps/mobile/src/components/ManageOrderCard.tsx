@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '@rneui/themed';
 import { Order } from '@/store/slices/ordersSlice';
 
 interface ManageOrderCardProps {
@@ -79,14 +79,14 @@ export default function ManageOrderCard({ order, onUpdateStatus }: ManageOrderCa
 
       <View style={styles.orderContent}>
         <View style={styles.itemsContainer}>
-          <Ionicons name="fast-food-outline" size={16} color="#666" />
+          <Icon name="fast-food-outline" size={16} color="#666" />
           <Text style={styles.itemsText} numberOfLines={1}>
             {order.items.map(i => `${i.quantity}x ${i.foodItem.name}`).join(', ')}
           </Text>
         </View>
 
         <View style={styles.addressContainer}>
-          <Ionicons name="location-outline" size={16} color="#666" />
+          <Icon name="location-outline" size={16} color="#666" />
           <Text style={styles.addressText} numberOfLines={1}>
             {order.deliveryAddress}
           </Text>

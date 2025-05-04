@@ -9,7 +9,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { CourierStackParamList } from '@/navigation/types';
 import NavBar from './ui/NavBar';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '@rneui/themed';
 
 type CourierLayoutNavProp = NativeStackNavigationProp<CourierStackParamList>;
 
@@ -51,8 +51,9 @@ export default function CourierLayout({
           style={styles.navButton}
           onPress={() => navigation.navigate('CourierHome')}
         >
-          <Ionicons
+          <Icon
             name={route.name === 'CourierHome' ? 'home' : 'home-outline'}
+            type="material-community"
             size={24}
             color={route.name === 'CourierHome' ? '#22C55E' : '#666'}
           />
@@ -62,8 +63,9 @@ export default function CourierLayout({
           style={styles.navButton}
           onPress={() => navigation.navigate('History')}
         >
-          <Ionicons
-            name={route.name === 'History' ? 'time' : 'time-outline'}
+          <Icon
+            name={route.name === 'History' ? 'clock' : 'clock-outline'}
+            type="material-community"
             size={24}
             color={route.name === 'History' ? '#22C55E' : '#666'}
           />
@@ -73,8 +75,9 @@ export default function CourierLayout({
           style={styles.navButton}
           onPress={() => navigation.navigate('Earnings')}
         >
-          <Ionicons
+          <Icon
             name={route.name === 'Earnings' ? 'wallet' : 'wallet-outline'}
+            type="material-community"
             size={24}
             color={route.name === 'Earnings' ? '#22C55E' : '#666'}
           />
@@ -84,8 +87,9 @@ export default function CourierLayout({
           style={styles.navButton}
           onPress={() => navigation.navigate('CourierProfile')}
         >
-          <Ionicons
-            name={route.name === 'CourierProfile' ? 'person' : 'person-outline'}
+          <Icon
+            name={route.name === 'CourierProfile' ? 'account' : 'account-outline'}
+            type="material-community"
             size={24}
             color={route.name === 'CourierProfile' ? '#22C55E' : '#666'}
           />

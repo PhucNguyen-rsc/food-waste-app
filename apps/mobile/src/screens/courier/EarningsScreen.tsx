@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import CourierLayout from '@/components/CourierLayout';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '@rneui/themed';
 import { API_ENDPOINTS, handleApiError } from '@/config/api';
 import api from '@/lib/api';
 import { format } from 'date-fns';
@@ -131,11 +131,11 @@ export default function EarningsScreen() {
                 </View>
                 <View style={styles.historyDetails}>
                   <View style={styles.detailRow}>
-                    <Ionicons name="person" size={16} color="#6B7280" />
+                    <Icon name="account" type="material-community" size={16} color="#6B7280" />
                     <Text style={styles.detailText}>{item.customerName}</Text>
                   </View>
                   <View style={styles.detailRow}>
-                    <Ionicons name="time" size={16} color="#6B7280" />
+                    <Icon name="clock" type="material-community" size={16} color="#6B7280" />
                     <Text style={styles.detailText}>
                       {format(new Date(item.completedAt), 'MMM d, yyyy h:mm a')}
                     </Text>
