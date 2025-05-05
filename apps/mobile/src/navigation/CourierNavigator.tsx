@@ -3,6 +3,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Icon } from '@rneui/themed';
 import { CourierStackParamList } from './types';
+import { useAppSelector } from '@/store';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 // Import screens
 import CourierHomeScreen from '@/screens/courier/CourierHomeScreen';
@@ -16,6 +18,19 @@ const Tab = createBottomTabNavigator<CourierStackParamList>();
 const Stack = createNativeStackNavigator<CourierStackParamList>();
 
 function TabNavigator() {
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const user = useAppSelector((state) => state.auth.user);
+  const isProfileComplete = Boolean(user?.name);
+  const hasRedirectedRef = React.useRef(false);
+
+  React.useEffect(() => {
+    if (!isProfileComplete && route.name !== 'CourierProfile' && !hasRedirectedRef.current) {
+      hasRedirectedRef.current = true;
+      navigation.navigate('CourierProfile');
+    }
+  }, [isProfileComplete, route.name]);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -27,13 +42,13 @@ function TabNavigator() {
               iconName = focused ? 'home' : 'home-outline';
               break;
             case 'ActiveDelivery':
-              iconName = focused ? 'truck-delivery' : 'truck-delivery-outline';
+              iconName = focused ? 'truck-fast' : 'truck-fast-outline';
               break;
             case 'Earnings':
-              iconName = focused ? 'cash' : 'cash-outline';
+              iconName = focused ? 'wallet' : 'wallet-outline';
               break;
             case 'History':
-              iconName = focused ? 'history' : 'history-outline';
+              iconName = focused ? 'clock-time-four' : 'clock-time-four-outline';
               break;
             case 'CourierProfile':
               iconName = focused ? 'account' : 'account-outline';
@@ -94,7 +109,7 @@ function TabNavigator() {
 
 export default function CourierNavigator() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="CourierTabs">
       <Stack.Screen
         name="CourierTabs"
         component={TabNavigator}
@@ -105,7 +120,8 @@ export default function CourierNavigator() {
         component={DeliveryDetailsScreen}
         options={{ 
           title: 'Delivery Details',
-          headerShown: true
+          headerShown: true,
+          presentation: 'modal'
         }}
       />
     </Stack.Navigator>

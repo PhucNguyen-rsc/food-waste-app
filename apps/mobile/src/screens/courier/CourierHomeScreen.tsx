@@ -9,7 +9,6 @@ import {
   FlatList,
   ActivityIndicator,
   Alert,
-  Image,
   RefreshControl,
 } from 'react-native';
 import CourierLayout from '@/components/CourierLayout';
@@ -25,7 +24,6 @@ type CourierHomeScreenNavigationProp = NativeStackNavigationProp<CourierStackPar
 type DeliveryRequest = {
   id: string;
   customerName: string;
-  customerPhotoUrl?: string;
   distanceKm: number;
   pickupAddress: string;
   rewardAed: number;
@@ -34,7 +32,6 @@ type DeliveryRequest = {
 type CourierStats = {
   completed: number;
   earnings: number;
-  rating: number;
 };
 
 export default function CourierHomeScreen() {
@@ -131,7 +128,7 @@ export default function CourierHomeScreen() {
 
   if (loading) {
     return (
-      <CourierLayout title="New Deliveries">
+      <CourierLayout>
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color="#22C55E" />
         </View>
@@ -141,7 +138,7 @@ export default function CourierHomeScreen() {
 
   if (error) {
     return (
-      <CourierLayout title="New Deliveries">
+      <CourierLayout>
         <View style={styles.centerContainer}>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={() => fetchCourierData()}>
@@ -153,7 +150,7 @@ export default function CourierHomeScreen() {
   }
 
   return (
-    <CourierLayout title="New Deliveries">
+    <CourierLayout>
       <View style={styles.container}>
         {/* Stats Section */}
         {stats && (
@@ -166,12 +163,6 @@ export default function CourierHomeScreen() {
               <View style={styles.statItem}>
                 <Text style={styles.statNumber}>AED {stats.earnings}</Text>
                 <Text style={styles.statLabel}>Earnings</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>
-                  {stats.rating} <Icon name="star" type="material-community" size={14} color="#FACC15" />
-                </Text>
-                <Text style={styles.statLabel}>Rating</Text>
               </View>
             </View>
           </View>
@@ -189,14 +180,6 @@ export default function CourierHomeScreen() {
           renderItem={({ item }) => (
             <View style={styles.requestCard}>
               <View style={styles.requestTopRow}>
-                <Image
-                  source={
-                    item.customerPhotoUrl
-                      ? { uri: item.customerPhotoUrl }
-                      : undefined
-                  }
-                  style={styles.avatar}
-                />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.customerName}>{item.customerName}</Text>
                   <Text style={styles.customerDistance}>{item.distanceKm} km away</Text>
@@ -256,7 +239,7 @@ const styles = StyleSheet.create({
   },
   statsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
   },
   statItem: {
     alignItems: 'center',
@@ -292,12 +275,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 12,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
   },
   customerName: {
     fontSize: 16,

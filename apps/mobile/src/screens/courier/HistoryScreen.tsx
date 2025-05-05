@@ -202,7 +202,7 @@ export default function HistoryScreen() {
 
   if (loading && !refreshing) {
     return (
-      <CourierLayout title="History">
+      <CourierLayout>
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color="#22C55E" />
         </View>
@@ -211,7 +211,7 @@ export default function HistoryScreen() {
   }
 
   return (
-    <CourierLayout title="History">
+    <CourierLayout>
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}

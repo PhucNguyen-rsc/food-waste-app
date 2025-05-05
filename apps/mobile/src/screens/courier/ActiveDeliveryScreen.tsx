@@ -91,7 +91,7 @@ export default function ActiveDeliveryScreen() {
 
   if (loading) {
     return (
-      <CourierLayout title="Active Delivery">
+      <CourierLayout>
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color="#22C55E" />
         </View>
@@ -101,7 +101,7 @@ export default function ActiveDeliveryScreen() {
 
   if (error) {
     return (
-      <CourierLayout title="Active Delivery">
+      <CourierLayout>
         <View style={styles.centerContainer}>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={fetchActiveDelivery}>
@@ -114,7 +114,7 @@ export default function ActiveDeliveryScreen() {
 
   if (!delivery) {
     return (
-      <CourierLayout title="Active Delivery">
+      <CourierLayout>
         <View style={styles.centerContainer}>
           <Text style={styles.emptyText}>No active delivery</Text>
         </View>
@@ -123,7 +123,7 @@ export default function ActiveDeliveryScreen() {
   }
 
   return (
-    <CourierLayout title="Active Delivery">
+    <CourierLayout>
       <View style={styles.container}>
         <View style={styles.card}>
           <Text style={styles.orderId}>Order #{delivery.orderId}</Text>

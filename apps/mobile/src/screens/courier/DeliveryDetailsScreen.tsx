@@ -76,7 +76,7 @@ export default function DeliveryDetailsScreen() {
 
   if (loading) {
     return (
-      <CourierLayout title="Delivery Details">
+      <CourierLayout>
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color="#22C55E" />
         </View>
@@ -86,7 +86,7 @@ export default function DeliveryDetailsScreen() {
 
   if (error) {
     return (
-      <CourierLayout title="Delivery Details">
+      <CourierLayout>
         <View style={styles.centerContainer}>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={fetchDeliveryDetails}>
@@ -99,7 +99,7 @@ export default function DeliveryDetailsScreen() {
 
   if (!delivery) {
     return (
-      <CourierLayout title="Delivery Details">
+      <CourierLayout>
         <View style={styles.centerContainer}>
           <Text style={styles.emptyText}>No delivery details available</Text>
         </View>
@@ -112,7 +112,7 @@ export default function DeliveryDetailsScreen() {
     : undefined;
 
   return (
-    <CourierLayout title="Delivery Details">
+    <CourierLayout>
       <View style={styles.container}>
         <View style={styles.card}>
           {imageSource && (

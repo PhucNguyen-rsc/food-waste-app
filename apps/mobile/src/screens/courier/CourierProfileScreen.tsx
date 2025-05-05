@@ -66,7 +66,7 @@ export default function CourierProfileScreen() {
 
   if (loading) {
     return (
-      <CourierLayout title="Profile">
+      <CourierLayout>
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color="#22C55E" />
         </View>
@@ -76,7 +76,7 @@ export default function CourierProfileScreen() {
 
   if (error) {
     return (
-      <CourierLayout title="Profile">
+      <CourierLayout>
         <View style={styles.centerContainer}>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={fetchProfile}>
@@ -89,7 +89,7 @@ export default function CourierProfileScreen() {
 
   if (!profile) {
     return (
-      <CourierLayout title="Profile">
+      <CourierLayout>
         <View style={styles.centerContainer}>
           <Text style={styles.emptyText}>Profile not available</Text>
         </View>
@@ -98,7 +98,7 @@ export default function CourierProfileScreen() {
   }
 
   return (
-    <CourierLayout title="Profile">
+    <CourierLayout>
       <View style={styles.container}>
         <View style={styles.profileCard}>
           <Image

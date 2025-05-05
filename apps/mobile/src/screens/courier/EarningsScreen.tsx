@@ -57,7 +57,7 @@ export default function EarningsScreen() {
 
   if (loading) {
     return (
-      <CourierLayout title="Earnings">
+      <CourierLayout>
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color="#22C55E" />
         </View>
@@ -67,7 +67,7 @@ export default function EarningsScreen() {
 
   if (error) {
     return (
-      <CourierLayout title="Earnings">
+      <CourierLayout>
         <View style={styles.centerContainer}>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={fetchEarningsData}>
@@ -79,7 +79,7 @@ export default function EarningsScreen() {
   }
 
   return (
-    <CourierLayout title="Earnings">
+    <CourierLayout>
       <View style={styles.container}>
         {/* Stats Cards */}
         {stats && (
