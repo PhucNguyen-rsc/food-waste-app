@@ -3,7 +3,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Icon } from '@rneui/themed';
 import { BusinessStackParamList } from './types';
-
+import { useAppSelector } from '@/store';
+import { useNavigation, useRoute } from '@react-navigation/native';
 // Import screens
 import BusinessHomeScreen from '@/screens/business/BusinessHomeScreen';
 import AnalyticsScreen from '@/screens/business/AnalyticsScreen';
@@ -17,6 +18,19 @@ const Tab = createBottomTabNavigator<BusinessStackParamList>();
 const Stack = createNativeStackNavigator<BusinessStackParamList>();
 
 function TabNavigator() {
+  const navigation = useNavigation<any>(); // type it better if needed
+  const route = useRoute();
+  const user = useAppSelector((state) => state.auth.user);
+  const isProfileComplete = Boolean(user?.businessName && user?.businessAddress && user?.businessPhone);
+  const hasRedirectedRef = React.useRef(false);
+
+  React.useEffect(() => {
+    if (!isProfileComplete && route.name !== 'Profile' && !hasRedirectedRef.current) {
+      hasRedirectedRef.current = true;
+      navigation.navigate('Profile');
+    }
+  }, [isProfileComplete, route.name]);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -27,14 +41,14 @@ function TabNavigator() {
             case 'Home':
               iconName = focused ? 'home' : 'home-outline';
               break;
+            case 'Orders':
+              iconName = focused ? 'file-document' : 'file-document-outline';
+              break;
             case 'Analytics':
               iconName = focused ? 'chart-bar' : 'chart-bar-stacked';
               break;
             case 'Inventory':
-              iconName = focused ? 'format-list-bulleted' : 'format-list-bulleted';
-              break;
-            case 'Orders':
-              iconName = focused ? 'package-variant' : 'package-variant-closed';
+              iconName = focused ? 'cube' : 'cube-outline';
               break;
             case 'Profile':
               iconName = focused ? 'account' : 'account-outline';
@@ -49,38 +63,19 @@ function TabNavigator() {
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen 
-        name="Home" 
-        component={BusinessHomeScreen}
-        options={{ headerShown: false }}
-      />
-      <Tab.Screen 
-        name="Analytics" 
-        component={AnalyticsScreen}
-        options={{ headerShown: false }}
-      />
-      <Tab.Screen 
-        name="Inventory" 
-        component={InventoryScreen}
-        options={{ headerShown: false }}
-      />
-      <Tab.Screen 
-        name="Orders" 
-        component={ManageOrderScreen}
-        options={{ headerShown: false }}
-      />
-      <Tab.Screen 
-        name="Profile" 
-        component={BusinessProfileScreen}
-        options={{ headerShown: false }}
-      />
+      <Tab.Screen name="Home" component={BusinessHomeScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Orders" component={ManageOrderScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Analytics" component={AnalyticsScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Inventory" component={InventoryScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Profile" component={BusinessProfileScreen} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 }
 
+
 export default function BusinessNavigator() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="BusinessTabs">
       <Stack.Screen
         name="BusinessTabs"
         component={TabNavigator}
@@ -89,13 +84,21 @@ export default function BusinessNavigator() {
       <Stack.Screen
         name="AddItem"
         component={AddItemScreen}
-        options={{ title: 'Add New Item' }}
+        options={{ 
+          title: 'Add New Item',
+          headerShown: true,
+          presentation: 'modal'
+        }}
       />
       <Stack.Screen
         name="UpdatePrice"
         component={UpdatePriceScreen}
-        options={{ title: 'Update Price' }}
+        options={{ 
+          title: 'Update Price',
+          headerShown: true,
+          presentation: 'modal'
+        }}
       />
     </Stack.Navigator>
   );
-} 
+}

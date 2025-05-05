@@ -32,16 +32,16 @@ export default function RoleSelectionScreen() {
       // Navigate to appropriate screen based on role
       switch (role) {
         case UserRole.BUSINESS:
-          navigation.replace('BusinessProfile');
+          navigation.replace('Business', { screen: 'Profile' });
           break;
         case UserRole.CONSUMER:
-          navigation.replace('Consumer');
+          navigation.replace('Consumer', { screen: 'Home' });
           break;
         case UserRole.COURIER:
-          navigation.replace('Courier');
+          navigation.replace('Courier', { screen: 'CourierHome' });
           break;
         default:
-          navigation.replace('Consumer'); // Default to consumer home
+          navigation.replace('Consumer', { screen: 'Home' });
       }
     } catch (error) {
       console.error('Error updating role:', error);

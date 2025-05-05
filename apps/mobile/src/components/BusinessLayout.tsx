@@ -13,14 +13,12 @@ type BusinessLayoutNavProp = NativeStackNavigationProp<RootStackParamList>;
 
 interface BusinessLayoutProps {
   children: React.ReactNode;
-  title?: string;
   showBackButton?: boolean;
   onBackPress?: () => void;
 }
 
 export default function BusinessLayout({ 
   children, 
-  title,
   showBackButton,
   onBackPress 
 }: BusinessLayoutProps) {
@@ -30,7 +28,7 @@ export default function BusinessLayout({
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <NavBar 
-          title={title} 
+          title="Feedr" 
           showBackButton={showBackButton} 
           onBackPress={onBackPress} 
         />

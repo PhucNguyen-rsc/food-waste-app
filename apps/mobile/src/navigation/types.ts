@@ -1,19 +1,18 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
 import { PaymentType } from '@food-waste/types';
-import { Order } from '@/types'; // Ensure this exists and is typed correctly
 import { Product } from '@/types'; // Ensure this exists and is typed correctly
 
 // ==========================
 // Courier Stack
 // ==========================
 export type CourierStackParamList = {
+  CourierTabs: undefined;
   CourierHome: undefined;
   ActiveDelivery: undefined;
   DeliveryDetails: { deliveryId: string };
-  DeliveryHistory: undefined;
   Earnings: undefined;
-  CourierProfile: undefined;
   History: undefined;
+  CourierProfile: undefined;
 };
 
 // ==========================
@@ -60,43 +59,14 @@ export type RootStackParamList = {
   // Role Selection
   RoleSelection: undefined;
 
-  // Consumer Screens (direct from root)
-  ConsumerHome: undefined;
-  ProductDetail: { product: Product };
-  Cart: undefined;
-  Orders: undefined;
-  Profile: undefined;
-  Settings: undefined;
-  ChangePassword: undefined;
-  CheckoutScreen: undefined;
-  OrderSuccessScreen: { orderId: string };
-  OrderDetailScreen: { order: Order };
-
-  // Courier Screens
-  CourierHome: undefined;
-  ActiveDelivery: undefined;
-  DeliveryDetails: { deliveryId: string };
-  Earnings: undefined;
-  History: undefined;
-  CourierProfile: undefined;
-
-  // Business Screens
-  BusinessHome: undefined;
-  AddItem: undefined;
-  ManageOrders: undefined;
-  Analytics: undefined;
-  UpdatePrice: { itemId: string };
-  Inventory: undefined;
-  BusinessProfile: undefined;
+  // Nested Navigators
+  Business: NavigatorScreenParams<BusinessStackParamList>;
+  Consumer: NavigatorScreenParams<ConsumerStackParamList>;
+  Courier: NavigatorScreenParams<CourierStackParamList>;
 
   // Payment Screens
   NoPaymentMethod: undefined;
   PaymentMethods: undefined;
   AddPaymentMethod: { type: PaymentType };
   PaymentSuccess: undefined;
-
-  // Nested Navigators (optional if you use stack containers)
-  Courier?: NavigatorScreenParams<CourierStackParamList>;
-  Consumer?: NavigatorScreenParams<ConsumerStackParamList>;
-  Business?: NavigatorScreenParams<BusinessStackParamList>;
 };

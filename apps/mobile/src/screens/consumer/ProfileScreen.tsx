@@ -1,7 +1,7 @@
 // src/screens/consumer/ProfileScreen.tsx
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import ConsumerLayout from '@/components/ConsumerLayout';
 import { useAppSelector } from '@/store';
 import { useNavigation } from '@react-navigation/native';
@@ -13,6 +13,18 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export default function ProfileScreen() {
   const user = useAppSelector((state) => state.auth.user);
   const navigation = useNavigation<NavigationProp>();
+
+  const handleLogout = async () => {
+    try {
+      Alert.alert('Logged out', 'You have been logged out successfully.');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'SignIn' }],
+      });
+    } catch (err) {
+      Alert.alert('Logout Failed', 'Please try again.');
+    }
+  };
 
   return (
     <ConsumerLayout title="My Profile">
@@ -32,9 +44,16 @@ export default function ProfileScreen() {
 
         <TouchableOpacity
           style={styles.editButton}
-          onPress={() => navigation.navigate('ChangePassword')}
+          onPress={() => navigation.navigate('Consumer', { screen: 'ChangePassword' })}
         >
           <Text style={styles.editButtonText}>Change Password</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={handleLogout}
+        >
+          <Text style={styles.logoutButtonText}>Logout</Text>
         </TouchableOpacity>
       </View>
     </ConsumerLayout>
@@ -74,8 +93,20 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
+    marginBottom: 16,
   },
   editButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  logoutButton: {
+    backgroundColor: '#EF4444',
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  logoutButtonText: {
     color: '#fff',
     fontWeight: '600',
     fontSize: 16,

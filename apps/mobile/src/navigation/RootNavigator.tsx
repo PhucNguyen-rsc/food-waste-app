@@ -14,14 +14,7 @@ import RoleSelectionScreen from '@/screens/RoleSelectionScreen';
 // Navigators
 import ConsumerNavigator from './ConsumerNavigator';
 import BusinessNavigator from './BusinessNavigator';
-
-// Courier Screens
-import CourierHomeScreen from '@/screens/courier/CourierHomeScreen';
-import ActiveDeliveryScreen from '@/screens/courier/ActiveDeliveryScreen';
-import DeliveryDetailsScreen from '@/screens/courier/DeliveryDetailsScreen';
-import EarningsScreen from '@/screens/courier/EarningsScreen';
-import HistoryScreen from '@/screens/courier/HistoryScreen';
-import CourierProfileScreen from '@/screens/courier/CourierProfileScreen';
+import CourierNavigator from './CourierNavigator';
 
 // Payment Screens
 import NoPaymentMethodScreen from '@/screens/consumer/NoPaymentMethodScreen';
@@ -59,13 +52,8 @@ export const RootNavigator = () => {
         {/* Consumer Navigator */}
         <Stack.Screen name="Consumer" component={ConsumerNavigator} />
 
-        {/* Courier Screens */}
-        <Stack.Screen name="CourierHome" component={CourierHomeScreen} />
-        <Stack.Screen name="ActiveDelivery" component={ActiveDeliveryScreen} />
-        <Stack.Screen name="DeliveryDetails" component={DeliveryDetailsScreen} />
-        <Stack.Screen name="Earnings" component={EarningsScreen} />
-        <Stack.Screen name="History" component={HistoryScreen} />
-        <Stack.Screen name="CourierProfile" component={CourierProfileScreen} />
+        {/* Courier Navigator */}
+        <Stack.Screen name="Courier" component={CourierNavigator} />
 
         {/* Payment Screens */}
         <Stack.Screen

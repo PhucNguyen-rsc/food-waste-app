@@ -24,9 +24,9 @@ import api from '@/lib/api';
 import { Icon } from '@rneui/themed';
 
 type QuickAction = {
-  title: 'Add Item' | 'Update Price' | 'Inventory';
-  icon: 'add-circle' | 'pricetag' | 'cube';
-  screen: 'AddItem' | 'UpdatePrice' | 'Inventory';
+  title: 'Add Item' | 'Update Price';
+  icon: 'add-circle' | 'attach-money';
+  screen: 'AddItem' | 'UpdatePrice';
 };
 
 export default function BusinessHomeScreen() {
@@ -78,19 +78,17 @@ export default function BusinessHomeScreen() {
     },
     {
       title: 'Update Price',
-      icon: 'pricetag',
+      icon: 'attach-money',
       screen: 'UpdatePrice',
-    },
-    {
-      title: 'Inventory',
-      icon: 'cube',
-      screen: 'Inventory',
     },
   ];
 
   return (
-    <BusinessLayout title={user?.businessName || 'Your Business'}>
+    <BusinessLayout>
       <ScrollView style={styles.container}>
+        <View style={styles.businessHeader}>
+          <Text style={styles.businessName}>{user?.businessName || 'Your Business'}</Text>
+        </View>
         {/* Quick Actions */}
         <View style={styles.quickActionsContainer}>
           {quickActions.map((action) => (
@@ -99,14 +97,14 @@ export default function BusinessHomeScreen() {
               style={styles.actionCard}
               onPress={() => {
                 if (action.screen === 'UpdatePrice') {
-                  navigation.navigate('UpdatePrice', { itemId: '' });
+                  navigation.navigate('Business', { screen: 'UpdatePrice', params: { itemId: '' } });
                 } else {
-                  navigation.navigate(action.screen);
+                  navigation.navigate('Business', { screen: action.screen });
                 }
               }}
             >
               <Icon
-                name="add-circle"
+                name={action.icon}
                 type="material"
                 size={24}
                 color="#22C55E"
@@ -122,7 +120,7 @@ export default function BusinessHomeScreen() {
             <Text style={styles.sectionTitle}>Active Listings</Text>
             <TouchableOpacity 
               style={styles.seeAllButton}
-              onPress={() => navigation.navigate('Inventory')}
+              onPress={() => navigation.navigate('Business', { screen: 'Inventory' })}
             >
               <Text style={styles.seeAllText}>See All</Text>
               <Icon
@@ -147,7 +145,7 @@ export default function BusinessHomeScreen() {
               <FoodItemCard
                 key={item.id}
                 {...item}
-                onPress={() => navigation.navigate('UpdatePrice', { itemId: item.id })}
+                onPress={() => navigation.navigate('Business', { screen: 'UpdatePrice', params: { itemId: item.id } })}
               />
             ))
           ) : (
@@ -155,7 +153,7 @@ export default function BusinessHomeScreen() {
               <Text style={styles.emptyStateText}>No active listings</Text>
               <TouchableOpacity
                 style={styles.addItemButton}
-                onPress={() => navigation.navigate('AddItem')}
+                onPress={() => navigation.navigate('Business', { screen: 'AddItem' })}
               >
                 <Text style={styles.addItemButtonText}>Add Your First Item</Text>
               </TouchableOpacity>
@@ -169,7 +167,7 @@ export default function BusinessHomeScreen() {
             <Text style={styles.sectionTitle}>Recent Orders</Text>
             <TouchableOpacity 
               style={styles.seeAllButton}
-              onPress={() => navigation.navigate('ManageOrders')}
+              onPress={() => navigation.navigate('Business', { screen: 'Orders' })}
             >
               <Text style={styles.seeAllText}>See All</Text>
               <Icon
@@ -194,7 +192,7 @@ export default function BusinessHomeScreen() {
               <OrderCard
                 key={order.id}
                 {...order}
-                onPress={() => navigation.navigate('ManageOrders')}
+                onPress={() => navigation.navigate('Business', { screen: 'Orders' })}
               />
             ))
           ) : (
@@ -213,9 +211,22 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
+  businessHeader: {
+    marginBottom: 24,
+  },
+  businessName: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#1F2937',
+    marginBottom: 4,
+  },
+  businessSubtitle: {
+    fontSize: 16,
+    color: '#6B7280',
+  },
   quickActionsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     marginBottom: 24,
   },
   actionCard: {

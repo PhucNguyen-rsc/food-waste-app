@@ -17,12 +17,11 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
+import { Icon } from '@rneui/themed';
 import api from '@/lib/api';
 import { uploadImages } from '@/lib/cloudinary';
 import BusinessLayout from '@/components/BusinessLayout';
 import { FoodCategory, FoodStatus } from '@food-waste/types';
-
-const PLACEHOLDER_IMAGE = 'https://www.allrecipes.com/thmb/CjzJwg2pACUzGODdxJL1BJDRx9Y=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/6788-amish-white-bread-DDMFS-4x3-6faa1e552bdb4f6eabdd7791e59b3c84.jpg';
 
 export default function AddItemScreen() {
   const [name, setName] = useState('');
@@ -47,7 +46,7 @@ export default function AddItemScreen() {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: 'images',
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
@@ -119,12 +118,14 @@ export default function AddItemScreen() {
       return;
     }
 
+    if (images.length === 0) {
+      Alert.alert('Validation', 'Please add at least one image.');
+      return;
+    }
+
     try {
       setUploading(true);
-
-      const imagesToUpload = images.length === 0 ? [PLACEHOLDER_IMAGE] : images;
-
-      const uploadedImageUrls = await uploadImages(imagesToUpload);
+      const uploadedImageUrls = await uploadImages(images);
 
       const itemPayload = {
         name: name.trim(),
@@ -132,7 +133,7 @@ export default function AddItemScreen() {
         price: parseFloat(price),
         originalPrice: parseFloat(originalPrice),
         quantity: parseInt(quantity, 10),
-        expiryDate: expiryDate.toISOString(),  // full ISO format
+        expiryDate: expiryDate.toISOString(),
         category,
         images: uploadedImageUrls,
         status: FoodStatus.AVAILABLE,
@@ -177,27 +178,34 @@ export default function AddItemScreen() {
             <Text style={styles.heading}>Add New Food Item</Text>
 
             <View style={styles.imagesContainer}>
-              <FlatList
-                horizontal
-                data={images.length === 0 ? [PLACEHOLDER_IMAGE] : images}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item, index }) => (
-                  <View style={styles.imageItem}>
-                    <Image source={{ uri: item }} style={styles.imagePreview} />
-                    {images.length !== 0 && (
+              {images.length > 0 ? (
+                <FlatList
+                  horizontal
+                  data={images}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item, index }) => (
+                    <View style={styles.imageItem}>
+                      <Image source={{ uri: item }} style={styles.imagePreview} />
                       <TouchableOpacity
                         style={styles.removeImageButton}
                         onPress={() => removeImage(index)}
                       >
                         <Text style={styles.removeImageText}>×</Text>
                       </TouchableOpacity>
-                    )}
-                  </View>
-                )}
-              />
-              <TouchableOpacity style={styles.addImageButton} onPress={pickImage}>
-                <Text style={styles.addImageText}>Add Image</Text>
-              </TouchableOpacity>
+                    </View>
+                  )}
+                />
+              ) : (
+                <TouchableOpacity style={styles.addFirstImageButton} onPress={pickImage}>
+                  <Icon name="add-a-photo" type="material" size={40} color="#9CA3AF" />
+                  <Text style={styles.addFirstImageText}>Add Photos</Text>
+                </TouchableOpacity>
+              )}
+              {images.length > 0 && (
+                <TouchableOpacity style={styles.addImageButton} onPress={pickImage}>
+                  <Text style={styles.addImageText}>Add More Photos</Text>
+                </TouchableOpacity>
+              )}
             </View>
 
             <TextInput
@@ -473,5 +481,23 @@ const styles = StyleSheet.create({
   modalCloseButtonText: {
     color: '#666',
     fontSize: 16,
+  },
+  addFirstImageButton: {
+    width: '100%',
+    height: 200,
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    borderStyle: 'dashed',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+    marginBottom: 16,
+  },
+  addFirstImageText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#6B7280',
+    fontWeight: '500',
   },
 });

@@ -59,8 +59,15 @@ export default function BusinessProfileScreen() {
       if (user.businessAddress && addressRef.current) {
         addressRef.current.setAddressText(user.businessAddress);
       }
+
+      // Prevent going back if profile is incomplete
+      if (!user.businessName || !user.businessAddress || !user.businessPhone) {
+        navigation.setOptions({
+          headerLeft: () => null // Disable back button
+        });
+      }
     }
-  }, [user]);
+  }, [user, navigation]);
 
   const handleAddressFocus = () => {
     setIsAddressFocused(true);
@@ -98,7 +105,7 @@ export default function BusinessProfileScreen() {
         [
           {
             text: 'OK',
-            onPress: () => navigation.navigate('BusinessHome')
+            onPress: () => navigation.replace('Business', { screen: 'Home' })
           }
         ]
       );
@@ -113,9 +120,20 @@ export default function BusinessProfileScreen() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      Alert.alert('Logged out', 'You have been logged out successfully.');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'SignIn' }],
+      });
+    } catch (err) {
+      Alert.alert('Logout Failed', 'Please try again.');
+    }
+  };
+
   return (
     <BusinessLayout 
-      title="Business Profile"
       showBackButton
       onBackPress={() => navigation.goBack()}
     >
@@ -211,6 +229,13 @@ export default function BusinessProfileScreen() {
                 {isLoading ? 'Updating...' : 'Update Profile'}
               </Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.logoutButton}
+              onPress={handleLogout}
+            >
+              <Text style={styles.logoutButtonText}>Logout</Text>
+            </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
@@ -249,6 +274,19 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  logoutButton: {
+    backgroundColor: '#EF4444',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  logoutButtonText: {
+    color: 'white',
     fontWeight: '600',
     fontSize: 16,
   },

@@ -44,13 +44,13 @@ export default function SignInScreen() {
       
       switch (user.role) {
         case 'CONSUMER':
-          navigation.replace('Consumer');
+          navigation.replace('Consumer', { screen: 'Home' });
           break;
         case 'BUSINESS':
-          navigation.replace('Business');
+          navigation.replace('Business', { screen: 'Home' });
           break;
         case 'COURIER':
-          navigation.replace('CourierHome');
+          navigation.replace('Courier', { screen: 'CourierHome' });
           break;
         default:
           navigation.replace('SignUp');

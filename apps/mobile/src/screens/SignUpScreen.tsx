@@ -39,19 +39,19 @@ export default function SignUpScreen() {
         case 'CONSUMER':
           navigation.reset({
             index: 0,
-            routes: [{ name: 'Consumer' }],
+            routes: [{ name: 'Consumer', params: { screen: 'Home' } }],
           });
           break;
         case 'BUSINESS':
           navigation.reset({
             index: 0,
-            routes: [{ name: 'Business' }],
+            routes: [{ name: 'Business', params: { screen: 'Home' } }],
           });
           break;
         case 'COURIER':
           navigation.reset({
             index: 0,
-            routes: [{ name: 'CourierHome' }],
+            routes: [{ name: 'Courier', params: { screen: 'CourierHome' } }],
           });
           break;
         default:
