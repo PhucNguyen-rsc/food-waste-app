@@ -17,4 +17,13 @@ export class UsersController {
   async updateRole(@Request() req, @Body('role') role: UserRole) {
     return this.usersService.updateRole(req.user.id, role);
   }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  async updateUser(
+    @Param('id') id: string,
+    @Body() updateData: { deliveryAddress?: string }
+  ) {
+    return this.usersService.updateUser(id, updateData);
+  }
 } 

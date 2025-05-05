@@ -114,4 +114,32 @@ export class UsersService {
       },
     };
   }
+
+  async updateUser(userId: string, updateData: { deliveryAddress?: string }) {
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+    });
+
+    return {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      name: updatedUser.name,
+      role: updatedUser.role,
+      // Include role-specific fields
+      ...(updatedUser.role === UserRole.BUSINESS && {
+        businessName: updatedUser.businessName,
+        businessAddress: updatedUser.businessAddress,
+        businessPhone: updatedUser.businessPhone,
+      }),
+      ...(updatedUser.role === UserRole.CONSUMER && {
+        deliveryAddress: updatedUser.deliveryAddress,
+      }),
+      ...(updatedUser.role === UserRole.COURIER && {
+        isAvailable: updatedUser.isAvailable,
+        currentLocation: updatedUser.currentLocation,
+        vehicleType: updatedUser.vehicleType,
+      }),
+    };
+  }
 } 

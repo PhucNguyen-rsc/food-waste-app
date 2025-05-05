@@ -3,6 +3,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Icon } from '@rneui/themed';
 import { ConsumerStackParamList } from './types';
+import { useAppSelector } from '@/store';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 // Import screens
 import HomeScreen from '@/screens/consumer/ConsumerHomeScreen';
@@ -19,6 +21,19 @@ const Tab = createBottomTabNavigator<ConsumerStackParamList>();
 const Stack = createNativeStackNavigator<ConsumerStackParamList>();
 
 function TabNavigator() {
+  const navigation = useNavigation<any>();
+  const route = useRoute();
+  const user = useAppSelector((state) => state.auth.user);
+  const isProfileComplete = Boolean(user?.name && user?.deliveryAddress);
+  const hasRedirectedRef = React.useRef(false);
+
+  React.useEffect(() => {
+    if (!isProfileComplete && route.name !== 'Profile' && !hasRedirectedRef.current) {
+      hasRedirectedRef.current = true;
+      navigation.navigate('Profile');
+    }
+  }, [isProfileComplete, route.name]);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -33,7 +48,7 @@ function TabNavigator() {
               iconName = focused ? 'cart' : 'cart-outline';
               break;
             case 'Orders':
-              iconName = focused ? 'format-list-bulleted' : 'format-list-bulleted';
+              iconName = focused ? 'file-document' : 'file-document-outline';
               break;
             case 'Profile':
               iconName = focused ? 'account' : 'account-outline';
@@ -74,7 +89,7 @@ function TabNavigator() {
 
 export default function ConsumerNavigator() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="ConsumerTabs">
       <Stack.Screen
         name="ConsumerTabs"
         component={TabNavigator}
@@ -83,27 +98,47 @@ export default function ConsumerNavigator() {
       <Stack.Screen
         name="OrderDetails"
         component={OrderDetailsScreen}
-        options={{ title: 'Order Details' }}
+        options={{ 
+          title: 'Order Details',
+          headerShown: true,
+          presentation: 'card'
+        }}
       />
       <Stack.Screen
         name="BusinessDetails"
         component={BusinessDetailsScreen}
-        options={{ title: 'Business Details' }}
+        options={{ 
+          title: 'Business Details',
+          headerShown: true,
+          presentation: 'card'
+        }}
       />
       <Stack.Screen
         name="ProductDetail"
         component={ProductDetailScreen}
-        options={{ title: 'Product Details' }}
+        options={{ 
+          title: 'Product Details',
+          headerShown: true,
+          presentation: 'card'
+        }}
       />
       <Stack.Screen
         name="CheckoutScreen"
         component={CheckoutScreen}
-        options={{ title: 'Checkout' }}
+        options={{ 
+          title: 'Checkout',
+          headerShown: true,
+          presentation: 'modal'
+        }}
       />
       <Stack.Screen
         name="OrderSuccessScreen"
         component={OrderSuccessScreen}
-        options={{ title: 'Order Success' }}
+        options={{ 
+          title: 'Order Success',
+          headerShown: true,
+          presentation: 'modal'
+        }}
       />
     </Stack.Navigator>
   );
