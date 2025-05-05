@@ -8,6 +8,7 @@ import { ConsumerStackParamList } from './types';
 import HomeScreen from '@/screens/consumer/ConsumerHomeScreen';
 import CartScreen from '@/screens/consumer/CartScreen';
 import OrdersScreen from '@/screens/consumer/OrdersScreen';
+import OrderSuccessScreen from '@/screens/consumer/OrderSuccessScreen';
 import ProfileScreen from '@/screens/consumer/ProfileScreen';
 import OrderDetailsScreen from '@/screens/consumer/OrderDetailScreen';
 import BusinessDetailsScreen from '@/screens/consumer/BusinessDetailsScreen';
@@ -98,6 +99,11 @@ export default function ConsumerNavigator() {
         name="CheckoutScreen"
         component={CheckoutScreen}
         options={{ title: 'Checkout' }}
+      />
+      <Stack.Screen
+        name="OrderSuccessScreen"
+        component={OrderSuccessScreen}
+        options={{ title: 'Order Success' }}
       />
     </Stack.Navigator>
   );

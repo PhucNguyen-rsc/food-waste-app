@@ -79,14 +79,14 @@ export default function ManageOrderCard({ order, onUpdateStatus }: ManageOrderCa
 
       <View style={styles.orderContent}>
         <View style={styles.itemsContainer}>
-          <Icon name="fast-food-outline" size={16} color="#666" />
+          <Icon name="food" type="material-community" size={16} color="#666" />
           <Text style={styles.itemsText} numberOfLines={1}>
             {order.items.map(i => `${i.quantity}x ${i.foodItem.name}`).join(', ')}
           </Text>
         </View>
 
         <View style={styles.addressContainer}>
-          <Icon name="location-outline" size={16} color="#666" />
+          <Icon name="map-marker" type="material-community" size={16} color="#666" />
           <Text style={styles.addressText} numberOfLines={1}>
             {order.deliveryAddress}
           </Text>

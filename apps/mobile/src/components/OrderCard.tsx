@@ -67,14 +67,14 @@ export default function OrderCard({
 
       <View style={styles.content}>
         <View style={styles.itemsContainer}>
-          <Icon name="fast-food-outline" size={16} color="#666" />
+          <Icon name="food" type="material-community" size={16} color="#666" />
           <Text style={styles.itemsText} numberOfLines={1}>
             {formatItems(items)}
           </Text>
         </View>
 
         <View style={styles.addressContainer}>
-          <Icon name="location-outline" size={16} color="#666" />
+          <Icon name="map-marker" type="material-community" size={16} color="#666" />
           <Text style={styles.addressText} numberOfLines={1}>
             {deliveryAddress}
           </Text>

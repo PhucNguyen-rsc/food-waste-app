@@ -24,33 +24,33 @@ function TabNavigator() {
           let iconName: string;
 
           switch (route.name) {
-            case 'BusinessHome':
+            case 'Home':
               iconName = focused ? 'home' : 'home-outline';
               break;
             case 'Analytics':
-              iconName = focused ? 'bar-chart' : 'bar-chart-outline';
+              iconName = focused ? 'chart-bar' : 'chart-bar-stacked';
               break;
             case 'Inventory':
-              iconName = focused ? 'list' : 'list-outline';
+              iconName = focused ? 'format-list-bulleted' : 'format-list-bulleted';
               break;
-            case 'ManageOrders':
-              iconName = focused ? 'shopping-cart' : 'shopping-cart-outline';
+            case 'Orders':
+              iconName = focused ? 'package-variant' : 'package-variant-closed';
               break;
-            case 'BusinessProfile':
-              iconName = focused ? 'person' : 'person-outline';
+            case 'Profile':
+              iconName = focused ? 'account' : 'account-outline';
               break;
             default:
               iconName = 'help-outline';
           }
 
-          return <Icon name={iconName as any} size={size} color={color} />;
+          return <Icon name={iconName} type="material-community" size={size} color={color} />;
         },
         tabBarActiveTintColor: '#22C55E',
         tabBarInactiveTintColor: 'gray',
       })}
     >
       <Tab.Screen 
-        name="BusinessHome" 
+        name="Home" 
         component={BusinessHomeScreen}
         options={{ headerShown: false }}
       />
@@ -65,12 +65,12 @@ function TabNavigator() {
         options={{ headerShown: false }}
       />
       <Tab.Screen 
-        name="ManageOrders" 
+        name="Orders" 
         component={ManageOrderScreen}
         options={{ headerShown: false }}
       />
       <Tab.Screen 
-        name="BusinessProfile" 
+        name="Profile" 
         component={BusinessProfileScreen}
         options={{ headerShown: false }}
       />

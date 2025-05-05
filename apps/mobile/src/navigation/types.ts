@@ -39,13 +39,13 @@ export type ConsumerStackParamList = {
 // ==========================
 export type BusinessStackParamList = {
   BusinessTabs: undefined;
-  BusinessHome: undefined;
+  Home: undefined;
   AddItem: undefined;
-  ManageOrders: undefined;
+  Orders: undefined;
   Analytics: undefined;
   UpdatePrice: { itemId: string };
   Inventory: undefined;
-  BusinessProfile: undefined;
+  Profile: undefined;
 };
 
 // ==========================

@@ -8,7 +8,7 @@ import { setOrders, setLoading, setError } from '@/store/slices/ordersSlice';
 import api from '@/lib/api';
 import ManageOrderCard from '@/components/ManageOrderCard';
 import { Order } from '@/store/slices/ordersSlice';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '@rneui/themed';
 
 export default function ManageOrderScreen() {
   const dispatch = useAppDispatch();
@@ -68,7 +68,7 @@ export default function ManageOrderScreen() {
     return (
       <BusinessLayout>
         <View style={styles.emptyContainer}>
-          <Ionicons name="receipt-outline" size={64} color="#CBD5E1" />
+          <Icon name="receipt" type="material-community" size={64} color="#CBD5E1" />
           <Text style={styles.emptyTitle}>No Orders Yet</Text>
           <Text style={styles.emptyText}>
             When customers place orders, they will appear here

@@ -11,8 +11,8 @@ export const SUPPORTED_PAYMENT_METHODS = {
 // Export payment configuration
 export const PAYMENT_CONFIG = {
   PAYPAL: {
-    CLIENT_ID: process.env.EXPO_PUBLIC_PAYPAL_CLIENT_ID || '',
-    SECRET: process.env.EXPO_PUBLIC_PAYPAL_SECRET || '',
+    CLIENT_ID: process.env.EXPO_PUBLIC_PAYPAL_CLIENT_ID || 'dummy-client-id',
+    SECRET: process.env.EXPO_PUBLIC_PAYPAL_SECRET || 'dummy-secret',
     ENVIRONMENT: process.env.EXPO_PUBLIC_PAYPAL_ENVIRONMENT || 'sandbox',
   },
   SUPPORTED_METHODS: SUPPORTED_PAYMENT_METHODS,
