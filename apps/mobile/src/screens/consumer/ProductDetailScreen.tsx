@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,8 @@ import {
   Modal,
   TextInput,
   Alert,
+  Dimensions,
+  FlatList,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
@@ -33,6 +35,8 @@ export default function ProductDetailScreen() {
   const dispatch = useDispatch();
   const [selectedQuantity, setSelectedQuantity] = useState('1');
   const [showQuantityModal, setShowQuantityModal] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const flatListRef = useRef<FlatList>(null);
 
   // Add error handling for missing product
   if (!route.params?.product) {
@@ -84,15 +88,49 @@ export default function ProductDetailScreen() {
     Alert.alert('Success', 'Item added to cart!');
   };
 
+  const renderImage = ({ item }: { item: string }) => (
+    <Image
+      source={{ uri: item || 'https://via.placeholder.com/400x300.png?text=No+Image' }}
+      style={styles.carouselImage}
+      resizeMode="cover"
+    />
+  );
+
+  const renderPagination = () => {
+    const images = product.images || ['https://via.placeholder.com/400x300.png?text=No+Image'];
+    return (
+      <View style={styles.paginationContainer}>
+        {images.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.paginationDot,
+              index === activeIndex && styles.paginationDotActive,
+            ]}
+          />
+        ))}
+      </View>
+    );
+  };
+
   return (
     <ConsumerLayout>
       <ScrollView contentContainerStyle={styles.container}>
-        <Image
-          source={{
-            uri: product.images?.[0] || 'https://via.placeholder.com/400x300.png?text=No+Image',
-          }}
-          style={styles.image}
-        />
+        <View style={styles.carouselContainer}>
+          <FlatList
+            ref={flatListRef}
+            data={product.images || ['https://via.placeholder.com/400x300.png?text=No+Image']}
+            renderItem={renderImage}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onMomentumScrollEnd={(event) => {
+              const index = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width);
+              setActiveIndex(index);
+            }}
+          />
+          {renderPagination()}
+        </View>
 
         <View style={styles.content}>
           <Text style={styles.title}>{product.name}</Text>
@@ -166,10 +204,13 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#fff',
   },
-  image: {
+  carouselContainer: {
     width: '100%',
     height: 300,
-    resizeMode: 'cover',
+  },
+  carouselImage: {
+    width: Dimensions.get('window').width,
+    height: 300,
   },
   content: {
     padding: 16,
@@ -268,5 +309,26 @@ const styles = StyleSheet.create({
   },
   addButton: {
     backgroundColor: '#22C55E',
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 16,
+    width: '100%',
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    marginHorizontal: 4,
+  },
+  paginationDotActive: {
+    backgroundColor: '#fff',
+    width: 12,
+    height: 12,
+    borderRadius: 6,
   },
 });

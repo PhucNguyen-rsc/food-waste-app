@@ -45,6 +45,7 @@ export default function CheckoutScreen() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const cartItems = useSelector((state: RootState) => state.cart.items);
+  const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
   const navigation = useNavigation<NavigationProp>();
 
@@ -82,6 +83,14 @@ export default function CheckoutScreen() {
 
     checkAuth();
   }, []);
+
+  // Pre-populate user data when component mounts
+  useEffect(() => {
+    if (user) {
+      setName(user.name || '');
+      setAddress(user.deliveryAddress || '');
+    }
+  }, [user]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -126,6 +135,20 @@ export default function CheckoutScreen() {
     }
   };
 
+  const validatePhoneNumber = (phone: string): boolean => {
+    // Remove any spaces, dashes, or other non-digit characters
+    const cleanedPhone = phone.replace(/\D/g, '');
+    
+    // UAE phone number validation:
+    // - Must start with 971 (country code) or 0
+    // - Must be 9-12 digits long (including country code)
+    // - If starts with 0, must be followed by 5
+    // - If starts with 971, must be followed by 5
+    const uaePhoneRegex = /^(?:971|0)?5[0-9]{8}$/;
+    
+    return uaePhoneRegex.test(cleanedPhone);
+  };
+
   const handleCheckout = async () => {
     try {
       // Validate all required fields
@@ -139,23 +162,37 @@ export default function CheckoutScreen() {
       }
       if (!phone.trim()) {
         Alert.alert('Error', 'Please enter your phone number');
-      return;
-    }
+        return;
+      }
+      if (!validatePhoneNumber(phone)) {
+        Alert.alert(
+          'Invalid Phone Number',
+          'Please enter a valid UAE phone number.\nExample: +971 50 123 4567 or 050 123 4567'
+        );
+        return;
+      }
       if (paymentMethod === 'Card' && !selectedPaymentMethodId) {
         Alert.alert('Error', 'Please select a payment method');
-      return;
-    }
+        return;
+      }
 
       setIsProcessing(true);
 
+      // Format phone number before sending to API
+      let formattedPhone = phone.replace(/\D/g, '');
+      if (formattedPhone.startsWith('0')) {
+        formattedPhone = '971' + formattedPhone.substring(1);
+      }
+
       // Create order
       const orderData = {
-      deliveryAddress: address,
+        deliveryAddress: address,
+        phone: formattedPhone,
         items: cartItems.map(item => ({
-        foodItemId: item.id,
+          foodItemId: item.id,
           quantity: item.quantity
         }))
-    };
+      };
 
       const response = await api.post('/consumer/orders', orderData);
       const orders = response.data;

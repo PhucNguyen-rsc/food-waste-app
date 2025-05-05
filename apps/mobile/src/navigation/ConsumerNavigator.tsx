@@ -101,7 +101,7 @@ export default function ConsumerNavigator() {
         options={{ 
           title: 'Order Details',
           headerShown: true,
-          presentation: 'card'
+          presentation: 'modal'
         }}
       />
       <Stack.Screen
@@ -110,7 +110,7 @@ export default function ConsumerNavigator() {
         options={{ 
           title: 'Business Details',
           headerShown: true,
-          presentation: 'card'
+          presentation: 'modal'
         }}
       />
       <Stack.Screen
@@ -119,7 +119,7 @@ export default function ConsumerNavigator() {
         options={{ 
           title: 'Product Details',
           headerShown: true,
-          presentation: 'card'
+          presentation: 'modal'
         }}
       />
       <Stack.Screen

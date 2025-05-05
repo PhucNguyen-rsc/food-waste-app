@@ -10,6 +10,21 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export default function OrderSuccessScreen() {
   const navigation = useNavigation<NavigationProp>();
 
+  const handleBackToHome = () => {
+    // Reset the navigation stack to go back to the main consumer tabs
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: 'Consumer',
+          state: {
+            routes: [{ name: 'Home' }]
+          }
+        }
+      ]
+    });
+  };
+
   return (
     <ConsumerLayout>
       <View style={styles.container}>
@@ -24,7 +39,7 @@ export default function OrderSuccessScreen() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('Consumer', { screen: 'Home' })}
+          onPress={handleBackToHome}
         >
           <Text style={styles.buttonText}>Back to Home</Text>
         </TouchableOpacity>
