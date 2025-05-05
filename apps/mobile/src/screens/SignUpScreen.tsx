@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { setUser, setToken } from '@/store/slices/authSlice';
 import { createUserWithEmailAndPassword } from '@/lib/auth';
@@ -13,6 +13,7 @@ export default function SignUpScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigation = useNavigation<SignUpScreenNavProp>();
 
@@ -23,6 +24,7 @@ export default function SignUpScreen() {
     }
 
     try {
+      setLoading(true);
       const { user, accessToken } = await createUserWithEmailAndPassword(email, password, name);
       
       // Update user with name
@@ -78,6 +80,8 @@ export default function SignUpScreen() {
       }
       
       Alert.alert('Error', errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -89,6 +93,7 @@ export default function SignUpScreen() {
         value={name}
         onChangeText={setName}
         autoCapitalize="words"
+        editable={!loading}
       />
       <TextInput
         style={styles.input}
@@ -97,6 +102,7 @@ export default function SignUpScreen() {
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
+        editable={!loading}
       />
       <TextInput
         style={styles.input}
@@ -104,12 +110,26 @@ export default function SignUpScreen() {
         value={password}
         onChangeText={setPassword}
         secureTextEntry={true}
+        editable={!loading}
       />
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>Sign Up</Text>
+      <TouchableOpacity 
+        style={[styles.button, loading && styles.buttonDisabled]} 
+        onPress={handleSignUp}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Sign Up</Text>
+        )}
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-        <Text style={styles.linkText}>Already have an account? Sign In</Text>
+      <TouchableOpacity 
+        onPress={() => navigation.navigate('SignIn')}
+        disabled={loading}
+      >
+        <Text style={[styles.linkText, loading && styles.linkTextDisabled]}>
+          Already have an account? Sign In
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -134,6 +154,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
   },
+  buttonDisabled: {
+    backgroundColor: '#999',
+  },
   buttonText: {
     color: 'white',
     fontSize: 16,
@@ -143,5 +166,8 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     textAlign: 'center',
     marginTop: 20,
+  },
+  linkTextDisabled: {
+    color: '#999',
   },
 });
