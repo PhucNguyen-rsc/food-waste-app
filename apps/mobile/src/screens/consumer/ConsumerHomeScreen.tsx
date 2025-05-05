@@ -9,6 +9,7 @@ import {
   TextInput,
   Modal,
   Alert,
+  ScrollView,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '@/lib/api';
@@ -117,39 +118,55 @@ export default function ConsumerHomeScreen() {
           />
         </View>
 
-        <View style={styles.categoryRow}>
-          {categories.map((cat) => (
-            <TouchableOpacity
-              key={cat}
-              style={[styles.categoryButton, selectedCategory === cat && styles.categorySelected]}
-              onPress={() => setSelectedCategory(cat)}
-            >
-              <Text
-                style={[
-                  styles.categoryText,
-                  selectedCategory === cat && styles.categoryTextSelected,
-                ]}
+        <View style={styles.categoriesWrapper}>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categoryContainer}
+          >
+            {categories.map((cat) => (
+              <TouchableOpacity
+                key={cat}
+                style={[styles.categoryButton, selectedCategory === cat && styles.categorySelected]}
+                onPress={() => setSelectedCategory(cat)}
               >
-                {cat}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text
+                  style={[
+                    styles.categoryText,
+                    selectedCategory === cat && styles.categoryTextSelected,
+                  ]}
+                >
+                  {cat}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
 
-        {filteredItems.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No items available at the moment</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={filteredItems}
-            keyExtractor={(item) => item.id}
-            renderItem={renderItem}
-            numColumns={2}
-            columnWrapperStyle={styles.columnWrapper}
-            contentContainerStyle={styles.grid}
-          />
-        )}
+        <View style={styles.contentContainer}>
+          {filteredItems.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No items available at the moment</Text>
+            </View>
+          ) : (
+            <ScrollView 
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.grid}
+            >
+              {filteredItems.map((item, index) => (
+                <View 
+                  key={item.id} 
+                  style={[
+                    styles.cardContainer,
+                    index % 2 === 0 ? styles.leftCard : styles.rightCard
+                  ]}
+                >
+                  {renderItem({ item })}
+                </View>
+              ))}
+            </ScrollView>
+          )}
+        </View>
       </View>
     </ConsumerLayout>
   );
@@ -157,13 +174,13 @@ export default function ConsumerHomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 12,
+    flexGrow: 1,
     backgroundColor: '#fff',
   },
   header: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 8,
   },
   searchInput: {
     height: 44,
@@ -172,41 +189,62 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     fontSize: 16,
   },
-  categoryRow: {
-    flexDirection: 'row',
-    marginBottom: 12,
-    flexWrap: 'wrap',
+  categoriesWrapper: {
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  categoryContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   categoryButton: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: '#F3F4F6',
+    borderRadius: 16,
+    backgroundColor: '#F9FAFB',
     marginRight: 8,
-    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    height: 32,
+    justifyContent: 'center',
   },
   categorySelected: {
     backgroundColor: '#22C55E',
+    borderColor: '#22C55E',
   },
   categoryText: {
     color: '#4B5563',
+    fontSize: 13,
+    fontWeight: '500',
   },
   categoryTextSelected: {
     color: '#fff',
   },
-  grid: {
-    paddingBottom: 100,
+  contentContainer: {
+    flex: 1,
   },
-  columnWrapper: {
-    justifyContent: 'space-between',
-    marginBottom: 16,
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: 16,
+    paddingBottom: 40,
+  },
+  cardContainer: {
+    width: '50%',
+    paddingHorizontal: 4,
+    marginBottom: 12,
+  },
+  leftCard: {
+    paddingRight: 4,
+  },
+  rightCard: {
+    paddingLeft: 4,
   },
   card: {
-    flex: 1,
     backgroundColor: '#F9FAFB',
     borderRadius: 12,
     padding: 12,
-    marginHorizontal: 4,
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -265,9 +303,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   emptyContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingVertical: 40,
   },
   emptyText: {
     color: '#888',

@@ -116,7 +116,7 @@ export class ConsumerService {
       include: {
         business: {
           select: {
-            name: true,
+            businessName: true,
             businessAddress: true,
           },
         },
@@ -134,7 +134,7 @@ export class ConsumerService {
     return orders.map(order => ({
       id: order.id,
       status: order.status,
-      businessName: order.business.name,
+      businessName: order.business.businessName,
       totalAmount: order.totalAmount,
       deliveryAddress: order.deliveryAddress,
       createdAt: order.createdAt,
