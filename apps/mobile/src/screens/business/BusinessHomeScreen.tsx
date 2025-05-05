@@ -24,9 +24,9 @@ import api from '@/lib/api';
 import { Icon } from '@rneui/themed';
 
 type QuickAction = {
-  title: 'Add Item' | 'Update Price';
-  icon: 'add-circle' | 'attach-money';
-  screen: 'AddItem' | 'UpdatePrice';
+  title: 'Add Item' | 'View Inventory';
+  icon: 'add-circle' | 'inventory';
+  screen: 'AddItem' | 'Inventory';
 };
 
 export default function BusinessHomeScreen() {
@@ -84,9 +84,9 @@ export default function BusinessHomeScreen() {
       screen: 'AddItem',
     },
     {
-      title: 'Update Price',
-      icon: 'attach-money',
-      screen: 'UpdatePrice',
+      title: 'View Inventory',
+      icon: 'inventory',
+      screen: 'Inventory',
     },
   ];
 
@@ -103,8 +103,11 @@ export default function BusinessHomeScreen() {
               key={action.title}
               style={styles.actionCard}
               onPress={() => {
-                if (action.screen === 'UpdatePrice') {
-                  navigation.navigate('Business', { screen: 'EditItem', params: { itemId: '' } });
+                if (action.screen === 'Inventory') {
+                  navigation.navigate('Business', { 
+                    screen: 'BusinessTabs',
+                    params: { screen: 'Inventory' }
+                  });
                 } else {
                   navigation.navigate('Business', { screen: action.screen });
                 }

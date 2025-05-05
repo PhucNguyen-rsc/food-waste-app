@@ -37,7 +37,9 @@ export type ConsumerStackParamList = {
 // Business Stack
 // ==========================
 export type BusinessStackParamList = {
-  BusinessTabs: undefined;
+  BusinessTabs: {
+    screen?: 'Home' | 'Orders' | 'Analytics' | 'Inventory' | 'Profile';
+  };
   Home: undefined;
   AddItem: undefined;
   Orders: undefined;
