@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
 import { CreateFoodItemDto } from '@business/dto/create-food-item.dto';
 import { UpdateFoodItemDto } from '@business/dto/update-food-item.dto';
@@ -195,5 +195,80 @@ export class BusinessService {
 
     console.log(`[BusinessService] Business details updated successfully:`, updatedBusiness);
     return updatedBusiness;
+  }
+
+  async updateFoodItemPrice(userId: string, itemId: string, price: number) {
+    const foodItem = await this.prisma.foodItem.findUnique({
+      where: { id: itemId },
+      include: { business: true },
+    });
+
+    if (!foodItem) {
+      throw new NotFoundException('Food item not found');
+    }
+
+    if (foodItem.business.id !== userId) {
+      throw new UnauthorizedException('Not authorized to update this food item');
+    }
+
+    return this.prisma.foodItem.update({
+      where: { id: itemId },
+      data: { price },
+    });
+  }
+
+  async updateDynamicPricing(
+    userId: string,
+    itemId: string,
+    dynamicPricingDto: {
+      discountPercentage: number;
+      discountThreshold: number;
+      price: number;
+    },
+  ) {
+    const foodItem = await this.prisma.foodItem.findUnique({
+      where: { id: itemId },
+      include: { business: true },
+    });
+
+    if (!foodItem) {
+      throw new NotFoundException('Food item not found');
+    }
+
+    if (foodItem.business.id !== userId) {
+      throw new UnauthorizedException('Not authorized to update this food item');
+    }
+
+    return this.prisma.foodItem.update({
+      where: { id: itemId },
+      data: {
+        price: dynamicPricingDto.price,
+        discountPercentage: dynamicPricingDto.discountPercentage,
+        discountThreshold: dynamicPricingDto.discountThreshold,
+      },
+    });
+  }
+
+  async removeDynamicPricing(userId: string, itemId: string) {
+    const foodItem = await this.prisma.foodItem.findUnique({
+      where: { id: itemId },
+      include: { business: true },
+    });
+
+    if (!foodItem) {
+      throw new NotFoundException('Food item not found');
+    }
+
+    if (foodItem.business.id !== userId) {
+      throw new UnauthorizedException('Not authorized to update this food item');
+    }
+
+    return this.prisma.foodItem.update({
+      where: { id: itemId },
+      data: {
+        discountPercentage: null,
+        discountThreshold: null,
+      },
+    });
   }
 } 

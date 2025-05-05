@@ -22,8 +22,13 @@ import api from '@/lib/api';
 import { uploadImages } from '@/lib/cloudinary';
 import BusinessLayout from '@/components/BusinessLayout';
 import { FoodCategory, FoodStatus } from '@food-waste/types';
+import { useAppDispatch } from '@/store';
+import { addFoodItem } from '@/store/slices/foodItemsSlice';
+import { useNavigation } from '@react-navigation/native';
 
 export default function AddItemScreen() {
+  const dispatch = useAppDispatch();
+  const navigation = useNavigation();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -140,17 +145,9 @@ export default function AddItemScreen() {
       };
 
       const response = await api.post('/business/food-items', itemPayload);
-
-      Alert.alert('Success', 'Food item added successfully!');
-      setName('');
-      setDescription('');
-      setPrice('');
-      setOriginalPrice('');
-      setQuantity('');
-      setExpiryDate(new Date());
-      setShowDatePicker(false);
-      setCategory(FoodCategory.OTHER);
-      setImages([]);
+      dispatch(addFoodItem(response.data));
+      Alert.alert('Success', 'Item added successfully');
+      navigation.goBack();
     } catch (err: any) {
       console.error('❌ Network or backend error:', err?.message || err);
       if (err?.response) {

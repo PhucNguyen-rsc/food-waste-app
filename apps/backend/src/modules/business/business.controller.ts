@@ -60,6 +60,45 @@ export class BusinessController {
     return result;
   }
 
+  @Patch('food-items/:id/price')
+  async updateFoodItemPrice(
+    @Request() req,
+    @Param('id') id: string,
+    @Body('price') price: number,
+  ) {
+    console.log(`[BusinessController] Updating price of food item ${id} to ${price} for user ${req.user.id}`);
+    const result = await this.businessService.updateFoodItemPrice(req.user.id, id, price);
+    console.log(`[BusinessController] Food item price updated successfully:`, result);
+    return result;
+  }
+
+  @Patch('food-items/:id/dynamic-pricing')
+  async updateDynamicPricing(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() dynamicPricingDto: {
+      discountPercentage: number;
+      discountThreshold: number;
+      price: number;
+    },
+  ) {
+    console.log(`[BusinessController] Updating dynamic pricing for food item ${id} for user ${req.user.id}:`, dynamicPricingDto);
+    const result = await this.businessService.updateDynamicPricing(req.user.id, id, dynamicPricingDto);
+    console.log(`[BusinessController] Dynamic pricing updated successfully:`, result);
+    return result;
+  }
+
+  @Delete('food-items/:id/dynamic-pricing')
+  async removeDynamicPricing(
+    @Request() req,
+    @Param('id') id: string,
+  ) {
+    console.log(`[BusinessController] Removing dynamic pricing for food item ${id} for user ${req.user.id}`);
+    const result = await this.businessService.removeDynamicPricing(req.user.id, id);
+    console.log(`[BusinessController] Dynamic pricing removed successfully:`, result);
+    return result;
+  }
+
   @Delete('food-items/:id')
   async removeFoodItem(@Request() req, @Param('id') id: string) {
     console.log(`[BusinessController] Removing food item ${id} for user ${req.user.id}`);

@@ -3,15 +3,17 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface FoodItem {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   price: number;
   originalPrice: number;
   quantity: number;
+  category: string;
+  status: string;
+  businessId: string;
+  discountPercentage?: number;
+  discountThreshold?: number;
   expiryDate: string;
   images: string[];
-  category: 'MEAT' | 'DAIRY' | 'PRODUCE' | 'BAKERY' | 'PREPARED' | 'OTHER';
-  status: 'AVAILABLE' | 'RESERVED' | 'SOLD' | 'EXPIRED';
-  businessId: string;
   createdAt: string;
   updatedAt: string;
 }

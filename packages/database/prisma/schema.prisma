@@ -73,21 +73,23 @@ model VerificationToken {
 }
 
 model FoodItem {
-  id            String      @id @default(cuid())
-  name          String
-  description   String
-  price         Float
-  originalPrice Float
-  quantity      Int
-  expiryDate    DateTime
-  images        String[]
-  category      FoodCategory
-  status        FoodStatus  @default(AVAILABLE)
-  businessId    String
-  business      User        @relation("BusinessFoodItems", fields: [businessId], references: [id])
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  orderItems    OrderItem[]
+  id                String      @id @default(cuid())
+  name              String
+  description       String
+  price             Float
+  originalPrice     Float
+  quantity          Int
+  expiryDate        DateTime
+  images            String[]
+  category          FoodCategory
+  status            FoodStatus  @default(AVAILABLE)
+  businessId        String
+  business          User        @relation("BusinessFoodItems", fields: [businessId], references: [id])
+  discountPercentage Float?
+  discountThreshold Int?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  orderItems        OrderItem[]
 }
 
 model Order {

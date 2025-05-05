@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 interface FoodItemCardProps {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   price: number;
   originalPrice: number;
   expiryDate: string;

@@ -12,7 +12,8 @@ import InventoryScreen from '@/screens/business/InventoryScreen';
 import ManageOrderScreen from '@/screens/business/ManageOrderScreen';
 import BusinessProfileScreen from '@/screens/business/BusinessProfileScreen';
 import AddItemScreen from '@/screens/business/AddItemScreen';
-import UpdatePriceScreen from '@/screens/business/UpdatePriceScreen';
+import EditItemScreen from '@/screens/business/EditItemScreen';
+
 
 const Tab = createBottomTabNavigator<BusinessStackParamList>();
 const Stack = createNativeStackNavigator<BusinessStackParamList>();
@@ -91,10 +92,10 @@ export default function BusinessNavigator() {
         }}
       />
       <Stack.Screen
-        name="UpdatePrice"
-        component={UpdatePriceScreen}
+        name="EditItem"
+        component={EditItemScreen}
         options={{ 
-          title: 'Update Price',
+          title: 'Edit Item',
           headerShown: true,
           presentation: 'modal'
         }}

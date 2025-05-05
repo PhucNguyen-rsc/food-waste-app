@@ -40,26 +40,33 @@ export default function BusinessHomeScreen() {
   const ordersLoading = useAppSelector((state) => state.orders.loading);
   const ordersError = useAppSelector((state) => state.orders.error);
 
+  const fetchData = async () => {
+    try {
+      // Fetch food items
+      dispatch(setFoodItemsLoading(true));
+      const { data: foodItemsData } = await api.get('/business/food-items');
+      dispatch(setFoodItems(foodItemsData));
+
+      // Fetch orders
+      dispatch(setOrdersLoading(true));
+      const { data: ordersData } = await api.get('/business/orders');
+      dispatch(setOrders(ordersData));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      dispatch(setFoodItemsError('Failed to fetch food items'));
+      dispatch(setOrdersError('Failed to fetch orders'));
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch food items
-        dispatch(setFoodItemsLoading(true));
-        const { data: foodItemsData } = await api.get('/business/food-items');
-        dispatch(setFoodItems(foodItemsData));
-
-        // Fetch orders
-        dispatch(setOrdersLoading(true));
-        const { data: ordersData } = await api.get('/business/orders');
-        dispatch(setOrders(ordersData));
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        dispatch(setFoodItemsError('Failed to fetch food items'));
-        dispatch(setOrdersError('Failed to fetch orders'));
-      }
-    };
-
+    // Initial fetch
     fetchData();
+
+    // Set up periodic refresh every 2 minutes
+    const refreshInterval = setInterval(fetchData, 120000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(refreshInterval);
   }, [dispatch]);
 
   // Get only available items, sorted by creation date
@@ -97,7 +104,7 @@ export default function BusinessHomeScreen() {
               style={styles.actionCard}
               onPress={() => {
                 if (action.screen === 'UpdatePrice') {
-                  navigation.navigate('Business', { screen: 'UpdatePrice', params: { itemId: '' } });
+                  navigation.navigate('Business', { screen: 'EditItem', params: { itemId: '' } });
                 } else {
                   navigation.navigate('Business', { screen: action.screen });
                 }
@@ -145,7 +152,7 @@ export default function BusinessHomeScreen() {
               <FoodItemCard
                 key={item.id}
                 {...item}
-                onPress={() => navigation.navigate('Business', { screen: 'UpdatePrice', params: { itemId: item.id } })}
+                onPress={() => navigation.navigate('Business', { screen: 'EditItem', params: { itemId: item.id } })}
               />
             ))
           ) : (

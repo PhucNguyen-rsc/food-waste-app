@@ -5,39 +5,47 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  TextInput,
   Alert,
   ActivityIndicator,
   Modal,
+  RefreshControl,
 } from 'react-native';
 import BusinessLayout from '@/components/BusinessLayout';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { Ionicons } from '@expo/vector-icons';
+import { Icon } from '@rneui/themed';
 import { FoodItem } from '@/store/slices/foodItemsSlice';
-import { FoodCategory, FoodStatus } from '@food-waste/types';
 import {
   setItems,
   setLoading,
   setError,
-  updateItemQuantity,
-  setCategoryFilter,
-  setStatusFilter,
 } from '@/store/slices/inventorySlice';
 import api from '@/lib/api';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/navigation/types';
 
-const getCategoryLabel = (category: FoodCategory): string => {
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+type Filter = {
+  category: string | null;
+  inStock: boolean | null;
+};
+
+const CATEGORIES = ['MEAT', 'DAIRY', 'PRODUCE', 'BAKERY', 'PREPARED', 'OTHER'];
+
+const getCategoryLabel = (category: string): string => {
   switch (category) {
-    case FoodCategory.MEAT:
+    case 'MEAT':
       return 'Meat';
-    case FoodCategory.DAIRY:
+    case 'DAIRY':
       return 'Dairy';
-    case FoodCategory.PRODUCE:
+    case 'PRODUCE':
       return 'Produce';
-    case FoodCategory.BAKERY:
+    case 'BAKERY':
       return 'Bakery';
-    case FoodCategory.PREPARED:
+    case 'PREPARED':
       return 'Prepared';
-    case FoodCategory.OTHER:
+    case 'OTHER':
       return 'Other';
     default:
       return 'Unknown';
@@ -46,14 +54,23 @@ const getCategoryLabel = (category: FoodCategory): string => {
 
 export default function InventoryScreen() {
   const dispatch = useAppDispatch();
-  const { items, loading, error, filters } = useAppSelector((state) => state.inventory);
-  const [selectedItem, setSelectedItem] = useState<FoodItem | null>(null);
-  const [quantityInput, setQuantityInput] = useState('');
-  const [showQuantityModal, setShowQuantityModal] = useState(false);
+  const navigation = useNavigation<NavigationProp>();
+  const { items, loading, error } = useAppSelector((state) => state.inventory);
+  const [filters, setFilters] = useState<Filter>({
+    category: null,
+    inStock: null,
+  });
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchInventory();
+
+    // Set up periodic refresh every 2 minutes
+    const refreshInterval = setInterval(fetchInventory, 120000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(refreshInterval);
   }, []);
 
   const fetchInventory = async () => {
@@ -66,53 +83,24 @@ export default function InventoryScreen() {
       Alert.alert('Error', 'Failed to fetch inventory items');
     } finally {
       dispatch(setLoading(false));
+      setRefreshing(false);
     }
   };
 
-  const handleUpdateQuantity = async () => {
-    if (!selectedItem) return;
-
-    const quantity = Number(quantityInput);
-
-    if (isNaN(quantity)) {
-      Alert.alert('Error', 'Quantity must be a number');
-      return;
-    }
-
-    if (!Number.isInteger(quantity)) {
-      Alert.alert('Error', 'Quantity must be a whole number');
-      return;
-    }
-
-    if (quantity < 0) {
-      Alert.alert('Error', 'Quantity must be a positive number');
-      return;
-    }
-
-    if (quantity > 1000) {
-      Alert.alert('Error', 'Quantity cannot exceed 1000');
-      return;
-    }
-
-    try {
-      dispatch(setLoading(true));
-      await api.patch(`/business/food-items/${selectedItem.id}`, { quantity });
-      dispatch(updateItemQuantity({ id: selectedItem.id, quantity }));
-      setShowQuantityModal(false);
-      Alert.alert('Success', 'Quantity updated successfully');
-    } catch (err) {
-      Alert.alert('Error', 'Failed to update quantity');
-    } finally {
-      dispatch(setLoading(false));
-    }
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchInventory();
   };
 
   const filteredItems = items.filter(item => {
     if (filters.category && item.category !== filters.category) {
       return false;
     }
-    if (filters.status && item.status !== filters.status) {
-      return false;
+    if (filters.inStock !== null) {
+      const isInStock = item.quantity > 0;
+      if (filters.inStock !== isInStock) {
+        return false;
+      }
     }
     return true;
   });
@@ -120,51 +108,76 @@ export default function InventoryScreen() {
   const renderItem = ({ item }: { item: FoodItem }) => (
     <TouchableOpacity
       style={styles.itemCard}
-      onPress={() => {
-        setSelectedItem(item);
-        setQuantityInput(item.quantity.toString());
-        setShowQuantityModal(true);
-      }}
+      onPress={() => navigation.navigate('Business', { 
+        screen: 'EditItem',
+        params: { itemId: item.id }
+      })}
     >
       <View style={styles.itemHeader}>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.quantity}>Qty: {item.quantity}</Text>
-      </View>
-      <View style={styles.itemDetails}>
-        <Text style={styles.category}>{getCategoryLabel(item.category)}</Text>
-        <Text style={styles.status}>{item.status}</Text>
+        <View style={styles.itemInfo}>
+          <Text style={styles.itemName}>{item.name}</Text>
+          <Text style={styles.category}>{getCategoryLabel(item.category)}</Text>
+        </View>
+        <View style={styles.priceContainer}>
+          <Text style={styles.price}>AED {item.price.toFixed(2)}</Text>
+          <View style={styles.quantityContainer}>
+            <View style={[
+              styles.stockIndicator,
+              { backgroundColor: item.quantity > 0 ? '#22C55E' : '#EF4444' }
+            ]} />
+            <Text style={styles.quantity}>
+              {item.quantity > 0 ? `${item.quantity} in stock` : 'Out of stock'}
+            </Text>
+          </View>
+        </View>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <BusinessLayout title="Inventory" showBackButton>
+    <BusinessLayout>
       <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => navigation.navigate('Business', { screen: 'AddItem' })}
+        >
+          <Icon name="add" type="material" color="#fff" size={24} />
+          <Text style={styles.addButtonText}>Add New Item</Text>
+        </TouchableOpacity>
+
         <View style={styles.filterContainer}>
           <TouchableOpacity
             style={styles.filterButton}
             onPress={() => setShowCategoryModal(true)}
           >
+            <Icon name="category" type="material" size={20} color="#374151" />
             <Text style={styles.filterText}>
-              Category: {filters.category ? getCategoryLabel(filters.category) : 'All'}
+              {filters.category ? getCategoryLabel(filters.category) : 'All Categories'}
             </Text>
           </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.filterButton}
-            onPress={() => dispatch(setStatusFilter(null))}
+            onPress={() => setFilters(prev => ({ ...prev, inStock: prev.inStock === null ? true : prev.inStock === true ? false : null }))}
           >
+            <Icon 
+              name={filters.inStock === null ? 'filter-list' : filters.inStock ? 'check-circle' : 'cancel'} 
+              type="material" 
+              size={20} 
+              color="#374151" 
+            />
             <Text style={styles.filterText}>
-              Status: {filters.status || 'All'}
+              {filters.inStock === null ? 'All Stock' : filters.inStock ? 'In Stock' : 'Out of Stock'}
             </Text>
           </TouchableOpacity>
         </View>
 
-        {loading ? (
-          <View style={styles.loadingContainer}>
+        {loading && !refreshing ? (
+          <View style={styles.centerContainer}>
             <ActivityIndicator size="large" color="#22C55E" />
           </View>
         ) : error ? (
-          <View style={styles.errorContainer}>
+          <View style={styles.centerContainer}>
             <Text style={styles.errorText}>{error}</Text>
             <TouchableOpacity
               style={styles.retryButton}
@@ -173,12 +186,30 @@ export default function InventoryScreen() {
               <Text style={styles.retryText}>Retry</Text>
             </TouchableOpacity>
           </View>
+        ) : filteredItems.length === 0 ? (
+          <View style={styles.centerContainer}>
+            <Icon name="inventory" type="material" size={64} color="#ccc" />
+            <Text style={styles.emptyText}>No items found</Text>
+            <Text style={styles.emptySubtext}>
+              {items.length === 0 
+                ? 'Add your first item to get started'
+                : 'Try adjusting your filters'}
+            </Text>
+          </View>
         ) : (
           <FlatList
             data={filteredItems}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.listContainer}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={['#22C55E']}
+                tintColor="#22C55E"
+              />
+            }
           />
         )}
 
@@ -194,68 +225,25 @@ export default function InventoryScreen() {
               <TouchableOpacity
                 style={styles.modalOption}
                 onPress={() => {
-                  dispatch(setCategoryFilter(null));
+                  setFilters(prev => ({ ...prev, category: null }));
                   setShowCategoryModal(false);
                 }}
               >
                 <Text>All Categories</Text>
               </TouchableOpacity>
 
-              {[
-                FoodCategory.MEAT,
-                FoodCategory.DAIRY,
-                FoodCategory.PRODUCE,
-                FoodCategory.BAKERY,
-                FoodCategory.PREPARED,
-                FoodCategory.OTHER,
-              ].map((category) => (
+              {CATEGORIES.map((category) => (
                 <TouchableOpacity
                   key={category}
                   style={styles.modalOption}
                   onPress={() => {
-                    dispatch(setCategoryFilter(category));
+                    setFilters(prev => ({ ...prev, category }));
                     setShowCategoryModal(false);
                   }}
                 >
                   <Text>{getCategoryLabel(category)}</Text>
                 </TouchableOpacity>
               ))}
-            </View>
-          </View>
-        </Modal>
-
-        <Modal
-          visible={showQuantityModal}
-          transparent
-          animationType="slide"
-          onRequestClose={() => setShowQuantityModal(false)}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>
-                Update Quantity for {selectedItem?.name}
-              </Text>
-              <TextInput
-                style={styles.quantityInput}
-                keyboardType="numeric"
-                value={quantityInput}
-                onChangeText={setQuantityInput}
-                placeholder="Enter new quantity"
-              />
-              <View style={styles.modalButtons}>
-                <TouchableOpacity
-                  style={[styles.modalButton, styles.cancelButton]}
-                  onPress={() => setShowQuantityModal(false)}
-                >
-                  <Text style={styles.buttonText}>Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.modalButton, styles.updateButton]}
-                  onPress={handleUpdateQuantity}
-                >
-                  <Text style={styles.buttonText}>Update</Text>
-                </TouchableOpacity>
-              </View>
             </View>
           </View>
         </Modal>
@@ -269,50 +257,48 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F9FAFB',
   },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#22C55E',
+    margin: 16,
+    padding: 12,
+    borderRadius: 8,
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
   filterContainer: {
     flexDirection: 'row',
-    padding: 16,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    gap: 8,
   },
   filterButton: {
     flex: 1,
-    padding: 8,
-    marginHorizontal: 4,
-    backgroundColor: '#F3F4F6',
-    borderRadius: 8,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    padding: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    gap: 4,
   },
   filterText: {
     fontSize: 14,
     color: '#374151',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  errorText: {
-    color: '#EF4444',
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  retryButton: {
-    backgroundColor: '#22C55E',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  retryText: {
-    color: '#FFFFFF',
-    fontSize: 16,
   },
   listContainer: {
     padding: 16,
@@ -332,28 +318,69 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+  },
+  itemInfo: {
+    flex: 1,
   },
   itemName: {
     fontSize: 16,
     fontWeight: '600',
     color: '#111827',
+    marginBottom: 4,
+  },
+  category: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  priceContainer: {
+    alignItems: 'flex-end',
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#22C55E',
+    marginBottom: 4,
+  },
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  stockIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 6,
   },
   quantity: {
     fontSize: 14,
     color: '#6B7280',
   },
-  itemDetails: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  errorText: {
+    color: '#EF4444',
+    fontSize: 16,
+    marginBottom: 16,
   },
-  category: {
-    fontSize: 14,
-    color: '#4B5563',
+  retryButton: {
+    backgroundColor: '#22C55E',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
   },
-  status: {
+  retryText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+  },
+  emptyText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#374151',
+    marginTop: 16,
+  },
+  emptySubtext: {
     fontSize: 14,
-    color: '#4B5563',
+    color: '#6B7280',
+    marginTop: 4,
   },
   modalContainer: {
     flex: 1,
@@ -372,34 +399,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 16,
     color: '#111827',
-  },
-  quantityInput: {
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-    fontSize: 16,
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  modalButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginLeft: 8,
-  },
-  cancelButton: {
-    backgroundColor: '#F3F4F6',
-  },
-  updateButton: {
-    backgroundColor: '#22C55E',
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '500',
   },
   modalOption: {
     paddingVertical: 12,

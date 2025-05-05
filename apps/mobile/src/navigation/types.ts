@@ -42,7 +42,7 @@ export type BusinessStackParamList = {
   AddItem: undefined;
   Orders: undefined;
   Analytics: undefined;
-  UpdatePrice: { itemId: string };
+  EditItem: { itemId: string };
   Inventory: undefined;
   Profile: undefined;
 };

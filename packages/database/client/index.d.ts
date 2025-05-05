@@ -383,8 +383,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.6.0
-   * Query Engine version: f676762280b54cd07c770017ed3711ddde35f37a
+   * Prisma Client JS version: 6.7.0
+   * Query Engine version: 3cff47a7f5d65c3ea74883f1d736e41d68ce91ed
    */
   export type PrismaVersion = {
     client: string
@@ -5159,12 +5159,16 @@ export namespace Prisma {
     price: number | null
     originalPrice: number | null
     quantity: number | null
+    discountPercentage: number | null
+    discountThreshold: number | null
   }
 
   export type FoodItemSumAggregateOutputType = {
     price: number | null
     originalPrice: number | null
     quantity: number | null
+    discountPercentage: number | null
+    discountThreshold: number | null
   }
 
   export type FoodItemMinAggregateOutputType = {
@@ -5178,6 +5182,8 @@ export namespace Prisma {
     category: $Enums.FoodCategory | null
     status: $Enums.FoodStatus | null
     businessId: string | null
+    discountPercentage: number | null
+    discountThreshold: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5193,6 +5199,8 @@ export namespace Prisma {
     category: $Enums.FoodCategory | null
     status: $Enums.FoodStatus | null
     businessId: string | null
+    discountPercentage: number | null
+    discountThreshold: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5209,6 +5217,8 @@ export namespace Prisma {
     category: number
     status: number
     businessId: number
+    discountPercentage: number
+    discountThreshold: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -5219,12 +5229,16 @@ export namespace Prisma {
     price?: true
     originalPrice?: true
     quantity?: true
+    discountPercentage?: true
+    discountThreshold?: true
   }
 
   export type FoodItemSumAggregateInputType = {
     price?: true
     originalPrice?: true
     quantity?: true
+    discountPercentage?: true
+    discountThreshold?: true
   }
 
   export type FoodItemMinAggregateInputType = {
@@ -5238,6 +5252,8 @@ export namespace Prisma {
     category?: true
     status?: true
     businessId?: true
+    discountPercentage?: true
+    discountThreshold?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5253,6 +5269,8 @@ export namespace Prisma {
     category?: true
     status?: true
     businessId?: true
+    discountPercentage?: true
+    discountThreshold?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5269,6 +5287,8 @@ export namespace Prisma {
     category?: true
     status?: true
     businessId?: true
+    discountPercentage?: true
+    discountThreshold?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -5372,6 +5392,8 @@ export namespace Prisma {
     category: $Enums.FoodCategory
     status: $Enums.FoodStatus
     businessId: string
+    discountPercentage: number | null
+    discountThreshold: number | null
     createdAt: Date
     updatedAt: Date
     _count: FoodItemCountAggregateOutputType | null
@@ -5407,6 +5429,8 @@ export namespace Prisma {
     category?: boolean
     status?: boolean
     businessId?: boolean
+    discountPercentage?: boolean
+    discountThreshold?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     business?: boolean | UserDefaultArgs<ExtArgs>
@@ -5426,6 +5450,8 @@ export namespace Prisma {
     category?: boolean
     status?: boolean
     businessId?: boolean
+    discountPercentage?: boolean
+    discountThreshold?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     business?: boolean | UserDefaultArgs<ExtArgs>
@@ -5443,6 +5469,8 @@ export namespace Prisma {
     category?: boolean
     status?: boolean
     businessId?: boolean
+    discountPercentage?: boolean
+    discountThreshold?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     business?: boolean | UserDefaultArgs<ExtArgs>
@@ -5460,11 +5488,13 @@ export namespace Prisma {
     category?: boolean
     status?: boolean
     businessId?: boolean
+    discountPercentage?: boolean
+    discountThreshold?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type FoodItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "price" | "originalPrice" | "quantity" | "expiryDate" | "images" | "category" | "status" | "businessId" | "createdAt" | "updatedAt", ExtArgs["result"]["foodItem"]>
+  export type FoodItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "price" | "originalPrice" | "quantity" | "expiryDate" | "images" | "category" | "status" | "businessId" | "discountPercentage" | "discountThreshold" | "createdAt" | "updatedAt", ExtArgs["result"]["foodItem"]>
   export type FoodItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     business?: boolean | UserDefaultArgs<ExtArgs>
     orderItems?: boolean | FoodItem$orderItemsArgs<ExtArgs>
@@ -5495,6 +5525,8 @@ export namespace Prisma {
       category: $Enums.FoodCategory
       status: $Enums.FoodStatus
       businessId: string
+      discountPercentage: number | null
+      discountThreshold: number | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["foodItem"]>
@@ -5933,6 +5965,8 @@ export namespace Prisma {
     readonly category: FieldRef<"FoodItem", 'FoodCategory'>
     readonly status: FieldRef<"FoodItem", 'FoodStatus'>
     readonly businessId: FieldRef<"FoodItem", 'String'>
+    readonly discountPercentage: FieldRef<"FoodItem", 'Float'>
+    readonly discountThreshold: FieldRef<"FoodItem", 'Int'>
     readonly createdAt: FieldRef<"FoodItem", 'DateTime'>
     readonly updatedAt: FieldRef<"FoodItem", 'DateTime'>
   }
@@ -9884,6 +9918,8 @@ export namespace Prisma {
     category: 'category',
     status: 'status',
     businessId: 'businessId',
+    discountPercentage: 'discountPercentage',
+    discountThreshold: 'discountThreshold',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -10374,6 +10410,8 @@ export namespace Prisma {
     category?: EnumFoodCategoryFilter<"FoodItem"> | $Enums.FoodCategory
     status?: EnumFoodStatusFilter<"FoodItem"> | $Enums.FoodStatus
     businessId?: StringFilter<"FoodItem"> | string
+    discountPercentage?: FloatNullableFilter<"FoodItem"> | number | null
+    discountThreshold?: IntNullableFilter<"FoodItem"> | number | null
     createdAt?: DateTimeFilter<"FoodItem"> | Date | string
     updatedAt?: DateTimeFilter<"FoodItem"> | Date | string
     business?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -10392,6 +10430,8 @@ export namespace Prisma {
     category?: SortOrder
     status?: SortOrder
     businessId?: SortOrder
+    discountPercentage?: SortOrderInput | SortOrder
+    discountThreshold?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     business?: UserOrderByWithRelationInput
@@ -10413,6 +10453,8 @@ export namespace Prisma {
     category?: EnumFoodCategoryFilter<"FoodItem"> | $Enums.FoodCategory
     status?: EnumFoodStatusFilter<"FoodItem"> | $Enums.FoodStatus
     businessId?: StringFilter<"FoodItem"> | string
+    discountPercentage?: FloatNullableFilter<"FoodItem"> | number | null
+    discountThreshold?: IntNullableFilter<"FoodItem"> | number | null
     createdAt?: DateTimeFilter<"FoodItem"> | Date | string
     updatedAt?: DateTimeFilter<"FoodItem"> | Date | string
     business?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -10431,6 +10473,8 @@ export namespace Prisma {
     category?: SortOrder
     status?: SortOrder
     businessId?: SortOrder
+    discountPercentage?: SortOrderInput | SortOrder
+    discountThreshold?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: FoodItemCountOrderByAggregateInput
@@ -10455,6 +10499,8 @@ export namespace Prisma {
     category?: EnumFoodCategoryWithAggregatesFilter<"FoodItem"> | $Enums.FoodCategory
     status?: EnumFoodStatusWithAggregatesFilter<"FoodItem"> | $Enums.FoodStatus
     businessId?: StringWithAggregatesFilter<"FoodItem"> | string
+    discountPercentage?: FloatNullableWithAggregatesFilter<"FoodItem"> | number | null
+    discountThreshold?: IntNullableWithAggregatesFilter<"FoodItem"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"FoodItem"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"FoodItem"> | Date | string
   }
@@ -10999,6 +11045,8 @@ export namespace Prisma {
     images?: FoodItemCreateimagesInput | string[]
     category: $Enums.FoodCategory
     status?: $Enums.FoodStatus
+    discountPercentage?: number | null
+    discountThreshold?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     business: UserCreateNestedOneWithoutFoodItemsInput
@@ -11017,6 +11065,8 @@ export namespace Prisma {
     category: $Enums.FoodCategory
     status?: $Enums.FoodStatus
     businessId: string
+    discountPercentage?: number | null
+    discountThreshold?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutFoodItemInput
@@ -11033,6 +11083,8 @@ export namespace Prisma {
     images?: FoodItemUpdateimagesInput | string[]
     category?: EnumFoodCategoryFieldUpdateOperationsInput | $Enums.FoodCategory
     status?: EnumFoodStatusFieldUpdateOperationsInput | $Enums.FoodStatus
+    discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    discountThreshold?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     business?: UserUpdateOneRequiredWithoutFoodItemsNestedInput
@@ -11051,6 +11103,8 @@ export namespace Prisma {
     category?: EnumFoodCategoryFieldUpdateOperationsInput | $Enums.FoodCategory
     status?: EnumFoodStatusFieldUpdateOperationsInput | $Enums.FoodStatus
     businessId?: StringFieldUpdateOperationsInput | string
+    discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    discountThreshold?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUncheckedUpdateManyWithoutFoodItemNestedInput
@@ -11068,6 +11122,8 @@ export namespace Prisma {
     category: $Enums.FoodCategory
     status?: $Enums.FoodStatus
     businessId: string
+    discountPercentage?: number | null
+    discountThreshold?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -11083,6 +11139,8 @@ export namespace Prisma {
     images?: FoodItemUpdateimagesInput | string[]
     category?: EnumFoodCategoryFieldUpdateOperationsInput | $Enums.FoodCategory
     status?: EnumFoodStatusFieldUpdateOperationsInput | $Enums.FoodStatus
+    discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    discountThreshold?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11099,6 +11157,8 @@ export namespace Prisma {
     category?: EnumFoodCategoryFieldUpdateOperationsInput | $Enums.FoodCategory
     status?: EnumFoodStatusFieldUpdateOperationsInput | $Enums.FoodStatus
     businessId?: StringFieldUpdateOperationsInput | string
+    discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    discountThreshold?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11737,6 +11797,17 @@ export namespace Prisma {
     not?: NestedEnumFoodStatusFilter<$PrismaModel> | $Enums.FoodStatus
   }
 
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type OrderItemListRelationFilter = {
     every?: OrderItemWhereInput
     some?: OrderItemWhereInput
@@ -11759,6 +11830,8 @@ export namespace Prisma {
     category?: SortOrder
     status?: SortOrder
     businessId?: SortOrder
+    discountPercentage?: SortOrder
+    discountThreshold?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11767,6 +11840,8 @@ export namespace Prisma {
     price?: SortOrder
     originalPrice?: SortOrder
     quantity?: SortOrder
+    discountPercentage?: SortOrder
+    discountThreshold?: SortOrder
   }
 
   export type FoodItemMaxOrderByAggregateInput = {
@@ -11780,6 +11855,8 @@ export namespace Prisma {
     category?: SortOrder
     status?: SortOrder
     businessId?: SortOrder
+    discountPercentage?: SortOrder
+    discountThreshold?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11795,6 +11872,8 @@ export namespace Prisma {
     category?: SortOrder
     status?: SortOrder
     businessId?: SortOrder
+    discountPercentage?: SortOrder
+    discountThreshold?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -11803,6 +11882,8 @@ export namespace Prisma {
     price?: SortOrder
     originalPrice?: SortOrder
     quantity?: SortOrder
+    discountPercentage?: SortOrder
+    discountThreshold?: SortOrder
   }
 
   export type FloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -11855,6 +11936,22 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumFoodStatusFilter<$PrismaModel>
     _max?: NestedEnumFoodStatusFilter<$PrismaModel>
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type EnumOrderStatusFilter<$PrismaModel = never> = {
@@ -12374,6 +12471,14 @@ export namespace Prisma {
     set?: $Enums.FoodStatus
   }
 
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type UserUpdateOneRequiredWithoutFoodItemsNestedInput = {
     create?: XOR<UserCreateWithoutFoodItemsInput, UserUncheckedCreateWithoutFoodItemsInput>
     connectOrCreate?: UserCreateOrConnectWithoutFoodItemsInput
@@ -12814,6 +12919,22 @@ export namespace Prisma {
     _max?: NestedEnumFoodStatusFilter<$PrismaModel>
   }
 
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
   export type NestedEnumOrderStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.OrderStatus | EnumOrderStatusFieldRefInput<$PrismaModel>
     in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
@@ -13041,6 +13162,8 @@ export namespace Prisma {
     images?: FoodItemCreateimagesInput | string[]
     category: $Enums.FoodCategory
     status?: $Enums.FoodStatus
+    discountPercentage?: number | null
+    discountThreshold?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orderItems?: OrderItemCreateNestedManyWithoutFoodItemInput
@@ -13057,6 +13180,8 @@ export namespace Prisma {
     images?: FoodItemCreateimagesInput | string[]
     category: $Enums.FoodCategory
     status?: $Enums.FoodStatus
+    discountPercentage?: number | null
+    discountThreshold?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutFoodItemInput
@@ -13276,6 +13401,8 @@ export namespace Prisma {
     category?: EnumFoodCategoryFilter<"FoodItem"> | $Enums.FoodCategory
     status?: EnumFoodStatusFilter<"FoodItem"> | $Enums.FoodStatus
     businessId?: StringFilter<"FoodItem"> | string
+    discountPercentage?: FloatNullableFilter<"FoodItem"> | number | null
+    discountThreshold?: IntNullableFilter<"FoodItem"> | number | null
     createdAt?: DateTimeFilter<"FoodItem"> | Date | string
     updatedAt?: DateTimeFilter<"FoodItem"> | Date | string
   }
@@ -13925,6 +14052,8 @@ export namespace Prisma {
     images?: FoodItemCreateimagesInput | string[]
     category: $Enums.FoodCategory
     status?: $Enums.FoodStatus
+    discountPercentage?: number | null
+    discountThreshold?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
     business: UserCreateNestedOneWithoutFoodItemsInput
@@ -13942,6 +14071,8 @@ export namespace Prisma {
     category: $Enums.FoodCategory
     status?: $Enums.FoodStatus
     businessId: string
+    discountPercentage?: number | null
+    discountThreshold?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14010,6 +14141,8 @@ export namespace Prisma {
     images?: FoodItemUpdateimagesInput | string[]
     category?: EnumFoodCategoryFieldUpdateOperationsInput | $Enums.FoodCategory
     status?: EnumFoodStatusFieldUpdateOperationsInput | $Enums.FoodStatus
+    discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    discountThreshold?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     business?: UserUpdateOneRequiredWithoutFoodItemsNestedInput
@@ -14027,6 +14160,8 @@ export namespace Prisma {
     category?: EnumFoodCategoryFieldUpdateOperationsInput | $Enums.FoodCategory
     status?: EnumFoodStatusFieldUpdateOperationsInput | $Enums.FoodStatus
     businessId?: StringFieldUpdateOperationsInput | string
+    discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    discountThreshold?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14179,6 +14314,8 @@ export namespace Prisma {
     images?: FoodItemCreateimagesInput | string[]
     category: $Enums.FoodCategory
     status?: $Enums.FoodStatus
+    discountPercentage?: number | null
+    discountThreshold?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14305,6 +14442,8 @@ export namespace Prisma {
     images?: FoodItemUpdateimagesInput | string[]
     category?: EnumFoodCategoryFieldUpdateOperationsInput | $Enums.FoodCategory
     status?: EnumFoodStatusFieldUpdateOperationsInput | $Enums.FoodStatus
+    discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    discountThreshold?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUpdateManyWithoutFoodItemNestedInput
@@ -14321,6 +14460,8 @@ export namespace Prisma {
     images?: FoodItemUpdateimagesInput | string[]
     category?: EnumFoodCategoryFieldUpdateOperationsInput | $Enums.FoodCategory
     status?: EnumFoodStatusFieldUpdateOperationsInput | $Enums.FoodStatus
+    discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    discountThreshold?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUncheckedUpdateManyWithoutFoodItemNestedInput
@@ -14337,6 +14478,8 @@ export namespace Prisma {
     images?: FoodItemUpdateimagesInput | string[]
     category?: EnumFoodCategoryFieldUpdateOperationsInput | $Enums.FoodCategory
     status?: EnumFoodStatusFieldUpdateOperationsInput | $Enums.FoodStatus
+    discountPercentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    discountThreshold?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
