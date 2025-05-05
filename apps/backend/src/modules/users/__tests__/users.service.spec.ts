@@ -4,14 +4,16 @@ import { PrismaService } from '@prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { TestFactory } from '../../../test/factories/test.factory';
 import { UserRole } from '@food-waste/types';
+import { NotFoundException, ConflictException } from '@nestjs/common';
 
 describe('UsersService', () => {
   let service: UsersService;
   let prismaService: PrismaService;
   let jwtService: JwtService;
+  let module: TestingModule;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [
         UsersService,
         {
@@ -21,6 +23,7 @@ describe('UsersService', () => {
               findUnique: jest.fn(),
               create: jest.fn(),
               update: jest.fn(),
+              findFirst: jest.fn(),
             },
           },
         },
@@ -36,6 +39,14 @@ describe('UsersService', () => {
     service = module.get<UsersService>(UsersService);
     prismaService = module.get<PrismaService>(PrismaService);
     jwtService = module.get<JwtService>(JwtService);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {
@@ -60,6 +71,12 @@ describe('UsersService', () => {
       const result = await service.findByFirebaseUid('non-existent-id');
       expect(result).toBeNull();
     });
+
+    it('should handle database errors gracefully', async () => {
+      (prismaService.user.findUnique as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await expect(service.findByFirebaseUid('test-id')).rejects.toThrow('Database error');
+    });
   });
 
   describe('create', () => {
@@ -73,6 +90,7 @@ describe('UsersService', () => {
 
       const mockUser = TestFactory.createUser(createData);
       (prismaService.user.create as jest.Mock).mockResolvedValue(mockUser);
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValue(null);
 
       const result = await service.create(createData);
       expect(result).toEqual(mockUser);
@@ -84,6 +102,72 @@ describe('UsersService', () => {
           role: createData.role,
         }),
       });
+    });
+
+    it('should create a user without name', async () => {
+      const createData = {
+        email: 'test@example.com',
+        id: 'test-id',
+        role: UserRole.CONSUMER,
+      };
+
+      const mockUser = TestFactory.createUser({ ...createData, name: null });
+      (prismaService.user.create as jest.Mock).mockResolvedValue(mockUser);
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValue(null);
+
+      const result = await service.create(createData);
+      expect(result).toEqual(mockUser);
+      expect(prismaService.user.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          id: createData.id,
+          email: createData.email,
+          name: null,
+          role: createData.role,
+        }),
+      });
+    });
+
+    it('should throw ConflictException when email already exists', async () => {
+      const createData = {
+        email: 'test@example.com',
+        id: 'test-id',
+        role: UserRole.CONSUMER,
+        name: 'Test User',
+      };
+
+      const existingUser = TestFactory.createUser({ email: createData.email });
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValue(existingUser);
+
+      await expect(service.create(createData)).rejects.toThrow(ConflictException);
+    });
+
+    it('should handle duplicate user creation', async () => {
+      const createData = {
+        email: 'test@example.com',
+        id: 'test-id',
+        role: UserRole.CONSUMER,
+        name: 'Test User',
+      };
+
+      (prismaService.user.create as jest.Mock).mockRejectedValue({
+        code: 'P2002',
+        message: 'Unique constraint failed',
+      });
+
+      await expect(service.create(createData)).rejects.toThrow('A user with this email already exists');
+    });
+
+    it('should handle database errors during creation', async () => {
+      const createData = {
+        email: 'test@example.com',
+        id: 'test-id',
+        role: UserRole.CONSUMER,
+        name: 'Test User',
+      };
+
+      (prismaService.user.create as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await expect(service.create(createData)).rejects.toThrow('Database error');
     });
   });
 
@@ -116,6 +200,101 @@ describe('UsersService', () => {
         email: mockUser.email,
         role: newRole,
       });
+    });
+
+    it('should throw NotFoundException when user not found', async () => {
+      const userId = 'non-existent-id';
+      const newRole = UserRole.BUSINESS;
+
+      (prismaService.user.update as jest.Mock).mockRejectedValue({
+        code: 'P2025',
+        message: 'Record not found',
+      });
+
+      await expect(service.updateRole(userId, newRole)).rejects.toThrow(NotFoundException);
+    });
+
+    it('should handle database errors during role update', async () => {
+      const userId = 'test-id';
+      const newRole = UserRole.BUSINESS;
+
+      (prismaService.user.update as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await expect(service.updateRole(userId, newRole)).rejects.toThrow('Database error');
+    });
+  });
+
+  describe('updateUser', () => {
+    it('should update user delivery address', async () => {
+      const userId = 'test-id';
+      const updateData = { deliveryAddress: '123 New St' };
+      const mockUser = TestFactory.createUser({ 
+        id: userId, 
+        role: UserRole.CONSUMER,
+        deliveryAddress: updateData.deliveryAddress 
+      });
+
+      (prismaService.user.update as jest.Mock).mockResolvedValue(mockUser);
+
+      const result = await service.updateUser(userId, updateData);
+
+      expect(result).toEqual(expect.objectContaining({
+        id: userId,
+        role: UserRole.CONSUMER,
+        deliveryAddress: updateData.deliveryAddress,
+      }));
+
+      expect(prismaService.user.update).toHaveBeenCalledWith({
+        where: { id: userId },
+        data: updateData,
+      });
+    });
+
+    it('should throw NotFoundException when user not found', async () => {
+      const userId = 'non-existent-id';
+      const updateData = { deliveryAddress: '123 New St' };
+
+      (prismaService.user.update as jest.Mock).mockRejectedValue({
+        code: 'P2025',
+        message: 'Record not found',
+      });
+
+      await expect(service.updateUser(userId, updateData)).rejects.toThrow(NotFoundException);
+    });
+
+    it('should handle database errors during update', async () => {
+      const userId = 'test-id';
+      const updateData = { deliveryAddress: '123 New St' };
+
+      (prismaService.user.update as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await expect(service.updateUser(userId, updateData)).rejects.toThrow('Database error');
+    });
+  });
+
+  describe('findByEmail', () => {
+    it('should return a user when found by email', async () => {
+      const mockUser = TestFactory.createUser({ email: 'test@example.com' });
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+
+      const result = await service.findByEmail('test@example.com');
+      expect(result).toEqual(mockUser);
+      expect(prismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { email: 'test@example.com' },
+      });
+    });
+
+    it('should return null when user not found by email', async () => {
+      (prismaService.user.findUnique as jest.Mock).mockResolvedValue(null);
+
+      const result = await service.findByEmail('nonexistent@example.com');
+      expect(result).toBeNull();
+    });
+
+    it('should handle database errors when finding by email', async () => {
+      (prismaService.user.findUnique as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await expect(service.findByEmail('test@example.com')).rejects.toThrow('Database error');
     });
   });
 }); 

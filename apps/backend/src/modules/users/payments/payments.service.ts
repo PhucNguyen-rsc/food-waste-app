@@ -19,8 +19,8 @@ export class PaymentsService {
 
   async addPaymentMethod(userId: string, data: {
     type: PaymentType;
-    cardNumber: string;
-    expiryDate: string;
+    cardNumber: string | null;
+    expiryDate: string | null;
     isDefault?: boolean;
   }) {
     // Check if user exists
@@ -44,14 +44,14 @@ export class PaymentsService {
     }
 
     // For credit cards, validate the details
-    const cleanCardNumber = data.cardNumber.replace(/\D/g, '');
+    const cleanCardNumber = data.cardNumber?.replace(/\D/g, '') || '';
     if (!cleanCardNumber || cleanCardNumber.length < 13 || cleanCardNumber.length > 16) {
       throw new Error('Invalid card number');
     }
 
     // Validate expiry date format (MM/YY)
     const expiryRegex = /^\d{2}\/\d{2}$/;
-    if (!expiryRegex.test(data.expiryDate)) {
+    if (!expiryRegex.test(data.expiryDate || '')) {
       throw new Error('Invalid expiry date format. Use MM/YY');
     }
 

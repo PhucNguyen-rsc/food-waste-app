@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BusinessService } from '../business.service';
 import { PrismaService } from '@prisma/prisma.service';
 import { TestFactory } from '../../../test/factories/test.factory';
-import { NotFoundException } from '@nestjs/common';
-import { FoodStatus, FoodCategory } from '@food-waste/types';
+import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { FoodStatus, FoodCategory, OrderStatus } from '@food-waste/types';
 
 describe('BusinessService', () => {
   let service: BusinessService;
@@ -26,6 +26,7 @@ describe('BusinessService', () => {
             order: {
               findMany: jest.fn(),
               findFirst: jest.fn(),
+              update: jest.fn(),
             },
             user: {
               update: jest.fn(),
@@ -66,6 +67,24 @@ describe('BusinessService', () => {
         data: { ...createDto, businessId },
       });
     });
+
+    it('should handle database errors during creation', async () => {
+      const businessId = 'test-business-id';
+      const createDto = {
+        name: 'Test Food',
+        description: 'Test Description',
+        price: 10.99,
+        originalPrice: 15.99,
+        quantity: 5,
+        expiryDate: new Date(),
+        images: ['test.jpg'],
+        category: FoodCategory.MEAT,
+      };
+
+      (prismaService.foodItem.create as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await expect(service.createFoodItem(businessId, createDto)).rejects.toThrow('Database error');
+    });
   });
 
   describe('findAllFoodItems', () => {
@@ -84,6 +103,21 @@ describe('BusinessService', () => {
         where: { businessId },
         orderBy: { createdAt: 'desc' },
       });
+    });
+
+    it('should return empty array when no food items found', async () => {
+      const businessId = 'test-business-id';
+      (prismaService.foodItem.findMany as jest.Mock).mockResolvedValue([]);
+
+      const result = await service.findAllFoodItems(businessId);
+      expect(result).toEqual([]);
+    });
+
+    it('should handle database errors', async () => {
+      const businessId = 'test-business-id';
+      (prismaService.foodItem.findMany as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await expect(service.findAllFoodItems(businessId)).rejects.toThrow('Database error');
     });
   });
 
@@ -106,6 +140,15 @@ describe('BusinessService', () => {
       (prismaService.foodItem.findFirst as jest.Mock).mockResolvedValue(null);
 
       await expect(service.findOneFoodItem(businessId, foodItemId)).rejects.toThrow(NotFoundException);
+    });
+
+    it('should handle database errors', async () => {
+      const businessId = 'test-business-id';
+      const foodItemId = 'test-food-id';
+
+      (prismaService.foodItem.findFirst as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await expect(service.findOneFoodItem(businessId, foodItemId)).rejects.toThrow('Database error');
     });
   });
 
@@ -130,9 +173,22 @@ describe('BusinessService', () => {
       const foodItemId = 'non-existent-id';
       const updateDto = { name: 'Updated Food' };
 
-      (prismaService.foodItem.update as jest.Mock).mockRejectedValue(new Error());
+      (prismaService.foodItem.update as jest.Mock).mockRejectedValue({
+        code: 'P2025',
+        message: 'Record not found',
+      });
 
       await expect(service.updateFoodItem(businessId, foodItemId, updateDto)).rejects.toThrow(NotFoundException);
+    });
+
+    it('should handle database errors', async () => {
+      const businessId = 'test-business-id';
+      const foodItemId = 'test-food-id';
+      const updateDto = { name: 'Updated Food' };
+
+      (prismaService.foodItem.update as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await expect(service.updateFoodItem(businessId, foodItemId, updateDto)).rejects.toThrow('Database error');
     });
   });
 
@@ -152,9 +208,21 @@ describe('BusinessService', () => {
       const businessId = 'test-business-id';
       const foodItemId = 'non-existent-id';
 
-      (prismaService.foodItem.delete as jest.Mock).mockRejectedValue(new Error());
+      (prismaService.foodItem.delete as jest.Mock).mockRejectedValue({
+        code: 'P2025',
+        message: 'Record not found',
+      });
 
       await expect(service.removeFoodItem(businessId, foodItemId)).rejects.toThrow(NotFoundException);
+    });
+
+    it('should handle database errors', async () => {
+      const businessId = 'test-business-id';
+      const foodItemId = 'test-food-id';
+
+      (prismaService.foodItem.delete as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await expect(service.removeFoodItem(businessId, foodItemId)).rejects.toThrow('Database error');
     });
   });
 
@@ -176,9 +244,22 @@ describe('BusinessService', () => {
       const foodItemId = 'non-existent-id';
       const newStatus = FoodStatus.RESERVED;
 
-      (prismaService.foodItem.update as jest.Mock).mockRejectedValue(new Error());
+      (prismaService.foodItem.update as jest.Mock).mockRejectedValue({
+        code: 'P2025',
+        message: 'Record not found',
+      });
 
       await expect(service.updateFoodItemStatus(businessId, foodItemId, newStatus)).rejects.toThrow(NotFoundException);
+    });
+
+    it('should handle database errors', async () => {
+      const businessId = 'test-business-id';
+      const foodItemId = 'test-food-id';
+      const newStatus = FoodStatus.RESERVED;
+
+      (prismaService.foodItem.update as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await expect(service.updateFoodItemStatus(businessId, foodItemId, newStatus)).rejects.toThrow('Database error');
     });
   });
 
@@ -220,6 +301,21 @@ describe('BusinessService', () => {
         orderBy: { createdAt: 'desc' },
       });
     });
+
+    it('should return empty array when no orders found', async () => {
+      const businessId = 'test-business-id';
+      (prismaService.order.findMany as jest.Mock).mockResolvedValue([]);
+
+      const result = await service.getBusinessOrders(businessId);
+      expect(result).toEqual([]);
+    });
+
+    it('should handle database errors', async () => {
+      const businessId = 'test-business-id';
+      (prismaService.order.findMany as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await expect(service.getBusinessOrders(businessId)).rejects.toThrow('Database error');
+    });
   });
 
   describe('getBusinessOrder', () => {
@@ -242,6 +338,15 @@ describe('BusinessService', () => {
 
       await expect(service.getBusinessOrder(businessId, orderId)).rejects.toThrow(NotFoundException);
     });
+
+    it('should handle database errors', async () => {
+      const businessId = 'test-business-id';
+      const orderId = 'test-order-id';
+
+      (prismaService.order.findFirst as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await expect(service.getBusinessOrder(businessId, orderId)).rejects.toThrow('Database error');
+    });
   });
 
   describe('updateBusinessDetails', () => {
@@ -262,6 +367,35 @@ describe('BusinessService', () => {
         where: { id: businessId },
         data: updateDto,
       });
+    });
+
+    it('should throw NotFoundException if business not found', async () => {
+      const businessId = 'non-existent-id';
+      const updateDto = {
+        businessName: 'Updated Business',
+        businessAddress: 'New Address',
+        businessPhone: '123-456-7890',
+      };
+
+      (prismaService.user.update as jest.Mock).mockRejectedValue({
+        code: 'P2025',
+        message: 'Record not found',
+      });
+
+      await expect(service.updateBusinessDetails(businessId, updateDto)).rejects.toThrow(NotFoundException);
+    });
+
+    it('should handle database errors', async () => {
+      const businessId = 'test-business-id';
+      const updateDto = {
+        businessName: 'Updated Business',
+        businessAddress: 'New Address',
+        businessPhone: '123-456-7890',
+      };
+
+      (prismaService.user.update as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+      await expect(service.updateBusinessDetails(businessId, updateDto)).rejects.toThrow('Database error');
     });
   });
 }); 

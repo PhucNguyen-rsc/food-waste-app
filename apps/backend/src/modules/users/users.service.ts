@@ -1,4 +1,4 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
 import { UserRole } from '@food-waste/types';
 import { JwtService } from '@nestjs/jwt';
@@ -35,34 +35,44 @@ export class UsersService {
     role: UserRole;
     name?: string;
   }) {
-    // Check if user with this email already exists
-    const existingUser = await this.findByEmail(data.email);
-    if (existingUser) {
-      throw new ConflictException('A user with this email already exists');
-    }
+    try {
+      // Check if user with this email already exists
+      const existingUser = await this.findByEmail(data.email);
+      if (existingUser) {
+        throw new ConflictException('A user with this email already exists');
+      }
 
-    return this.prisma.user.create({
-      data: {
-        id: data.id,
-        email: data.email,
-        name: data.name || null,
-        role: data.role,
-        // Set default values for other required fields
-        emailVerified: null,
-        image: null,
-        password: null,
-        // Business specific fields
-        businessName: null,
-        businessAddress: null,
-        businessPhone: null,
-        // Consumer specific fields
-        deliveryAddress: null,
-        // Courier specific fields
-        isAvailable: false,
-        currentLocation: null,
-        vehicleType: null,
-      },
-    });
+      return await this.prisma.user.create({
+        data: {
+          id: data.id,
+          email: data.email,
+          name: data.name || null,
+          role: data.role,
+          // Set default values for other required fields
+          emailVerified: null,
+          image: null,
+          password: null,
+          // Business specific fields
+          businessName: null,
+          businessAddress: null,
+          businessPhone: null,
+          // Consumer specific fields
+          deliveryAddress: null,
+          // Courier specific fields
+          isAvailable: false,
+          currentLocation: null,
+          vehicleType: null,
+        },
+      });
+    } catch (error) {
+      if (error instanceof ConflictException) {
+        throw error;
+      }
+      if (error.code === 'P2002') {
+        throw new ConflictException('A user with this email already exists');
+      }
+      throw error;
+    }
   }
 
   async updateRole(userId: string, role: UserRole) {
@@ -70,29 +80,66 @@ export class UsersService {
     console.log('User ID:', userId);
     console.log('New Role:', role);
 
-    const updatedUser = await this.prisma.user.update({
-      where: { id: userId },
-      data: { role },
-    });
+    try {
+      const updatedUser = await this.prisma.user.update({
+        where: { id: userId },
+        data: { role },
+      });
 
-    // Generate new JWT token with updated role
-    const payload = {
-      sub: updatedUser.id,
-      email: updatedUser.email,
-      role: updatedUser.role,
-    };
-    const accessToken = this.jwtService.sign(payload);
+      // Generate new JWT token with updated role
+      const payload = {
+        sub: updatedUser.id,
+        email: updatedUser.email,
+        role: updatedUser.role,
+      };
+      const accessToken = this.jwtService.sign(payload);
 
-    console.log('Database Update Result:', {
-      id: updatedUser.id,
-      email: updatedUser.email,
-      role: updatedUser.role
-    });
-    console.log('========================\n');
+      console.log('Database Update Result:', {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        role: updatedUser.role
+      });
+      console.log('========================\n');
 
-    return {
-      accessToken,
-      user: {
+      return {
+        accessToken,
+        user: {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          name: updatedUser.name,
+          role: updatedUser.role,
+          // Include role-specific fields
+          ...(updatedUser.role === UserRole.BUSINESS && {
+            businessName: updatedUser.businessName,
+            businessAddress: updatedUser.businessAddress,
+            businessPhone: updatedUser.businessPhone,
+          }),
+          ...(updatedUser.role === UserRole.CONSUMER && {
+            deliveryAddress: updatedUser.deliveryAddress,
+          }),
+          ...(updatedUser.role === UserRole.COURIER && {
+            isAvailable: updatedUser.isAvailable,
+            currentLocation: updatedUser.currentLocation,
+            vehicleType: updatedUser.vehicleType,
+          }),
+        },
+      };
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('User not found');
+      }
+      throw error;
+    }
+  }
+
+  async updateUser(userId: string, updateData: { deliveryAddress?: string }) {
+    try {
+      const updatedUser = await this.prisma.user.update({
+        where: { id: userId },
+        data: updateData,
+      });
+
+      return {
         id: updatedUser.id,
         email: updatedUser.email,
         name: updatedUser.name,
@@ -111,35 +158,12 @@ export class UsersService {
           currentLocation: updatedUser.currentLocation,
           vehicleType: updatedUser.vehicleType,
         }),
-      },
-    };
-  }
-
-  async updateUser(userId: string, updateData: { deliveryAddress?: string }) {
-    const updatedUser = await this.prisma.user.update({
-      where: { id: userId },
-      data: updateData,
-    });
-
-    return {
-      id: updatedUser.id,
-      email: updatedUser.email,
-      name: updatedUser.name,
-      role: updatedUser.role,
-      // Include role-specific fields
-      ...(updatedUser.role === UserRole.BUSINESS && {
-        businessName: updatedUser.businessName,
-        businessAddress: updatedUser.businessAddress,
-        businessPhone: updatedUser.businessPhone,
-      }),
-      ...(updatedUser.role === UserRole.CONSUMER && {
-        deliveryAddress: updatedUser.deliveryAddress,
-      }),
-      ...(updatedUser.role === UserRole.COURIER && {
-        isAvailable: updatedUser.isAvailable,
-        currentLocation: updatedUser.currentLocation,
-        vehicleType: updatedUser.vehicleType,
-      }),
-    };
+      };
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('User not found');
+      }
+      throw error;
+    }
   }
 } 

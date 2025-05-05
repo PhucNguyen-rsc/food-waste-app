@@ -72,7 +72,10 @@ export class BusinessService {
       return updatedItem;
     } catch (error) {
       console.error(`[BusinessService] Error updating food item ${id}:`, error);
-      throw new NotFoundException(`Food item with ID ${id} not found`);
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Food item with ID ${id} not found`);
+      }
+      throw error;
     }
   }
 
@@ -89,7 +92,10 @@ export class BusinessService {
       return deletedItem;
     } catch (error) {
       console.error(`[BusinessService] Error removing food item ${id}:`, error);
-      throw new NotFoundException(`Food item with ID ${id} not found`);
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Food item with ID ${id} not found`);
+      }
+      throw error;
     }
   }
 
@@ -107,7 +113,10 @@ export class BusinessService {
       return updatedItem;
     } catch (error) {
       console.error(`[BusinessService] Error updating food item status ${id}:`, error);
-      throw new NotFoundException(`Food item with ID ${id} not found`);
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Food item with ID ${id} not found`);
+      }
+      throw error;
     }
   }
 
@@ -188,13 +197,21 @@ export class BusinessService {
   async updateBusinessDetails(businessId: string, updateBusinessDto: UpdateBusinessDto) {
     console.log(`[BusinessService] Updating business details for ${businessId}:`, updateBusinessDto);
     
-    const updatedBusiness = await this.prisma.user.update({
-      where: { id: businessId },
-      data: updateBusinessDto,
-    });
+    try {
+      const updatedBusiness = await this.prisma.user.update({
+        where: { id: businessId },
+        data: updateBusinessDto,
+      });
 
-    console.log(`[BusinessService] Business details updated successfully:`, updatedBusiness);
-    return updatedBusiness;
+      console.log(`[BusinessService] Business details updated successfully:`, updatedBusiness);
+      return updatedBusiness;
+    } catch (error) {
+      console.error(`[BusinessService] Error updating business details:`, error);
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Business with ID ${businessId} not found`);
+      }
+      throw error;
+    }
   }
 
   async updateFoodItemPrice(userId: string, itemId: string, price: number) {
