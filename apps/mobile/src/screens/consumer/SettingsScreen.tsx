@@ -31,14 +31,14 @@ export default function SettingsScreen() {
 
         <TouchableOpacity
           style={styles.settingItem}
-          onPress={() => navigation.navigate('Profile')}
+          onPress={() => navigation.navigate('Consumer', { screen: 'Profile' })}
         >
           <Text style={styles.settingText}>Profile</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.settingItem}
-          onPress={() => navigation.navigate('ChangePassword')}
+          onPress={() => navigation.navigate('Consumer', { screen: 'ChangePassword' })}
         >
           <Text style={styles.settingText}>Change Password</Text>
         </TouchableOpacity>

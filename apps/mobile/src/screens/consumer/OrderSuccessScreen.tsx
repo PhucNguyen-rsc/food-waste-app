@@ -24,7 +24,7 @@ export default function OrderSuccessScreen() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('ConsumerHome')}
+          onPress={() => navigation.navigate('Consumer', { screen: 'Home' })}
         >
           <Text style={styles.buttonText}>Back to Home</Text>
         </TouchableOpacity>

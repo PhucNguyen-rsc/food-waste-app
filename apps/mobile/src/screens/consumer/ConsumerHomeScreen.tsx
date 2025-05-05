@@ -82,7 +82,7 @@ export default function ConsumerHomeScreen() {
     return (
       <TouchableOpacity
         style={styles.card}
-        onPress={() => navigation.navigate('ProductDetail', { product: item })}
+        onPress={() => navigation.navigate('Consumer', { screen: 'ProductDetail', params: { product: item } })}
       >
         <Image
           source={{ uri: item.images?.[0] || 'https://via.placeholder.com/150' }}

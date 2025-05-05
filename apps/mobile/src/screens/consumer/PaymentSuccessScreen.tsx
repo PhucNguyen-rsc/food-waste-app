@@ -23,7 +23,7 @@ export default function PaymentSuccessScreen() {
         </Text>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('CheckoutScreen')}
+          onPress={() => navigation.navigate('Consumer', { screen: 'CheckoutScreen' })}
         >
           <Text style={styles.buttonText}>BACK TO CHECKOUT</Text>
         </TouchableOpacity>

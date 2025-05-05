@@ -166,9 +166,7 @@ export default function CheckoutScreen() {
       // Navigate to success screen with the first order ID
       // Note: We take the first order ID since the backend might create multiple orders
       // if items are from different businesses
-      navigation.navigate('OrderSuccessScreen', {
-        orderId: orders[0].id
-      });
+      navigation.navigate('Consumer', { screen: 'OrderSuccessScreen', params: { orderId: orders[0].id } });
     } catch (error: any) {
       console.error('Checkout error:', error);
       Alert.alert(

@@ -57,7 +57,7 @@ export default function CartScreen() {
       Alert.alert('Cart is empty', 'Please add items before checking out.');
       return;
     }
-    navigation.navigate('CheckoutScreen');
+    navigation.navigate('Consumer', { screen: 'CheckoutScreen' });
   };
 
   const renderItem = ({ item }: { item: CartItem }) => (
@@ -119,7 +119,7 @@ export default function CartScreen() {
             <Text style={styles.emptyText}>Your cart is empty</Text>
             <TouchableOpacity 
               style={styles.shopButton}
-              onPress={() => navigation.navigate('ConsumerHome')}
+              onPress={() => navigation.navigate('Consumer', { screen: 'Home' })}
             >
               <Text style={styles.shopButtonText}>Start Shopping</Text>
             </TouchableOpacity>
