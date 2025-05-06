@@ -31,6 +31,11 @@ export type ConsumerStackParamList = {
   OrderSuccessScreen: { orderId: string };
   OrderDetails: { orderId: string };
   BusinessDetails: undefined;
+  // Payment Screens
+  NoPaymentMethod: undefined;
+  PaymentMethods: undefined;
+  AddPaymentMethod: { type: PaymentType };
+  PaymentSuccess: undefined;
 };
 
 // ==========================
@@ -65,10 +70,4 @@ export type RootStackParamList = {
   Business: NavigatorScreenParams<BusinessStackParamList>;
   Consumer: NavigatorScreenParams<ConsumerStackParamList>;
   Courier: NavigatorScreenParams<CourierStackParamList>;
-
-  // Payment Screens
-  NoPaymentMethod: undefined;
-  PaymentMethods: undefined;
-  AddPaymentMethod: { type: PaymentType };
-  PaymentSuccess: undefined;
 };

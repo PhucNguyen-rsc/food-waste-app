@@ -26,17 +26,17 @@ export default function CourierLayout({
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea}>
         <NavBar 
           title="Feedr"
           showBackButton={showBackButton} 
           onBackPress={onBackPress} 
         />
       </SafeAreaView>
-      <View style={styles.content}>
-        {children}
+        <View style={styles.content}>
+          {children}
+        </View>
       </View>
-    </View>
   );
 }
 

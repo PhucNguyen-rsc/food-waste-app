@@ -16,13 +16,13 @@ import { RootState } from '@/store';
 import { clearCart } from '@/store/slices/cartSlice';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/navigation/types';
+import { RootStackParamList, ConsumerStackParamList } from '@/navigation/types';
 import api from '@/lib/api';
 import { auth } from '@/config/firebaseConfig';
 import { PaymentType } from '@food-waste/types';
 import { isValidPaymentMethod } from '@/config/paymentConfig';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList & ConsumerStackParamList>;
 
 type PaymentMethod = {
   id: string;
@@ -191,7 +191,13 @@ export default function CheckoutScreen() {
         items: cartItems.map(item => ({
           foodItemId: item.id,
           quantity: item.quantity
-        }))
+        })),
+        paymentMethod: paymentMethod === 'Card' ? {
+          type: 'Card',
+          paymentMethodId: selectedPaymentMethodId
+        } : {
+          type: 'Cash'
+        }
       };
 
       const response = await api.post('/consumer/orders', orderData);
@@ -244,12 +250,14 @@ export default function CheckoutScreen() {
 
     if (paymentMethods.length === 0) {
       return (
-        <TouchableOpacity
-          style={styles.addPaymentButton}
-          onPress={handleAddPaymentMethod}
-        >
-          <Text style={styles.addPaymentButtonText}>Add Payment Method</Text>
-        </TouchableOpacity>
+        <View style={styles.paymentMethodsContainer}>
+          <TouchableOpacity
+            style={styles.addPaymentButton}
+            onPress={handleAddPaymentMethod}
+          >
+            <Text style={styles.addPaymentButtonText}>Add Payment Method</Text>
+          </TouchableOpacity>
+        </View>
       );
     }
 
@@ -262,7 +270,10 @@ export default function CheckoutScreen() {
                 styles.paymentMethodItem,
                 selectedPaymentMethodId === method.id && styles.selectedPaymentMethod,
               ]}
-              onPress={() => setSelectedPaymentMethodId(method.id)}
+              onPress={() => {
+                setSelectedPaymentMethodId(method.id);
+                console.log('Selected payment method:', method.id);
+              }}
             >
               <Text style={styles.paymentMethodText}>
                 {method.cardBrand} **** {method.cardNumber.slice(-4)}

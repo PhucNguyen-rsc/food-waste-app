@@ -40,23 +40,23 @@ export default function BusinessHomeScreen() {
   const ordersLoading = useAppSelector((state) => state.orders.loading);
   const ordersError = useAppSelector((state) => state.orders.error);
 
-  const fetchData = async () => {
-    try {
-      // Fetch food items
-      dispatch(setFoodItemsLoading(true));
-      const { data: foodItemsData } = await api.get('/business/food-items');
-      dispatch(setFoodItems(foodItemsData));
+    const fetchData = async () => {
+      try {
+        // Fetch food items
+        dispatch(setFoodItemsLoading(true));
+        const { data: foodItemsData } = await api.get('/business/food-items');
+        dispatch(setFoodItems(foodItemsData));
 
-      // Fetch orders
-      dispatch(setOrdersLoading(true));
-      const { data: ordersData } = await api.get('/business/orders');
-      dispatch(setOrders(ordersData));
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      dispatch(setFoodItemsError('Failed to fetch food items'));
-      dispatch(setOrdersError('Failed to fetch orders'));
-    }
-  };
+        // Fetch orders
+        dispatch(setOrdersLoading(true));
+        const { data: ordersData } = await api.get('/business/orders');
+        dispatch(setOrders(ordersData));
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        dispatch(setFoodItemsError('Failed to fetch food items'));
+        dispatch(setOrdersError('Failed to fetch orders'));
+      }
+    };
 
   useEffect(() => {
     // Initial fetch

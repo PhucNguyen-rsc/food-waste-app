@@ -73,7 +73,7 @@ export class BusinessService {
     } catch (error) {
       console.error(`[BusinessService] Error updating food item ${id}:`, error);
       if (error.code === 'P2025') {
-        throw new NotFoundException(`Food item with ID ${id} not found`);
+      throw new NotFoundException(`Food item with ID ${id} not found`);
       }
       throw error;
     }
@@ -93,7 +93,7 @@ export class BusinessService {
     } catch (error) {
       console.error(`[BusinessService] Error removing food item ${id}:`, error);
       if (error.code === 'P2025') {
-        throw new NotFoundException(`Food item with ID ${id} not found`);
+      throw new NotFoundException(`Food item with ID ${id} not found`);
       }
       throw error;
     }
@@ -114,7 +114,7 @@ export class BusinessService {
     } catch (error) {
       console.error(`[BusinessService] Error updating food item status ${id}:`, error);
       if (error.code === 'P2025') {
-        throw new NotFoundException(`Food item with ID ${id} not found`);
+      throw new NotFoundException(`Food item with ID ${id} not found`);
       }
       throw error;
     }
@@ -198,13 +198,13 @@ export class BusinessService {
     console.log(`[BusinessService] Updating business details for ${businessId}:`, updateBusinessDto);
     
     try {
-      const updatedBusiness = await this.prisma.user.update({
-        where: { id: businessId },
-        data: updateBusinessDto,
-      });
+    const updatedBusiness = await this.prisma.user.update({
+      where: { id: businessId },
+      data: updateBusinessDto,
+    });
 
-      console.log(`[BusinessService] Business details updated successfully:`, updatedBusiness);
-      return updatedBusiness;
+    console.log(`[BusinessService] Business details updated successfully:`, updatedBusiness);
+    return updatedBusiness;
     } catch (error) {
       console.error(`[BusinessService] Error updating business details:`, error);
       if (error.code === 'P2025') {

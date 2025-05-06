@@ -2,20 +2,24 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/navigation/types';
+import { ConsumerStackParamList } from '@/navigation/types';
 import ConsumerLayout from '@/components/ConsumerLayout';
 import { Icon } from '@rneui/themed';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type NavigationProp = NativeStackNavigationProp<ConsumerStackParamList>;
 
 export default function NoPaymentMethodScreen() {
   const navigation = useNavigation<NavigationProp>();
+
+  const handleAddPaymentMethod = () => {
+    navigation.navigate('PaymentMethods');
+  };
 
   return (
     <ConsumerLayout>
       <View style={styles.container}>
         <View style={styles.iconContainer}>
-          <Icon name="card-outline" size={80} color="#22C55E" />
+          <Icon name="credit-card-outline" type="material-community" size={80} color="#22C55E" />
         </View>
         <Text style={styles.title}>Don't have any card</Text>
         <Text style={styles.subtitle}>
@@ -23,7 +27,7 @@ export default function NoPaymentMethodScreen() {
         </Text>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('PaymentMethods')}
+          onPress={handleAddPaymentMethod}
         >
           <Text style={styles.buttonText}>ADD CREDIT CARDS</Text>
         </TouchableOpacity>

@@ -99,7 +99,7 @@ export default function InventoryScreen() {
     if (filters.inStock !== null) {
       const isInStock = item.quantity > 0;
       if (filters.inStock !== isInStock) {
-        return false;
+      return false;
       }
     }
     return true;
@@ -115,7 +115,7 @@ export default function InventoryScreen() {
     >
       <View style={styles.itemHeader}>
         <View style={styles.itemInfo}>
-          <Text style={styles.itemName}>{item.name}</Text>
+        <Text style={styles.itemName}>{item.name}</Text>
           <Text style={styles.category}>{getCategoryLabel(item.category)}</Text>
         </View>
         <View style={styles.priceContainer}>
@@ -129,7 +129,7 @@ export default function InventoryScreen() {
               {item.quantity > 0 ? `${item.quantity} in stock` : 'Out of stock'}
             </Text>
           </View>
-        </View>
+      </View>
       </View>
     </TouchableOpacity>
   );

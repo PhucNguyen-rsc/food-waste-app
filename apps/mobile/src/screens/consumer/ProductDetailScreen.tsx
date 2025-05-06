@@ -128,7 +128,7 @@ export default function ProductDetailScreen() {
               const index = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width);
               setActiveIndex(index);
             }}
-          />
+        />
           {renderPagination()}
         </View>
 

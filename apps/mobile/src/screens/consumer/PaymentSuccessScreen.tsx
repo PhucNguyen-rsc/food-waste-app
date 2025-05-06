@@ -4,9 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ConsumerLayout from '@/components/ConsumerLayout';
 import { Icon } from '@rneui/themed';
-import { RootStackParamList } from '@/navigation/types';
+import { ConsumerStackParamList } from '@/navigation/types';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type NavigationProp = NativeStackNavigationProp<ConsumerStackParamList>;
 
 export default function PaymentSuccessScreen() {
   const navigation = useNavigation<NavigationProp>();
@@ -15,7 +15,7 @@ export default function PaymentSuccessScreen() {
     <ConsumerLayout>
       <View style={styles.container}>
         <View style={styles.iconContainer}>
-          <Icon name="checkmark-circle" size={80} color="#22C55E" />
+          <Icon name="check-circle" type="material-community" size={80} color="#22C55E" />
         </View>
         <Text style={styles.title}>Payment Method Added!</Text>
         <Text style={styles.subtitle}>
@@ -23,7 +23,7 @@ export default function PaymentSuccessScreen() {
         </Text>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('Consumer', { screen: 'CheckoutScreen' })}
+          onPress={() => navigation.goBack()}
         >
           <Text style={styles.buttonText}>BACK TO CHECKOUT</Text>
         </TouchableOpacity>

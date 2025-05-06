@@ -12,10 +12,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ConsumerLayout from '@/components/ConsumerLayout';
 import api from '@/lib/api';
 import { PaymentType } from '@food-waste/types';
-import { RootStackParamList } from '@/navigation/types';
+import { ConsumerStackParamList } from '@/navigation/types';
 import { useAppSelector } from '@/store';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type NavigationProp = NativeStackNavigationProp<ConsumerStackParamList>;
 
 export default function AddPaymentMethodScreen() {
   const navigation = useNavigation<NavigationProp>();
@@ -46,77 +46,18 @@ export default function AddPaymentMethodScreen() {
     return cleaned;
   };
 
-  const handleAddPaymentMethod = async () => {
+  const handleSubmit = async () => {
     try {
-      if (!user?.id) {
-        Alert.alert('Error', 'User not authenticated');
-        return;
-      }
-
-      if (!cardNumber || !expiryDate || !cvv) {
-        Alert.alert('Error', 'Please fill in all fields');
-        return;
-      }
-
-      // Validate card number (basic check)
-      if (cardNumber.length < 13 || cardNumber.length > 19) {
-        Alert.alert('Error', 'Invalid card number');
-        return;
-      }
-
-      // Validate expiry date format
-      if (!/^\d{2}\/\d{2}$/.test(expiryDate)) {
-        Alert.alert('Error', 'Invalid expiry date format. Use MM/YY');
-        return;
-      }
-
-      // Validate CVV
-      if (cvv.length < 3 || cvv.length > 4) {
-        Alert.alert('Error', 'Invalid CVV');
-        return;
-      }
-
-      // Determine card type based on card number pattern
-      const cleanCardNumber = cardNumber.replace(/\D/g, '');
-      let cardType: PaymentType;
-      
-      // Visa: Starts with 4, length 13-16
-      if (/^4[0-9]{12}(?:[0-9]{3})?$/.test(cleanCardNumber)) {
-        cardType = PaymentType.VISA;
-      } 
-      // Mastercard: Starts with 51-55 or 2221-2720, length 16
-      else if (/^(5[1-5][0-9]{14}|2[2-7][0-9]{14})$/.test(cleanCardNumber)) {
-        cardType = PaymentType.MASTERCARD;
-      } else {
-        Alert.alert('Error', 'Only VISA and Mastercard are supported. Please check your card number.');
-        return;
-      }
-
-      console.log('Sending payment method request:', {
-        type: cardType,
-        cardNumber,
-        expiryDate,
-      });
-
       const response = await api.post('/users/payments/methods', {
-        type: cardType,
-        cardNumber,
-        expiryDate,
+        type,
+        cardNumber: cardNumber.replace(/\s/g, ''), // Remove spaces from card number
+        expiryDate
       });
-
-      console.log('Payment method response:', response.data);
 
       if (response.status === 201) {
-        Alert.alert('Success', 'Payment method added successfully');
-        navigation.goBack();
+        navigation.navigate('PaymentSuccess');
       }
-    } catch (error: any) {
-      console.error('Error adding payment method:', error);
-      console.error('Error details:', {
-        message: error?.message,
-        response: error?.response?.data,
-        status: error?.response?.status,
-      });
+    } catch (error) {
       Alert.alert('Error', 'Failed to add payment method. Please try again.');
     }
   };
@@ -169,7 +110,7 @@ export default function AddPaymentMethodScreen() {
 
         <TouchableOpacity
           style={[styles.button, loading && styles.buttonDisabled]}
-          onPress={handleAddPaymentMethod}
+          onPress={handleSubmit}
           disabled={loading}
         >
           <Text style={styles.buttonText}>

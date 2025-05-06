@@ -2,12 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '@/navigation/types';
+import { ConsumerStackParamList } from '@/navigation/types';
 import { PaymentType } from '@food-waste/types';
 import ConsumerLayout from '@/components/ConsumerLayout';
 import { Icon } from '@rneui/themed';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type NavigationProp = NativeStackNavigationProp<ConsumerStackParamList>;
 
 type PaymentMethodInfo = {
   type: PaymentType;

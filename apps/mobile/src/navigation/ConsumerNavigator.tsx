@@ -16,6 +16,11 @@ import OrderDetailsScreen from '@/screens/consumer/OrderDetailScreen';
 import BusinessDetailsScreen from '@/screens/consumer/BusinessDetailsScreen';
 import ProductDetailScreen from '@/screens/consumer/ProductDetailScreen';
 import CheckoutScreen from '@/screens/consumer/CheckoutScreen';
+// Payment Screens
+import NoPaymentMethodScreen from '@/screens/consumer/NoPaymentMethodScreen';
+import PaymentMethodsScreen from '@/screens/consumer/PaymentMethodsScreen';
+import AddPaymentMethodScreen from '@/screens/consumer/AddPaymentMethodScreen';
+import PaymentSuccessScreen from '@/screens/consumer/PaymentSuccessScreen';
 
 const Tab = createBottomTabNavigator<ConsumerStackParamList>();
 const Stack = createNativeStackNavigator<ConsumerStackParamList>();
@@ -136,6 +141,43 @@ export default function ConsumerNavigator() {
         component={OrderSuccessScreen}
         options={{ 
           title: 'Order Success',
+          headerShown: true,
+          presentation: 'modal'
+        }}
+      />
+      {/* Payment Screens */}
+      <Stack.Screen
+        name="NoPaymentMethod"
+        component={NoPaymentMethodScreen}
+        options={{
+          title: 'Payment Method',
+          headerShown: true,
+          presentation: 'modal'
+        }}
+      />
+      <Stack.Screen
+        name="PaymentMethods"
+        component={PaymentMethodsScreen}
+        options={{
+          title: 'Payment Methods',
+          headerShown: true,
+          presentation: 'modal'
+        }}
+      />
+      <Stack.Screen
+        name="AddPaymentMethod"
+        component={AddPaymentMethodScreen}
+        options={{
+          title: 'Add Payment Method',
+          headerShown: true,
+          presentation: 'modal'
+        }}
+      />
+      <Stack.Screen
+        name="PaymentSuccess"
+        component={PaymentSuccessScreen}
+        options={{
+          title: 'Success',
           headerShown: true,
           presentation: 'modal'
         }}

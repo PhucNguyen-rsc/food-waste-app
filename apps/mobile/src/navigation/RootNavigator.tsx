@@ -16,12 +16,6 @@ import ConsumerNavigator from './ConsumerNavigator';
 import BusinessNavigator from './BusinessNavigator';
 import CourierNavigator from './CourierNavigator';
 
-// Payment Screens
-import NoPaymentMethodScreen from '@/screens/consumer/NoPaymentMethodScreen';
-import PaymentMethodsScreen from '@/screens/consumer/PaymentMethodsScreen';
-import AddPaymentMethodScreen from '@/screens/consumer/AddPaymentMethodScreen';
-import PaymentSuccessScreen from '@/screens/consumer/PaymentSuccessScreen';
-
 import { useAppSelector } from '@/store';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -54,40 +48,6 @@ export const RootNavigator = () => {
 
         {/* Courier Navigator */}
         <Stack.Screen name="Courier" component={CourierNavigator} />
-
-        {/* Payment Screens */}
-        <Stack.Screen
-          name="NoPaymentMethod"
-          component={NoPaymentMethodScreen}
-          options={{
-            title: 'Payment Method',
-            headerShown: true,
-          }}
-        />
-        <Stack.Screen
-          name="PaymentMethods"
-          component={PaymentMethodsScreen}
-          options={{
-            title: 'Payment Methods',
-            headerShown: true,
-          }}
-        />
-        <Stack.Screen
-          name="AddPaymentMethod"
-          component={AddPaymentMethodScreen}
-          options={{
-            title: 'Add Payment Method',
-            headerShown: true,
-          }}
-        />
-        <Stack.Screen
-          name="PaymentSuccess"
-          component={PaymentSuccessScreen}
-          options={{
-            title: 'Success',
-            headerShown: true,
-          }}
-        />
       </Stack.Navigator>
     </NavigationContainer>
   );

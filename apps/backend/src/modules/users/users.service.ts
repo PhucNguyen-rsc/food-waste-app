@@ -36,34 +36,34 @@ export class UsersService {
     name?: string;
   }) {
     try {
-      // Check if user with this email already exists
-      const existingUser = await this.findByEmail(data.email);
-      if (existingUser) {
-        throw new ConflictException('A user with this email already exists');
-      }
+    // Check if user with this email already exists
+    const existingUser = await this.findByEmail(data.email);
+    if (existingUser) {
+      throw new ConflictException('A user with this email already exists');
+    }
 
       return await this.prisma.user.create({
-        data: {
-          id: data.id,
-          email: data.email,
-          name: data.name || null,
-          role: data.role,
-          // Set default values for other required fields
-          emailVerified: null,
-          image: null,
-          password: null,
-          // Business specific fields
-          businessName: null,
-          businessAddress: null,
-          businessPhone: null,
-          // Consumer specific fields
-          deliveryAddress: null,
-          // Courier specific fields
-          isAvailable: false,
-          currentLocation: null,
-          vehicleType: null,
-        },
-      });
+      data: {
+        id: data.id,
+        email: data.email,
+        name: data.name || null,
+        role: data.role,
+        // Set default values for other required fields
+        emailVerified: null,
+        image: null,
+        password: null,
+        // Business specific fields
+        businessName: null,
+        businessAddress: null,
+        businessPhone: null,
+        // Consumer specific fields
+        deliveryAddress: null,
+        // Courier specific fields
+        isAvailable: false,
+        currentLocation: null,
+        vehicleType: null,
+      },
+    });
     } catch (error) {
       if (error instanceof ConflictException) {
         throw error;
@@ -81,49 +81,49 @@ export class UsersService {
     console.log('New Role:', role);
 
     try {
-      const updatedUser = await this.prisma.user.update({
-        where: { id: userId },
-        data: { role },
-      });
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: { role },
+    });
 
-      // Generate new JWT token with updated role
-      const payload = {
-        sub: updatedUser.id,
-        email: updatedUser.email,
-        role: updatedUser.role,
-      };
-      const accessToken = this.jwtService.sign(payload);
+    // Generate new JWT token with updated role
+    const payload = {
+      sub: updatedUser.id,
+      email: updatedUser.email,
+      role: updatedUser.role,
+    };
+    const accessToken = this.jwtService.sign(payload);
 
-      console.log('Database Update Result:', {
+    console.log('Database Update Result:', {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      role: updatedUser.role
+    });
+    console.log('========================\n');
+
+    return {
+      accessToken,
+      user: {
         id: updatedUser.id,
         email: updatedUser.email,
-        role: updatedUser.role
-      });
-      console.log('========================\n');
-
-      return {
-        accessToken,
-        user: {
-          id: updatedUser.id,
-          email: updatedUser.email,
-          name: updatedUser.name,
-          role: updatedUser.role,
-          // Include role-specific fields
-          ...(updatedUser.role === UserRole.BUSINESS && {
-            businessName: updatedUser.businessName,
-            businessAddress: updatedUser.businessAddress,
-            businessPhone: updatedUser.businessPhone,
-          }),
-          ...(updatedUser.role === UserRole.CONSUMER && {
-            deliveryAddress: updatedUser.deliveryAddress,
-          }),
-          ...(updatedUser.role === UserRole.COURIER && {
-            isAvailable: updatedUser.isAvailable,
-            currentLocation: updatedUser.currentLocation,
-            vehicleType: updatedUser.vehicleType,
-          }),
-        },
-      };
+        name: updatedUser.name,
+        role: updatedUser.role,
+        // Include role-specific fields
+        ...(updatedUser.role === UserRole.BUSINESS && {
+          businessName: updatedUser.businessName,
+          businessAddress: updatedUser.businessAddress,
+          businessPhone: updatedUser.businessPhone,
+        }),
+        ...(updatedUser.role === UserRole.CONSUMER && {
+          deliveryAddress: updatedUser.deliveryAddress,
+        }),
+        ...(updatedUser.role === UserRole.COURIER && {
+          isAvailable: updatedUser.isAvailable,
+          currentLocation: updatedUser.currentLocation,
+          vehicleType: updatedUser.vehicleType,
+        }),
+      },
+    };
     } catch (error) {
       if (error.code === 'P2025') {
         throw new NotFoundException('User not found');

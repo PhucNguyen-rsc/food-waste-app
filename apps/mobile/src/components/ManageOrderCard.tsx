@@ -32,8 +32,6 @@ const getStatusColor = (status: string) => {
 const getNextStatus = (currentStatus: Order['status']): Order['status'] => {
   switch (currentStatus) {
     case 'PENDING':
-      return 'CONFIRMED';
-    case 'CONFIRMED':
       return 'PREPARING';
     case 'PREPARING':
       return 'READY';
@@ -49,8 +47,6 @@ const getNextStatus = (currentStatus: Order['status']): Order['status'] => {
 const getStatusButtonText = (currentStatus: string) => {
   switch (currentStatus) {
     case 'PENDING':
-      return 'Confirm Order';
-    case 'CONFIRMED':
       return 'Start Preparing';
     case 'PREPARING':
       return 'Mark as Ready';

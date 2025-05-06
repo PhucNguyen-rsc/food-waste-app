@@ -10,6 +10,7 @@ import {
   Modal,
   Alert,
   ScrollView,
+  RefreshControl,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '@/lib/api';
@@ -41,6 +42,7 @@ export default function ConsumerHomeScreen() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const foodItems = useSelector((state: RootState) => state.foodItems.items);
+  const [refreshing, setRefreshing] = useState(false);
 
   const categories = [
     'All',
@@ -52,16 +54,19 @@ export default function ConsumerHomeScreen() {
     'Other',
   ];
 
+  const fetchItems = async () => {
+    try {
+      const res = await api.get('/items');
+      setItems(res.data);
+      setFilteredItems(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const res = await api.get('/items');
-        setItems(res.data);
-        setFilteredItems(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
     fetchItems();
   }, []);
 
@@ -74,6 +79,11 @@ export default function ConsumerHomeScreen() {
     });
     setFilteredItems(filtered);
   }, [searchQuery, selectedCategory, items]);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchItems();
+  }, []);
 
   const renderItem = ({ item }: { item: FoodItem }) => {
     const discountPercent = Math.round(
@@ -149,22 +159,22 @@ export default function ConsumerHomeScreen() {
               <Text style={styles.emptyText}>No items available at the moment</Text>
             </View>
           ) : (
-            <ScrollView 
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.grid}
-            >
-              {filteredItems.map((item, index) => (
-                <View 
-                  key={item.id} 
-                  style={[
-                    styles.cardContainer,
-                    index % 2 === 0 ? styles.leftCard : styles.rightCard
-                  ]}
-                >
-                  {renderItem({ item })}
-                </View>
-              ))}
-            </ScrollView>
+            <FlatList
+              data={filteredItems}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              numColumns={2}
+              columnWrapperStyle={styles.row}
+              contentContainerStyle={styles.listContainer}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  colors={['#22C55E']}
+                  tintColor="#22C55E"
+                />
+              }
+            />
           )}
         </View>
       </View>
@@ -224,24 +234,15 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
   },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: 16,
-    paddingBottom: 40,
+  listContainer: {
+    padding: 16,
   },
-  cardContainer: {
-    width: '50%',
-    paddingHorizontal: 4,
+  row: {
+    justifyContent: 'space-between',
     marginBottom: 12,
   },
-  leftCard: {
-    paddingRight: 4,
-  },
-  rightCard: {
-    paddingLeft: 4,
-  },
   card: {
+    width: '48%',
     backgroundColor: '#F9FAFB',
     borderRadius: 12,
     padding: 12,

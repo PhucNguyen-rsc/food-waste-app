@@ -1,7 +1,7 @@
 // src/screens/business/ManageOrderScreen.tsx
 
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import BusinessLayout from '@/components/BusinessLayout';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { setOrders, setLoading, setError } from '@/store/slices/ordersSlice';
@@ -15,21 +15,30 @@ export default function ManageOrderScreen() {
   const orders = useAppSelector((state) => state.orders.items) || [];
   const loading = useAppSelector((state) => state.orders.loading);
   const error = useAppSelector((state) => state.orders.error);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchOrders = async () => {
+    try {
+      dispatch(setLoading(true));
+      const { data } = await api.get('/business/orders');
+      dispatch(setOrders(data));
+    } catch (error) {
+      dispatch(setError('Failed to fetch orders'));
+      console.error('Error fetching orders:', error);
+    } finally {
+      setRefreshing(false);
+      dispatch(setLoading(false));
+    }
+  };
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        dispatch(setLoading(true));
-        const { data } = await api.get('/business/orders');
-        dispatch(setOrders(data));
-      } catch (error) {
-        dispatch(setError('Failed to fetch orders'));
-        console.error('Error fetching orders:', error);
-      }
-    };
-
     fetchOrders();
   }, [dispatch]);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchOrders();
+  }, []);
 
   const handleUpdateStatus = async (orderId: string, newStatus: Order['status']) => {
     try {
@@ -44,7 +53,7 @@ export default function ManageOrderScreen() {
     }
   };
 
-  if (loading) {
+  if (loading && !refreshing) {
     return (
       <BusinessLayout>
         <View style={styles.loadingContainer}>
@@ -90,6 +99,14 @@ export default function ManageOrderScreen() {
         )}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#22C55E']}
+            tintColor="#22C55E"
+          />
+        }
       />
     </BusinessLayout>
   );
