@@ -1,4 +1,3 @@
-// src/screens/RoleSelectionScreen.tsx
 
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
