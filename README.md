@@ -7,7 +7,7 @@ A modern platform connecting businesses with consumers to reduce food waste and 
 - **Real-time Inventory Management**: Track and update food items in real-time
 - **Dynamic Pricing**: Automatic price adjustments based on expiration dates
 - **Order Management**: Streamlined order processing and delivery tracking
-- **Multi-platform Support**: Web, mobile, and backend services
+- **Multi-platform Support**: mobile, and backend services
 - **Secure Payments**: Integrated payment processing with multiple methods
 - **Analytics Dashboard**: Track sales, waste reduction, and business metrics
 
@@ -16,18 +16,10 @@ A modern platform connecting businesses with consumers to reduce food waste and 
 This is a monorepo built with modern technologies:
 
 ### Applications
-- `apps/web`: Next.js web application
 - `apps/mobile`: React Native mobile application
 - `apps/backend`: NestJS backend service
 
 ### Tech Stack
-- **Frontend Web**
-  - Next.js 14 with App Router
-  - TypeScript
-  - ShadCN/UI
-  - Tailwind CSS
-  - React Query & Zustand
-
 - **Frontend Mobile**
   - React Native (Expo)
   - TypeScript
@@ -68,7 +60,6 @@ pnpm install
 3. **Environment Setup**
 ```bash
 # Copy environment files
-cp apps/web/.env.example apps/web/.env
 cp apps/mobile/.env.example apps/mobile/.env
 cp apps/backend/.env.example apps/backend/.env
 
