@@ -1,6 +1,6 @@
 // src/screens/business/BusinessHomeScreen.tsx
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import BusinessLayout from '@/components/BusinessLayout'; // Use your BusinessLayout for a bottom bar
 import { useNavigation } from '@react-navigation/native';
@@ -39,24 +40,32 @@ export default function BusinessHomeScreen() {
   const orders = useAppSelector((state) => state.orders.items) || [];
   const ordersLoading = useAppSelector((state) => state.orders.loading);
   const ordersError = useAppSelector((state) => state.orders.error);
+  const [refreshing, setRefreshing] = useState(false);
 
-    const fetchData = async () => {
-      try {
-        // Fetch food items
-        dispatch(setFoodItemsLoading(true));
-        const { data: foodItemsData } = await api.get('/business/food-items');
-        dispatch(setFoodItems(foodItemsData));
+  const fetchData = async () => {
+    try {
+      // Fetch food items
+      dispatch(setFoodItemsLoading(true));
+      const { data: foodItemsData } = await api.get('/business/food-items');
+      dispatch(setFoodItems(foodItemsData));
 
-        // Fetch orders
-        dispatch(setOrdersLoading(true));
-        const { data: ordersData } = await api.get('/business/orders');
-        dispatch(setOrders(ordersData));
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        dispatch(setFoodItemsError('Failed to fetch food items'));
-        dispatch(setOrdersError('Failed to fetch orders'));
-      }
-    };
+      // Fetch orders
+      dispatch(setOrdersLoading(true));
+      const { data: ordersData } = await api.get('/business/orders');
+      dispatch(setOrders(ordersData));
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      dispatch(setFoodItemsError('Failed to fetch food items'));
+      dispatch(setOrdersError('Failed to fetch orders'));
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchData();
+  }, []);
 
   useEffect(() => {
     // Initial fetch
@@ -92,7 +101,17 @@ export default function BusinessHomeScreen() {
 
   return (
     <BusinessLayout>
-      <ScrollView style={styles.container}>
+      <ScrollView 
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#22C55E']}
+            tintColor="#22C55E"
+          />
+        }
+      >
         <View style={styles.businessHeader}>
           <Text style={styles.businessName}>{user?.businessName || 'Your Business'}</Text>
         </View>
