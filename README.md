@@ -1,25 +1,46 @@
-# Food Waste Marketplace Platform
+# feedr: Food Waste Marketplace Platform
 
-A comprehensive platform for managing surplus food, connecting businesses with consumers, and reducing food waste.
+A modern platform connecting businesses with consumers to reduce food waste and promote sustainable consumption.
 
-## Project Structure
+## Features
 
-This is a monorepo containing three main applications:
+- **Real-time Inventory Management**: Track and update food items in real-time
+- **Dynamic Pricing**: Automatic price adjustments based on expiration dates
+- **Order Management**: Streamlined order processing and delivery tracking
+- **Multi-platform Support**: Web, mobile, and backend services
+- **Secure Payments**: Integrated payment processing with multiple methods
+- **Analytics Dashboard**: Track sales, waste reduction, and business metrics
 
+## Architecture
+
+This is a monorepo built with modern technologies:
+
+### Applications
 - `apps/web`: Next.js web application
 - `apps/mobile`: React Native mobile application
 - `apps/backend`: NestJS backend service
 
-## Tech Stack
+### Tech Stack
+- **Frontend Web**
+  - Next.js 14 with App Router
+  - TypeScript
+  - ShadCN/UI
+  - Tailwind CSS
+  - React Query & Zustand
 
-- **Frontend Web**: Next.js 14 with App Router, TypeScript, ShadCN/UI, Tailwind CSS
-- **Frontend Mobile**: React Native (Expo), TypeScript, NativeWind
-- **Backend**: NestJS, PostgreSQL, Prisma ORM
-- **Authentication**: NextAuth.js (Web), Firebase Auth (Mobile)
-- **State Management**: React Query & Zustand
-- **Database**: PostgreSQL
-- **Deployment**: Vercel (Web), Railway (Backend), Expo (Mobile)
-- **CI/CD**: GitHub Actions
+- **Frontend Mobile**
+  - React Native (Expo)
+  - TypeScript
+  - NativeWind
+  - Firebase Auth
+  - React Query & Zustand
+
+- **Backend**
+  - NestJS
+  - PostgreSQL
+  - Prisma ORM
+  - JWT Authentication
+  - Jest for testing
 
 ## Getting Started
 
@@ -27,86 +48,217 @@ This is a monorepo containing three main applications:
 
 - Node.js 18+
 - pnpm 8+
-- PostgreSQL
-- Expo CLI (for mobile development)
+- PostgreSQL 14+
+- Expo CLI
+- Docker (optional)
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the Repository**
 ```bash
-git clone https://github.com/yourusername/food-waste-app.git
+git clone https://github.com/PhucNguyen-rsc/food-waste-app.git
 cd food-waste-app
 ```
 
-2. Install dependencies:
+2. **Install Dependencies**
 ```bash
 pnpm install
 ```
 
-3. Set up environment variables:
+3. **Environment Setup**
 ```bash
-cp .env.example .env
+# Copy environment files
+cp apps/web/.env.example apps/web/.env
+cp apps/mobile/.env.example apps/mobile/.env
+cp apps/backend/.env.example apps/backend/.env
+
+# Edit the .env files with your configuration
 ```
 
-4. Start development servers:
+4. **Database Setup**
 
-Web app:
+First, create a PostgreSQL database and get your connection URL. Then:
+
 ```bash
-pnpm dev:web
+cd packages/database
 ```
 
-Mobile app:
+Create a `.env` file in the database directory with your PostgreSQL connection URL:
+```bash
+echo "DATABASE_URL=\"postgresql://username:password@localhost:5432/food_waste_db\"" > .env
+```
+
+Generate Prisma client and run migrations:
+```bash
+pnpm prisma generate
+pnpm prisma migrate dev
+```
+
+## Development
+
+### Running the Applications
+
+1. **Start All Services**
+```bash
+pnpm dev
+```
+
+2. **Individual Services**
+
+
+Mobile App:
 ```bash
 pnpm dev:mobile
+# Scan QR code with Expo Go app
 ```
 
 Backend:
 ```bash
 pnpm dev:backend
+# API available at http://localhost:4000
 ```
 
-## Project Structure
+### Building for Production
 
+1. **Build All Applications**
+```bash
+pnpm build
 ```
-food-waste-app/
-├── apps/
-│   ├── web/           # Next.js web application
-│   ├── mobile/        # React Native mobile application
-│   └── backend/       # NestJS backend service
-├── packages/          # Shared packages
-│   ├── ui/           # Shared UI components
-│   ├── config/       # Shared configuration
-│   └── types/        # Shared TypeScript types
-└── package.json
+
+2. **Start Production Server**
+```bash
+pnpm start
+```
+
+## Testing
+
+### Unit Tests
+
+Run all tests:
+```bash
+pnpm test
+```
+
+Application-specific tests:
+```bash
+# Backend tests
+cd apps/backend && pnpm test
+```
+
+### Coverage Reports
+
+Generate coverage for all applications:
+```bash
+pnpm test:coverage
+```
+
+View coverage reports:
+- Backend: `apps/backend/coverage/lcov-report/index.html`
+
+### E2E Testing
+```bash
+pnpm test:e2e
 ```
 
 ## User Roles
 
-1. **Businesses**
-   - List and manage surplus food
-   - Manage orders
-   - Update inventory
-   - View analytics
+### Business Users
+- Manage food inventory
+- Set dynamic pricing
+- Track orders and analytics
+- Manage business profile
 
-2. **Consumers**
-   - Browse and buy food
-   - Track orders
-   - Earn rewards
+### Consumers
+- Browse available food items
+- Place and track orders
+- Manage payment methods
+- View order history
 
-3. **Couriers**
-   - Accept deliveries
-   - Update status
-   - Navigate routes
+### Couriers
+- Accept delivery requests
+- Update delivery status
+- View earnings and history
+- Manage availability
 
-4. **Admins**
-   - Monitor platform analytics
-   - Manage users
-   - Ensure compliance
+### Administrators
+- Monitor platform metrics
+- Manage user accounts
+- Handle disputes
+- Configure system settings
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Database Connection**
+```bash
+# Reset database
+pnpm prisma migrate reset
+```
+
+2. **Mobile App**
+```bash
+# Clear cache
+pnpm expo start -c
+
+# Reset Metro bundler
+rm -rf node_modules/.cache/metro
+```
+
+3. **Build Issues**
+```bash
+# Clean build
+pnpm clean
+
+# Fresh install
+rm -rf node_modules
+pnpm install
+```
+
+### Environment Variables
+
+Required environment variables for each application:
+
+#### Backend (.env)
+```
+DATABASE_URL=postgresql://user:password@localhost:5432/food_waste
+JWT_SECRET=your_jwt_secret
+PORT=4000
+```
+
+#### Mobile (.env)
+```
+EXPO_PUBLIC_API_URL=http://localhost:4000
+FIREBASE_CONFIG=your_firebase_config
+```
+
+## Documentation
+
+- [API Documentation](docs/api.md)
+- [Architecture Overview](docs/architecture.md)
+- [Contributing Guidelines](CONTRIBUTING.md)
+- [Security Policy](SECURITY.md)
 
 ## Contributing
 
-Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Authors
+
+- Phuc Hoang Nguyen
+- Mahlet Atrsaw Andargei
+- Kwaaku Boamah-Powers
+- Sudiksha Kalepu
+
+## Acknowledgments
+
+- Thanks to all contributors
+- Inspired by the need to reduce food waste
